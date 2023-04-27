@@ -4,6 +4,9 @@ mus-go is a [MUS format](https://github.com/mus-format/mus) serializer with vali
 # Tests
 Test coverage is 100%.
 
+# Benchmarks
+[github.com/alecthomas/go_serialization_benchmarks](https://github.com/alecthomas/go_serialization_benchmarks)
+
 # How To Use
 mus-go offers several encoding options, all of which are located in separate 
 packages.
