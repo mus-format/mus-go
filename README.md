@@ -8,7 +8,7 @@ Test coverage is 100%.
 [github.com/alecthomas/go_serialization_benchmarks](https://github.com/alecthomas/go_serialization_benchmarks)
 
 # Versioning
-[Go to the mus documentation](https://github.com/mus-format/mus#versioning).
+[Go to the MUS documentation](https://github.com/mus-format/mus#versioning).
 
 # How To Use
 mus-go offers several encoding options, all of which are located in separate 
