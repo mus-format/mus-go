@@ -8,12 +8,16 @@ import (
 
 // MarshalFloat64 fills bs with the MUS encoding (Raw) of a float64. Returns
 // the number of used bytes.
+//
+// It will panic if receives too small bs.
 func MarshalFloat64(v float64, bs []byte) (n int) {
 	return marshalInteger64(math.Float64bits(v), bs)
 }
 
 // MarshalFloat32 fills bs with the MUS encoding (Raw) of a float32. Returns
 // the number of used bytes.
+//
+// It will panic if receives too small bs.
 func MarshalFloat32(v float32, bs []byte) (n int) {
 	return marshalInteger32(math.Float32bits(v), bs)
 }

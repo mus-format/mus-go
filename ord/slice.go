@@ -8,6 +8,8 @@ import (
 
 // MarshalSlice fills bs with the MUS encoding of a slice. Returns the number of
 // used bytes.
+//
+// It will panic if receives too small bs.
 func MarshalSlice[T any](v []T, m mus.Marshaler[T], bs []byte) (n int) {
 	n = varint.MarshalInt(len(v), bs)
 	for _, e := range v {

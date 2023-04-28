@@ -6,30 +6,40 @@ import (
 
 // MarshalInt64 fills bs with the MUS encoding (Varint) of a int64. Returns the
 // number of used bytes.
+//
+// It will panic if receives too small bs.
 func MarshalInt64(v int64, bs []byte) (n int) {
 	return marshalUint(uint64(EncodeZigZag(v)), bs)
 }
 
 // MarshalInt32 fills bs with the MUS encoding (Varint) of a int32. Returns the
 // number of used bytes.
+//
+// It will panic if receives too small bs.
 func MarshalInt32(v int32, bs []byte) int {
 	return marshalUint(uint32(EncodeZigZag(v)), bs)
 }
 
 // MarshalInt16 fills bs with the MUS encoding (Varint) of a int16. Returns the
 // number of used bytes.
+//
+// It will panic if receives too small bs.
 func MarshalInt16(v int16, bs []byte) (n int) {
 	return marshalUint(uint16(EncodeZigZag(v)), bs)
 }
 
 // MarshalInt8 fills bs with the MUS encoding (Varint) of a int8. Returns the
 // number of used bytes.
+//
+// It will panic if receives too small bs.
 func MarshalInt8(v int8, bs []byte) (n int) {
 	return marshalUint(uint8(EncodeZigZag(v)), bs)
 }
 
 // MarshalInt fills bs with the MUS encoding (Varint) of a int. Returns the
 // number of used bytes.
+//
+// It will panic if receives too small bs.
 func MarshalInt(v int, bs []byte) (n int) {
 	return marshalUint(uint(EncodeZigZag(v)), bs)
 }

@@ -7,6 +7,8 @@ import (
 
 // MarshalPtr fills bs with the MUS encoding of a pointer. Returns the number
 // of used bytes.
+//
+// It will panic if receives too small bs.
 func MarshalPtr[T any](v *T, m mus.Marshaler[T], bs []byte) (n int) {
 	if v == nil {
 		bs[0] = muscom.NilFlag

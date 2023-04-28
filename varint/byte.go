@@ -6,6 +6,8 @@ import (
 
 // MarshalByte fills bs with the MUS encoding (Varint) of a byte. Returns the
 // number of used bytes.
+//
+// It will panic if receives too small bs.
 func MarshalByte(v byte, bs []byte) (n int) {
 	return marshalUint(v, bs)
 }

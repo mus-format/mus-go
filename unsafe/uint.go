@@ -20,30 +20,40 @@ var (
 
 // MarshalUint64 fills bs with the MUS encoding (Raw) of a uint64. Returns the
 // number of used bytes.
+//
+// It will panic if receives too small bs.
 func MarshalUint64(v uint64, bs []byte) (n int) {
 	return marshalInteger64(v, bs)
 }
 
 // MarshalUint32 fills bs with the MUS encoding (Raw) of a uint32. Returns the
 // number of used bytes.
+//
+// It will panic if receives too small bs.
 func MarshalUint32(v uint32, bs []byte) (n int) {
 	return marshalInteger32(v, bs)
 }
 
 // MarshalUint16 fills bs with the MUS encoding (Raw) of a uint16. Returns the
 // number of used bytes.
+//
+// It will panic if receives too small bs.
 func MarshalUint16(v uint16, bs []byte) (n int) {
 	return marshalInteger16(v, bs)
 }
 
 // MarshalUint8 fills bs with the MUS encoding (Raw) of a uint8. Returns the
 // number of used bytes.
+//
+// It will panic if receives too small bs.
 func MarshalUint8(v uint8, bs []byte) (n int) {
 	return marshalInteger8(v, bs)
 }
 
 // MarshalUint fills bs with the MUS encoding (Raw) of a uint. Returns the
 // number of used bytes.
+//
+// It will panic if receives too small bs.
 func MarshalUint(v uint, bs []byte) (n int) {
 	return marshalUint(v, bs)
 }

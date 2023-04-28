@@ -4,6 +4,8 @@ package mus
 //
 // MarshalMUS marshals data to the MUS format and returns the number of used
 // bytes.
+//
+// It should panic if receives too small bs.
 type Marshaler[T any] interface {
 	MarshalMUS(t T, bs []byte) (n int)
 }

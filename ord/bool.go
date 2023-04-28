@@ -7,6 +7,8 @@ import (
 
 // MarshalBool fills bs with the MUS encoding of a bool. Returns the number of
 // used bytes.
+//
+// It will panic if receives too small bs.
 func MarshalBool(v bool, bs []byte) int {
 	if v {
 		bs[0] = 1

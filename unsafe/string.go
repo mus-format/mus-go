@@ -11,6 +11,8 @@ import (
 
 // MarshalString fills bs with the MUS encoding of a string. Returns the number
 // of used bytes.
+//
+// It will panic if receives too small bs.
 func MarshalString(v string, bs []byte) (n int) {
 	n = varint.MarshalInt(len(v), bs)
 	if len(bs[n:]) < len(v) {

@@ -2,6 +2,8 @@ package raw
 
 // MarshalByte fills bs with the MUS encoding (Raw) of a byte. Returns the
 // number of used bytes.
+//
+// It will panic if receives too small bs.
 func MarshalByte(v byte, bs []byte) (n int) {
 	return marshalInteger8(v, bs)
 }
