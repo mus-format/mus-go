@@ -1,5 +1,7 @@
 # MUS Format Serializer
-mus-go is a [MUS format](https://github.com/mus-format/mus) serializer with validation support for Golang.
+mus-go is a [MUS format](https://github.com/mus-format/mus) extremely fast 
+serializer with validation support for Golang. Also it supports out of order 
+deserialization and zero allocations deserialization.
 
 # Tests
 Test coverage is 100%.
@@ -94,9 +96,9 @@ func main() {
 ### Slice
 ```go
 import (
-	"github.com/mus-format/mus-go"
-	"github.com/mus-format/mus-go/ord"
-	"github.com/mus-format/mus-go/varint"
+  "github.com/mus-format/mus-go"
+  "github.com/mus-format/mus-go/ord"
+  "github.com/mus-format/mus-go/varint"
 )
 
 func main() {
@@ -124,12 +126,12 @@ returns an error, the rest of the data will be skipped, thanks to `Skipper`.
 All this is done using the `ord.UnmarshalValidSlice()` function:
 ```go
 import (
-	"errors"
+  "errors"
 
-	muscom "github.com/mus-format/mus-common-go"
-	"github.com/mus-format/mus-go"
-	"github.com/mus-format/mus-go/ord"
-	"github.com/mus-format/mus-go/varint"
+  muscom "github.com/mus-format/mus-common-go"
+  "github.com/mus-format/mus-go"
+  "github.com/mus-format/mus-go/ord"
+  "github.com/mus-format/mus-go/varint"
 )
 
 func main() {
@@ -318,3 +320,42 @@ Therefore, to serialize an array, you must first make a slice of it. Or for
 greater performance, you can implement `Marshal`, `Unmarshal`, ... functions for 
 it yourself. This is not very difficult to do, you can also refer to the 
 [ord/slice.go](ord/slice.go) file for an example.
+
+# Out of Order Deserialization
+A simple example:
+```go
+package main
+
+import (
+  "fmt"
+
+  "github.com/mus-format/mus-go/varint"
+)
+
+func main() {
+  // We encode three numbers in turn - 5, 10, 15.
+  bs := make([]byte, varint.SizeInt(5)+varint.SizeInt(10)+varint.SizeInt(15))
+  n1 := varint.MarshalInt(5, bs)
+  n2 := varint.MarshalInt(10, bs[n1:])
+  varint.MarshalInt(15, bs[n1+n2:])
+
+  // Get them back in the opposite direction. Errors are omitted for simplicity.
+  n1, _ = varint.SkipInt(bs)
+  n2, _ = varint.SkipInt(bs)
+  num, _, _ := varint.UnmarshalInt(bs[n1+n2:])
+  fmt.Println(num)
+  num, _, _ = varint.UnmarshalInt(bs[n1:])
+  fmt.Println(num)
+  num, _, _ = varint.UnmarshalInt(bs)
+  fmt.Println(num)
+  // The output will be:
+  // 15
+  // 10
+  // 5
+}
+```
+
+# Zero Allocations Deserialization
+You can achieve this using `bool`, `byte`, all `uint`, `int`, `float` types and
+unsafe package. Please note that the length of variable-length data types 
+(such as `string`, `slice` or `map`) is encoded using Varint encoding.
