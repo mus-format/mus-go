@@ -192,7 +192,7 @@ func TestUnsafe(t *testing.T) {
 				wantN     = 0
 				wantErr   = mus.ErrTooSmallByteSlice
 				bs        = []byte{}
-				v, n, err = UnmarshalValidString(nil, bs)
+				v, n, err = UnmarshalValidString(nil, false, bs)
 			)
 			testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 		})
@@ -203,7 +203,7 @@ func TestUnsafe(t *testing.T) {
 				wantN     = 1
 				wantErr   = muscom.ErrNegativeLength
 				bs        = []byte{1}
-				v, n, err = UnmarshalValidString(nil, bs)
+				v, n, err = UnmarshalValidString(nil, false, bs)
 			)
 			testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 		})
@@ -214,30 +214,52 @@ func TestUnsafe(t *testing.T) {
 				wantN     = 1
 				wantErr   = mus.ErrTooSmallByteSlice
 				bs        = []byte{6, 1, 1}
-				v, n, err = UnmarshalValidString(nil, bs)
+				v, n, err = UnmarshalValidString(nil, false, bs)
 			)
 			testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 		})
 
-		t.Run("UnmarshalValid - MaxLength validator error", func(t *testing.T) {
-			var (
-				wantV     = ""
-				wantN     = 4
-				wantErr   = errors.New("MaxLength validator error")
-				maxLength = muscom_mock.NewValidator[int]().RegisterValidate(
-					func(v int) (err error) {
-						var wantV = 3
-						if v != wantV {
-							t.Errorf("unexpected v, want '%v' actual '%v'", wantV, v)
-						}
-						return wantErr
-					},
+		t.Run("UnmarshalValid - MaxLength validator error, skip == true",
+			func(t *testing.T) {
+				var (
+					wantV     = ""
+					wantN     = 4
+					wantErr   = errors.New("MaxLength validator error")
+					maxLength = muscom_mock.NewValidator[int]().RegisterValidate(
+						func(v int) (err error) {
+							var wantV = 3
+							if v != wantV {
+								t.Errorf("unexpected v, want '%v' actual '%v'", wantV, v)
+							}
+							return wantErr
+						},
+					)
+					bs        = []byte{6, 1, 1, 1}
+					v, n, err = UnmarshalValidString(maxLength, true, bs)
 				)
-				bs        = []byte{6, 1, 1, 1}
-				v, n, err = UnmarshalValidString(maxLength, bs)
-			)
-			testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
-		})
+				testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			})
+
+		t.Run("UnmarshalValid - MaxLength validator error, skip == false",
+			func(t *testing.T) {
+				var (
+					wantV     = ""
+					wantN     = 1
+					wantErr   = errors.New("MaxLength validator error")
+					maxLength = muscom_mock.NewValidator[int]().RegisterValidate(
+						func(v int) (err error) {
+							var wantV = 3
+							if v != wantV {
+								t.Errorf("unexpected v, want '%v' actual '%v'", wantV, v)
+							}
+							return wantErr
+						},
+					)
+					bs        = []byte{6, 1, 1, 1}
+					v, n, err = UnmarshalValidString(maxLength, false, bs)
+				)
+				testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			})
 
 	})
 

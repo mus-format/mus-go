@@ -27,7 +27,7 @@ func MarshalString(v string, bs []byte) (n int) {
 // The error can be one of mus.ErrTooSmallByteSlice, muscom.ErrOverflow, or
 // muscom.ErrNegativeLength.
 func UnmarshalString(bs []byte) (v string, n int, err error) {
-	return UnmarshalValidString(nil, bs)
+	return UnmarshalValidString(nil, false, bs)
 }
 
 // UnmarshalValidString parses a MUS-encoded valid string from bs. In addition
@@ -39,7 +39,7 @@ func UnmarshalString(bs []byte) (v string, n int, err error) {
 // The error returned by UnmarshalValidString can be one of
 // mus.ErrTooSmallByteSlice, muscom.ErrOverflow, muscom.ErrNegativeLength, or an
 // Validator error.
-func UnmarshalValidString(maxLength muscom.Validator[int], bs []byte) (
+func UnmarshalValidString(maxLength muscom.Validator[int], skip bool, bs []byte) (
 	v string, n int, err error) {
 	length, n, err := varint.UnmarshalInt(bs)
 	if err != nil || length == 0 {
@@ -55,7 +55,9 @@ func UnmarshalValidString(maxLength muscom.Validator[int], bs []byte) (
 	}
 	if maxLength != nil {
 		if err = maxLength.Validate(length); err != nil {
-			n += length
+			if skip {
+				n += length
+			}
 			return
 		}
 	}
