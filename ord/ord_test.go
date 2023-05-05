@@ -522,30 +522,31 @@ func TestOrd(t *testing.T) {
 			testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 		})
 
-		t.Run("UnmarshalValid - MaxLength validator error", func(t *testing.T) {
-			var (
-				wantV     []uint = nil
-				wantN            = 5
-				wantErr          = errors.New("MaxLength validator error")
-				bs               = []byte{4, 4, 1, 1, 0}
-				maxLength        = muscom_mock.NewValidator[int]().RegisterValidate(
-					func(v int) (err error) {
-						if v != 2 {
-							t.Errorf("unexpected v, want '%v' actual '%v'", 2, v)
-						}
-						return wantErr
-					},
+		t.Run("UnmarshalValid - MaxLength validator error, Skipper != nil",
+			func(t *testing.T) {
+				var (
+					wantV     []uint = nil
+					wantN            = 5
+					wantErr          = errors.New("MaxLength validator error")
+					bs               = []byte{8, 4, 1, 1, 0}
+					maxLength        = muscom_mock.NewValidator[int]().RegisterValidate(
+						func(v int) (err error) {
+							if v != 4 {
+								t.Errorf("unexpected v, want '%v' actual '%v'", 2, v)
+							}
+							return wantErr
+						},
+					)
+					sk = mock.NewSkipper().RegisterNSkipMUS(4,
+						func(bs []byte) (n int, err error) { return 1, nil },
+					)
+					mocks     = []*mok.Mock{sk.Mock}
+					v, n, err = UnmarshalValidSlice[uint](maxLength, nil, nil, sk, bs)
 				)
-				sk = mock.NewSkipper().RegisterSkipMUS(
-					func(bs []byte) (n int, err error) { return 4, nil },
-				)
-				mocks     = []*mok.Mock{sk.Mock}
-				v, n, err = UnmarshalValidSlice[uint](maxLength, nil, nil, sk, bs)
-			)
-			testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
-		})
+				testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
+			})
 
-		t.Run("UnmarshalValid - MaxLength validator error, skip rest - error",
+		t.Run("UnmarshalValid - MaxLength validator error, Skipper error",
 			func(t *testing.T) {
 				var (
 					wantV     []uint = nil

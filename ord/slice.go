@@ -76,6 +76,7 @@ func UnmarshalValidSlice[T any](maxLength muscom.Validator[int],
 		}
 		if vl != nil {
 			if err = vl.Validate(e); err != nil {
+				i++
 				goto SkipRemainingBytes
 			}
 		}
@@ -86,7 +87,7 @@ SkipRemainingBytes:
 	if sk == nil {
 		return
 	}
-	n1, err1 = skipRemainingSlice(i+1, length, sk, bs[n:])
+	n1, err1 = skipRemainingSlice(i, length, sk, bs[n:])
 	n += n1
 	if err1 != nil {
 		err = err1
