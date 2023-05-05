@@ -1169,12 +1169,12 @@ func TestOrd(t *testing.T) {
 			testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 		})
 
-		t.Run("UnmarshalValid - key Validator error, skip value - error",
+		t.Run("UnmarshalValid - key Validator error, value Skipper error",
 			func(t *testing.T) {
 				var (
 					wantV   = make(map[uint]uint, 2)
 					wantN   = 4
-					wantErr = errors.New("skip value error")
+					wantErr = errors.New("value Skipper error")
 					bs      = []byte{4, 10, 100, 1, 3, 4}
 					u1      = mock.NewUnmarshaler[uint]().RegisterUnmarshalMUS(
 						func(bs []byte) (v uint, n int, err error) {
@@ -1199,6 +1199,32 @@ func TestOrd(t *testing.T) {
 					mocks     = []*mok.Mock{u1.Mock, v1.Mock, sk2.Mock}
 					v, n, err = UnmarshalValidMap[uint, uint](nil, u1, nil, v1, nil, nil,
 						sk2,
+						bs)
+				)
+				testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks,
+					t)
+			})
+
+		t.Run("UnmarshalValid - key Validator error, value Skipper == nil",
+			func(t *testing.T) {
+				var (
+					wantV   = make(map[uint]uint, 2)
+					wantN   = 2
+					wantErr = errors.New("key Validator error")
+					bs      = []byte{4, 10, 100, 1, 3, 4}
+					u1      = mock.NewUnmarshaler[uint]().RegisterUnmarshalMUS(
+						func(bs []byte) (v uint, n int, err error) {
+							return 10, 1, nil
+						},
+					)
+					v1 = muscom_mock.NewValidator[uint]().RegisterValidate(
+						func(v uint) (err error) {
+							return wantErr
+						},
+					)
+					mocks     = []*mok.Mock{u1.Mock, v1.Mock}
+					v, n, err = UnmarshalValidMap[uint, uint](nil, u1, nil, v1, nil, nil,
+						nil,
 						bs)
 				)
 				testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks,

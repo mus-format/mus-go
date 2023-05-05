@@ -86,13 +86,15 @@ func UnmarshalValidMap[T comparable, V any](maxLength muscom.Validator[int],
 		}
 		if vl1 != nil {
 			if err = vl1.Validate(k); err != nil {
-				n1, err1 = sk2.SkipMUS(bs[n:])
-				n += n1
-				if err1 != nil {
-					err = err1
-					return
+				if sk2 != nil {
+					n1, err1 = sk2.SkipMUS(bs[n:])
+					n += n1
+					if err1 != nil {
+						err = err1
+						return
+					}
+					i++
 				}
-				i++
 				goto SkipRemainingBytes
 			}
 		}
