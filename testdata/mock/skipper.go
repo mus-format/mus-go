@@ -12,18 +12,18 @@ type Skipper struct {
 
 func (u Skipper) RegisterSkipMUS(
 	fn func(bs []byte) (n int, err error)) Skipper {
-	u.Register("SkipperMUS", fn)
+	u.Register("SkipMUS", fn)
 	return u
 }
 
 func (u Skipper) RegisterNSkipMUS(n int,
 	fn func(bs []byte) (n int, err error)) Skipper {
-	u.RegisterN("SkipperMUS", n, fn)
+	u.RegisterN("SkipMUS", n, fn)
 	return u
 }
 
 func (u Skipper) SkipMUS(bs []byte) (n int, err error) {
-	result, err := u.Call("SkipperMUS", bs)
+	result, err := u.Call("SkipMUS", bs)
 	if err != nil {
 		panic(err)
 	}

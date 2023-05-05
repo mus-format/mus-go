@@ -16,7 +16,7 @@ func MarshalInt64(v int64, bs []byte) (n int) {
 // number of used bytes.
 //
 // It will panic if receives too small bs.
-func MarshalInt32(v int32, bs []byte) int {
+func MarshalInt32(v int32, bs []byte) (n int) {
 	return marshalUint(uint32(EncodeZigZag(v)), bs)
 }
 
