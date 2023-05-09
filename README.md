@@ -22,6 +22,8 @@ packages.
 Serializes all `uint` (`uint64`, `uint32`, `uint16`, `uint8`, `uint`), `int`, 
 `float`, `byte` data types using Varint encoding. For example:
 ```go
+package main
+
 import "github.com/mus-format/mus-go/varint"
 
 func main() {
@@ -42,6 +44,8 @@ func main() {
 Serializes the same `uint`, `int`, `float`, `byte` data types using Raw 
 encoding. For example:
 ```go
+package main
+
 import "github.com/mus-format/mus-go/raw"
 
 func main() {
@@ -68,6 +72,8 @@ in the above examples. Let's consider the features.
 When deserializing a string, you can set a limit on its length. This is done 
 using the `ord.UnmarshalValidString()` function:
 ```go
+package main
+
 import (
   "errors"
 
@@ -97,6 +103,8 @@ func main() {
 
 ### Slice
 ```go
+package main
+
 import (
   "github.com/mus-format/mus-go"
   "github.com/mus-format/mus-go/ord"
@@ -127,6 +135,8 @@ the elements present in it, as well as `Skipper`. If one of the validators
 returns an error, the rest of the data will be skipped, thanks to `Skipper`.
 All this is done using the `ord.UnmarshalValidSlice()` function:
 ```go
+package main
+
 import (
   "errors"
 
@@ -179,6 +189,8 @@ In fact, mus-go does not support structural data types. You will have to
 implement the `mus.Marhsaler`, `mus.Unmarshaler`, `mus.Sizer` interfaces 
 yourself, but it is not difficult at all. For example:
 ```go
+package main
+
 import (
   "github.com/mus-format/mus-go/ord"
   "github.com/mus-format/mus-go/varint"
@@ -249,6 +261,8 @@ Also, thanks to this approach, we can very quickly find out whether the decoded
 structure is suitable for us or not. And we don't even need to deserialize it 
 completely! For example:
 ```go
+package main
+
 import (
   "errors"
 
