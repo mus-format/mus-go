@@ -13,8 +13,6 @@ Test coverage is 100%.
 [Go to the MUS documentation](https://github.com/mus-format/mus#versioning).
 
 # How To Use
-Don't forget to visit [mus-examples-go](https://github.com/mus-format/mus-examples-go).
-
 mus-go offers several encoding options, all of which are located in separate 
 packages.
 
