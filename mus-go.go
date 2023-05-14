@@ -48,7 +48,7 @@ func (fn SizerFn[T]) SizeMUS(t T) (size int) {
 
 // Skipper is the interface that wraps the SkipMUS method.
 //
-// SizeMUS skips data in the MUS format. Returns the number of skipped bytes and
+// SkipMUS skips data in the MUS format. Returns the number of skipped bytes and
 // an error.
 type Skipper interface {
 	SkipMUS(bs []byte) (n int, err error)
