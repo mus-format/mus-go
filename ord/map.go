@@ -9,6 +9,9 @@ import (
 // MarshalMap fills bs with the MUS encoding of a map. Returns the number of
 // used bytes.
 //
+// Arguments m1, m2 specify Marshalers for the keys and map values,
+// respectively.
+//
 // It will panic if receives too small bs.
 func MarshalMap[T comparable, V any](v map[T]V, m1 mus.Marshaler[T],
 	m2 mus.Marshaler[V],

@@ -37,7 +37,7 @@ func UnmarshalString(bs []byte) (v string, n int, err error) {
 // an error UnmarshalValidString skips the remaining string bytes.
 //
 // The error returned by UnmarshalValidString can be one of
-// mus.ErrTooSmallByteSlice, muscom.ErrOverflow, muscom.ErrNegativeLength, or an
+// mus.ErrTooSmallByteSlice, muscom.ErrOverflow, muscom.ErrNegativeLength, or a
 // Validator error.
 func UnmarshalValidString(maxLength muscom.Validator[int], skip bool, bs []byte) (
 	v string, n int, err error) {

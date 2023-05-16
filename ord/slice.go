@@ -9,6 +9,8 @@ import (
 // MarshalSlice fills bs with the MUS encoding of a slice. Returns the number of
 // used bytes.
 //
+// The m argument specifies the Marshaler for the slice elements.
+//
 // It will panic if receives too small bs.
 func MarshalSlice[T any](v []T, m mus.Marshaler[T], bs []byte) (n int) {
 	n = varint.MarshalInt(len(v), bs)
@@ -109,7 +111,7 @@ func SizeSlice[T any](v []T, s mus.Sizer[T]) (size int) {
 // SkipSlice skips a MUS-encoded slice in bs. Returns the number of skiped
 // bytes and an error.
 //
-// The sk argument specifies the Skipper for slice elements.
+// The sk argument specifies the Skipper for the slice elements.
 //
 // The error returned by SkipSlice can be one of mus.ErrTooSmallByteSlice,
 // muscom.ErrOverflow, muscom.ErrNegativeLength, or a Skipper error.

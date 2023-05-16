@@ -8,6 +8,8 @@ import (
 // MarshalPtr fills bs with the MUS encoding of a pointer. Returns the number
 // of used bytes.
 //
+// The m argument specifies the Marshaler for the pointer base type.
+//
 // It will panic if receives too small bs.
 func MarshalPtr[T any](v *T, m mus.Marshaler[T], bs []byte) (n int) {
 	if v == nil {
@@ -58,7 +60,7 @@ func SizePtr[T any](v *T, s mus.Sizer[T]) (size int) {
 	return 1
 }
 
-// SkipPtr skips a MUS-encoded slice in bs. Returns the number of skiped
+// SkipPtr skips a MUS-encoded pointer in bs. Returns the number of skiped
 // bytes and an error.
 //
 // The sk argument specifies the Skipper for the pointer base type.

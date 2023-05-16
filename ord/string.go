@@ -31,10 +31,11 @@ func UnmarshalString(bs []byte) (v string, n int, err error) {
 // to the string, it returns the number of used bytes and an error.
 //
 // The maxLength argument specifies the string length Validator. If it returns
-// an error UnmarshalValidString skips the remaining bytes of the string.
+// an error and skip == true UnmarshalValidString skips the remaining bytes of
+// the string.
 //
 // The error returned by UnmarshalValidString can be one of
-// mus.ErrTooSmallByteSlice, muscom.ErrOverflow, muscom.ErrNegativeLength, or an
+// mus.ErrTooSmallByteSlice, muscom.ErrOverflow, muscom.ErrNegativeLength, or a
 // Validator error.
 func UnmarshalValidString(maxLength muscom.Validator[int], skip bool, bs []byte) (
 	v string, n int, err error) {
