@@ -185,18 +185,18 @@ func unmarshalUint[T constraints.Unsigned](maxVarintLen int, maxLastByte byte,
 		shift int
 	)
 	for n, b = range bs {
+		n++
 		if n == maxVarintLen && b > maxLastByte {
 			return 0, n, muscom.ErrOverflow
 		}
 		if b < 0x80 {
 			t = t | T(b)<<shift
-			n++
 			return
 		}
 		t = t | T(b&0x7F)<<shift
 		shift += 7
 	}
-	return 0, n + 1, mus.ErrTooSmallByteSlice
+	return 0, n, mus.ErrTooSmallByteSlice
 }
 
 func sizeUint[T constraints.Unsigned](t T) (size int) {

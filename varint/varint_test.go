@@ -28,7 +28,7 @@ func TestVarint(t *testing.T) {
 				wantV     uint16 = 0
 				wantN            = 3
 				wantErr          = muscom.ErrOverflow
-				bs               = []byte{200, 200, 200, 200, 200}
+				bs               = []byte{200, 200, 200}
 				v, n, err        = unmarshalUint[uint16](muscom.Uint16MaxVarintLen,
 					muscom.Uint16MaxLastByte, bs)
 			)
