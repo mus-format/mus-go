@@ -1,7 +1,8 @@
 # MUS Format Serializer
 mus-go is a [MUS format](https://github.com/mus-format/mus) extremely fast 
 serializer with validation support for Golang. Also it supports out of order 
-deserialization and zero allocations deserialization.
+deserialization, zero allocations deserialization and has a 
+[streaming version](https://github.com/mus-format/mus-stream-go).
 
 # Tests
 Test coverage is 100%.
