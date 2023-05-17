@@ -3,6 +3,7 @@ package ord
 import (
 	"testing"
 
+	muscom_testdata "github.com/mus-format/mus-common-go/testdata"
 	"github.com/mus-format/mus-go"
 	"github.com/mus-format/mus-go/testdata"
 	"github.com/mus-format/mus-go/varint"
@@ -33,8 +34,8 @@ func TestIntegrationOrd(t *testing.T) {
 				}
 			}()
 		)
-		testdata.Test[*string](testdata.PointerTestCases, m, u, s, t)
-		testdata.TestSkip[*string](testdata.PointerTestCases, m, sk, s, t)
+		testdata.Test[*string](muscom_testdata.PointerTestCases, m, u, s, t)
+		testdata.TestSkip[*string](muscom_testdata.PointerTestCases, m, sk, s, t)
 	})
 
 	t.Run("Slice", func(t *testing.T) {
@@ -60,8 +61,8 @@ func TestIntegrationOrd(t *testing.T) {
 				}
 			}()
 		)
-		testdata.Test[[]int](testdata.SliceTestCases, m, u, s, t)
-		testdata.TestSkip[[]int](testdata.SliceTestCases, m, sk, s, t)
+		testdata.Test[[]int](muscom_testdata.SliceTestCases, m, u, s, t)
+		testdata.TestSkip[[]int](muscom_testdata.SliceTestCases, m, sk, s, t)
 	})
 
 	t.Run("Map", func(t *testing.T) {
@@ -97,8 +98,8 @@ func TestIntegrationOrd(t *testing.T) {
 				}
 			}()
 		)
-		testdata.Test[map[float32]uint8](testdata.MapTestCases, m, u, s, t)
-		testdata.TestSkip[map[float32]uint8](testdata.MapTestCases, m, sk, s, t)
+		testdata.Test[map[float32]uint8](muscom_testdata.MapTestCases, m, u, s, t)
+		testdata.TestSkip[map[float32]uint8](muscom_testdata.MapTestCases, m, sk, s, t)
 	})
 
 }
