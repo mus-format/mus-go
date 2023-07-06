@@ -59,7 +59,7 @@ func UnmarshalValidString(maxLength muscom.Validator[int], skip bool, bs []byte)
 			return
 		}
 	}
-	return string(bs[n : length+1]), n + length, nil
+	return string(bs[n : n+length]), n + length, nil
 }
 
 // SizeString returns the size of a MUS-encoded string.

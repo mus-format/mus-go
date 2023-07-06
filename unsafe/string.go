@@ -61,7 +61,7 @@ func UnmarshalValidString(maxLength muscom.Validator[int], skip bool, bs []byte)
 			return
 		}
 	}
-	c := bs[n : length+1]
+	c := bs[n : n+length]
 	return unsafe_mod.String(&c[0], len(c)), n + length, nil
 }
 
