@@ -473,6 +473,17 @@ func TestUnsafe(t *testing.T) {
 			muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 		})
 
+		t.Run("Unmarshal - ErrWrongFormat", func(t *testing.T) {
+			var (
+				wantV     bool = false
+				wantN          = 0
+				wantErr        = muscom.ErrWrongFormat
+				bs             = []byte{2}
+				v, n, err      = UnmarshalBool(bs)
+			)
+			muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+		})
+
 	})
 
 }

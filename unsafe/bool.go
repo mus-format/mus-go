@@ -3,6 +3,7 @@ package unsafe
 import (
 	unsafe_mod "unsafe"
 
+	muscom "github.com/mus-format/mus-common-go"
 	"github.com/mus-format/mus-go"
 	"github.com/mus-format/mus-go/ord"
 )
@@ -23,6 +24,10 @@ func MarshalBool(v bool, bs []byte) (n int) {
 func UnmarshalBool(bs []byte) (v bool, n int, err error) {
 	if len(bs) < 1 {
 		return false, 0, mus.ErrTooSmallByteSlice
+	}
+	if bs[0] > 1 {
+		err = muscom.ErrWrongFormat
+		return
 	}
 	return *(*bool)(unsafe_mod.Pointer(&bs[0])), 1, nil
 }
