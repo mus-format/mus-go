@@ -6,9 +6,9 @@ import (
 	"reflect"
 	"testing"
 
-	muscom "github.com/mus-format/mus-common-go"
-	muscom_testdata "github.com/mus-format/mus-common-go/testdata"
-	muscom_mock "github.com/mus-format/mus-common-go/testdata/mock"
+	com "github.com/mus-format/common-go"
+	com_testdata "github.com/mus-format/common-go/testdata"
+	com_mock "github.com/mus-format/common-go/testdata/mock"
 	"github.com/mus-format/mus-go"
 	"github.com/mus-format/mus-go/testdata"
 	"github.com/mus-format/mus-go/testdata/mock"
@@ -27,8 +27,8 @@ func TestOrd(t *testing.T) {
 					s  = mus.SizerFn[bool](SizeBool)
 					sk = mus.SkipperFn(SkipBool)
 				)
-				testdata.Test[bool](muscom_testdata.BoolTestCases, m, u, s, t)
-				testdata.TestSkip[bool](muscom_testdata.BoolTestCases, m, sk, s, t)
+				testdata.Test[bool](com_testdata.BoolTestCases, m, u, s, t)
+				testdata.TestSkip[bool](com_testdata.BoolTestCases, m, sk, s, t)
 			})
 
 		t.Run("UnmarshalBool should return ErrTooSmallByteSlice if there is no space in bs",
@@ -40,7 +40,7 @@ func TestOrd(t *testing.T) {
 					bs        = []byte{}
 					v, n, err = UnmarshalBool(bs)
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
 		t.Run("UnmarshalBool should return ErrWrongFormat if meets wrong format",
@@ -48,11 +48,11 @@ func TestOrd(t *testing.T) {
 				var (
 					wantV     = false
 					wantN     = 0
-					wantErr   = muscom.ErrWrongFormat
+					wantErr   = com.ErrWrongFormat
 					bs        = []byte{3}
 					v, n, err = UnmarshalBool(bs)
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
 		t.Run("SkipBool should return ErrTooSmallByteSlice if there is no space in bs",
@@ -63,18 +63,18 @@ func TestOrd(t *testing.T) {
 					bs      = []byte{}
 					n, err  = SkipBool(bs)
 				)
-				muscom_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+				com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
 			})
 
 		t.Run("SkipBool should return ErrWrongFormat if meets wrong format",
 			func(t *testing.T) {
 				var (
 					wantN   = 0
-					wantErr = muscom.ErrWrongFormat
+					wantErr = com.ErrWrongFormat
 					bs      = []byte{3}
 					n, err  = SkipBool(bs)
 				)
-				muscom_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+				com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
 			})
 
 	})
@@ -89,8 +89,8 @@ func TestOrd(t *testing.T) {
 					s  = mus.SizerFn[string](SizeString)
 					sk = mus.SkipperFn(SkipString)
 				)
-				testdata.Test[string](muscom_testdata.StringTestCases, m, u, s, t)
-				testdata.TestSkip[string](muscom_testdata.StringTestCases, m, sk, s, t)
+				testdata.Test[string](com_testdata.StringTestCases, m, u, s, t)
+				testdata.TestSkip[string](com_testdata.StringTestCases, m, sk, s, t)
 			})
 
 		t.Run("MarshalString should panic with ErrTooSmallByteSlice if there is no space in bs",
@@ -112,11 +112,11 @@ func TestOrd(t *testing.T) {
 				var (
 					wantV     = ""
 					wantN     = 1
-					wantErr   = muscom.ErrNegativeLength
+					wantErr   = com.ErrNegativeLength
 					bs        = []byte{1}
 					v, n, err = UnmarshalString(bs)
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
 		t.Run("UnmarshalString should return ErrTooSmallByteSlice if there is no space in bs",
@@ -128,7 +128,7 @@ func TestOrd(t *testing.T) {
 					bs        = []byte{4, 2}
 					v, n, err = UnmarshalString(bs)
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
 		t.Run("If skip == true and MaxLength validator returns an error, UnmarshalStringValid should return an error",
@@ -138,12 +138,12 @@ func TestOrd(t *testing.T) {
 					wantN     = 3
 					wantErr   = errors.New("MaxLength validator error")
 					bs        = []byte{4, 2, 2}
-					maxLength = muscom_mock.NewValidator[int]().RegisterValidate(
+					maxLength = com_mock.NewValidator[int]().RegisterValidate(
 						func(v int) (err error) { return wantErr },
 					)
 					v, n, err = UnmarshalValidString(maxLength, true, bs)
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
 		t.Run("If skip == false and MaxLength validator returns an error, UnmarshalStringValid should return an error",
@@ -153,23 +153,23 @@ func TestOrd(t *testing.T) {
 					wantN     = 1
 					wantErr   = errors.New("MaxLength validator error")
 					bs        = []byte{4, 2, 2}
-					maxLength = muscom_mock.NewValidator[int]().RegisterValidate(
+					maxLength = com_mock.NewValidator[int]().RegisterValidate(
 						func(v int) (err error) { return wantErr },
 					)
 					v, n, err = UnmarshalValidString(maxLength, false, bs)
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
 		t.Run("SkipString should return ErrNegativeLength if meets negative length",
 			func(t *testing.T) {
 				var (
 					wantN   = 1
-					wantErr = muscom.ErrNegativeLength
+					wantErr = com.ErrNegativeLength
 					bs      = []byte{1}
 					n, err  = SkipString(bs)
 				)
-				muscom_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+				com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
 			})
 
 		t.Run("SkipString should return ErrTooSmallByteSlice if there is no space in bs",
@@ -180,7 +180,7 @@ func TestOrd(t *testing.T) {
 					bs      = []byte{4, 2}
 					n, err  = SkipString(bs)
 				)
-				muscom_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+				com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
 			})
 
 		t.Run("If SkipString should return an error if it fails to unmarshal a length",
@@ -191,7 +191,7 @@ func TestOrd(t *testing.T) {
 					bs      = []byte{}
 					n, err  = SkipString(bs)
 				)
-				muscom_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+				com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
 			})
 
 	})
@@ -315,7 +315,7 @@ func TestOrd(t *testing.T) {
 					wantErr           = mus.ErrTooSmallByteSlice
 					v, n, err         = UnmarshalPtr[string](nil, []byte{})
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
 		t.Run("Unmarshal should return ErrWrongFormat if meets wrong format",
@@ -323,10 +323,10 @@ func TestOrd(t *testing.T) {
 				var (
 					wantV     *string = nil
 					wantN             = 0
-					wantErr           = muscom.ErrWrongFormat
+					wantErr           = com.ErrWrongFormat
 					v, n, err         = UnmarshalPtr[string](nil, []byte{2})
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
 		t.Run("If Unmarshaler fails with an error, UnmarshalPtr should return it",
@@ -340,9 +340,9 @@ func TestOrd(t *testing.T) {
 							return "", 4, wantErr
 						},
 					)
-					v, n, err = UnmarshalPtr[string](u, []byte{muscom.NotNilFlag})
+					v, n, err = UnmarshalPtr[string](u, []byte{com.NotNilFlag})
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
 		t.Run("SkipPtr should return ErrTooSmallByteSlice if there is no space in bs",
@@ -352,17 +352,17 @@ func TestOrd(t *testing.T) {
 					wantErr = mus.ErrTooSmallByteSlice
 					n, err  = SkipPtr(nil, []byte{})
 				)
-				muscom_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+				com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
 			})
 
 		t.Run("SkipPtr should return ErrWrongFormat if meets wrong format",
 			func(t *testing.T) {
 				var (
 					wantN   = 0
-					wantErr = muscom.ErrWrongFormat
+					wantErr = com.ErrWrongFormat
 					n, err  = SkipPtr(nil, []byte{2})
 				)
-				muscom_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+				com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
 			})
 
 		t.Run("If Skipper fails with an error, Skip should return it",
@@ -375,9 +375,9 @@ func TestOrd(t *testing.T) {
 							return 2, wantErr
 						},
 					)
-					n, err = SkipPtr(s, []byte{muscom.NotNilFlag})
+					n, err = SkipPtr(s, []byte{com.NotNilFlag})
 				)
-				muscom_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+				com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
 			})
 
 	})
@@ -517,7 +517,7 @@ func TestOrd(t *testing.T) {
 					wantErr          = mus.ErrTooSmallByteSlice
 					v, n, err        = UnmarshalSlice[uint](nil, []byte{})
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
 		t.Run("UnmarshalSlice should return ErrNegativeLength if meets a negative length",
@@ -525,10 +525,10 @@ func TestOrd(t *testing.T) {
 				var (
 					wantV     []uint = nil
 					wantN            = 1
-					wantErr          = muscom.ErrNegativeLength
+					wantErr          = com.ErrNegativeLength
 					v, n, err        = UnmarshalSlice[uint](nil, []byte{1})
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
 		t.Run("If Unmarshaler fails with an error, UnmarshalSlice should return it",
@@ -545,7 +545,7 @@ func TestOrd(t *testing.T) {
 					mocks     = []*mok.Mock{u.Mock}
 					v, n, err = UnmarshalSlice[uint](u, []byte{2})
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 			})
 
 		t.Run("If Skipper != nil and MaxLength validator returns an error, UnmarshalValidSlice should return it",
@@ -555,7 +555,7 @@ func TestOrd(t *testing.T) {
 					wantN            = 5
 					wantErr          = errors.New("MaxLength validator error")
 					bs               = []byte{8, 4, 1, 1, 0}
-					maxLength        = muscom_mock.NewValidator[int]().RegisterValidate(
+					maxLength        = com_mock.NewValidator[int]().RegisterValidate(
 						func(v int) (err error) {
 							if v != 4 {
 								t.Errorf("unexpected v, want '%v' actual '%v'", 2, v)
@@ -569,7 +569,7 @@ func TestOrd(t *testing.T) {
 					mocks     = []*mok.Mock{sk.Mock}
 					v, n, err = UnmarshalValidSlice[uint](maxLength, nil, nil, sk, bs)
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 			})
 
 		t.Run("If MaxLength validator returns an error and Skipper returns an error, UnmarshalValidSlice should return the last one",
@@ -579,7 +579,7 @@ func TestOrd(t *testing.T) {
 					wantN            = 4
 					wantErr          = errors.New("skip rest error")
 					bs               = []byte{4, 4, 1, 1}
-					maxLength        = muscom_mock.NewValidator[int]().RegisterValidate(
+					maxLength        = com_mock.NewValidator[int]().RegisterValidate(
 						func(v int) (err error) {
 							if v != 2 {
 								t.Errorf("unexpected v, want '%v' actual '%v'", 5, v)
@@ -593,7 +593,7 @@ func TestOrd(t *testing.T) {
 					mocks     = []*mok.Mock{sk.Mock}
 					v, n, err = UnmarshalValidSlice[uint](maxLength, nil, nil, sk, bs)
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks,
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks,
 					t)
 			})
 
@@ -603,7 +603,7 @@ func TestOrd(t *testing.T) {
 					wantV     []uint = nil
 					wantN            = 1
 					wantErr          = errors.New("MaxLength Validator error")
-					maxLength        = muscom_mock.NewValidator[int]().RegisterValidate(
+					maxLength        = com_mock.NewValidator[int]().RegisterValidate(
 						func(v int) (err error) {
 							return wantErr
 						},
@@ -612,7 +612,7 @@ func TestOrd(t *testing.T) {
 					mocks     = []*mok.Mock{maxLength.Mock}
 					v, n, err = UnmarshalValidSlice[uint](maxLength, nil, nil, nil, bs)
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks,
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks,
 					t)
 			})
 
@@ -623,7 +623,7 @@ func TestOrd(t *testing.T) {
 					wantN          = 4
 					wantErr        = errors.New("Validator error")
 					bs             = []byte{6, 10, 2, 3}
-					vl             = muscom_mock.NewValidator[uint]().RegisterValidate(
+					vl             = com_mock.NewValidator[uint]().RegisterValidate(
 						func(v uint) (err error) {
 							if v != 10 {
 								t.Errorf("unexpected v, want '%v' actual '%v'", 10, v)
@@ -658,7 +658,7 @@ func TestOrd(t *testing.T) {
 					mocks     = []*mok.Mock{vl.Mock, u.Mock, sk.Mock}
 					v, n, err = UnmarshalValidSlice[uint](nil, u, vl, sk, bs)
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 			})
 
 		t.Run("If Validator returns an error and Skipper returns an error, UnmarshalValidSlice should return the last one",
@@ -668,7 +668,7 @@ func TestOrd(t *testing.T) {
 					wantN   = 4
 					wantErr = errors.New("skip rest error")
 					bs      = []byte{6, 10, 2, 3}
-					vl      = muscom_mock.NewValidator[uint]().RegisterValidate(
+					vl      = com_mock.NewValidator[uint]().RegisterValidate(
 						func(v uint) (err error) {
 							if v != 10 {
 								t.Errorf("unexpected v, want '%v' actual '%v'", 10, v)
@@ -693,7 +693,7 @@ func TestOrd(t *testing.T) {
 					mocks     = []*mok.Mock{vl.Mock, u.Mock, sk.Mock}
 					v, n, err = UnmarshalValidSlice[uint](nil, u, vl, sk, bs)
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 			})
 
 		t.Run("SkipSlice should return ErrTooSmallByteSlice if there is no space in bs",
@@ -703,17 +703,17 @@ func TestOrd(t *testing.T) {
 					wantErr = mus.ErrTooSmallByteSlice
 					n, err  = SkipSlice(nil, []byte{})
 				)
-				muscom_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+				com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
 			})
 
 		t.Run("SkipSlice should return ErrNegativeLength if there is no space in bs",
 			func(t *testing.T) {
 				var (
 					wantN   = 1
-					wantErr = muscom.ErrNegativeLength
+					wantErr = com.ErrNegativeLength
 					n, err  = SkipSlice(nil, []byte{1})
 				)
-				muscom_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+				com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
 			})
 
 	})
@@ -902,7 +902,7 @@ func TestOrd(t *testing.T) {
 					wantErr                 = mus.ErrTooSmallByteSlice
 					v, n, err               = UnmarshalMap[uint, uint](nil, nil, []byte{})
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
 		t.Run("UnmarshalMap should return ErrNegativeLength if meets negative length",
@@ -910,10 +910,10 @@ func TestOrd(t *testing.T) {
 				var (
 					wantV     map[uint]uint = nil
 					wantN                   = 1
-					wantErr                 = muscom.ErrNegativeLength
+					wantErr                 = com.ErrNegativeLength
 					v, n, err               = UnmarshalMap[uint, uint](nil, nil, []byte{1})
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
 		t.Run("If Key Unmarshaller fails with an error, UnmarshalMap should return it",
@@ -935,7 +935,7 @@ func TestOrd(t *testing.T) {
 					mocks     = []*mok.Mock{u1.Mock}
 					v, n, err = UnmarshalMap[uint, uint](u1, nil, bs)
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 			})
 
 		t.Run("If Value Unmarshaller fails with an error, UnmarshalMap should return it",
@@ -962,7 +962,7 @@ func TestOrd(t *testing.T) {
 					mocks     = []*mok.Mock{u1.Mock, u2.Mock}
 					v, n, err = UnmarshalMap[uint, uint](u1, u2, bs)
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 			})
 
 		t.Run("If MaxLength validator returns an error, UnmarshalValidMap should return it",
@@ -972,7 +972,7 @@ func TestOrd(t *testing.T) {
 					wantN                   = 5
 					wantErr                 = errors.New("MaxLength validator error")
 					bs                      = []byte{4, 199, 1, 3, 4}
-					maxLength               = muscom_mock.NewValidator[int]().RegisterValidate(
+					maxLength               = com_mock.NewValidator[int]().RegisterValidate(
 						func(v int) (err error) {
 							if v != 2 {
 								t.Errorf("unexpected v, want '%v' actual '%v'", 2, v)
@@ -1021,7 +1021,7 @@ func TestOrd(t *testing.T) {
 						sk2,
 						bs)
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 			})
 
 		t.Run("If MaxLength validator returns an error and Key Skipper returns an error, UnmarshalValidMap should return the last one",
@@ -1031,7 +1031,7 @@ func TestOrd(t *testing.T) {
 					wantN                   = 2
 					wantErr                 = errors.New("skip key error")
 					bs                      = []byte{4, 199, 1, 3, 4}
-					maxLength               = muscom_mock.NewValidator[int]().RegisterValidate(
+					maxLength               = com_mock.NewValidator[int]().RegisterValidate(
 						func(v int) (err error) {
 							if v != 2 {
 								t.Errorf("unexpected v, want '%v' actual '%v'", 2, v)
@@ -1057,7 +1057,7 @@ func TestOrd(t *testing.T) {
 						sk2,
 						bs)
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks,
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks,
 					t)
 			})
 
@@ -1068,7 +1068,7 @@ func TestOrd(t *testing.T) {
 					wantN                   = 3
 					wantErr                 = errors.New("skip key error")
 					bs                      = []byte{4, 199, 1, 3, 4}
-					maxLength               = muscom_mock.NewValidator[int]().RegisterValidate(
+					maxLength               = com_mock.NewValidator[int]().RegisterValidate(
 						func(v int) (err error) {
 							return errors.New("MaxLength validator error")
 						},
@@ -1100,7 +1100,7 @@ func TestOrd(t *testing.T) {
 						sk2,
 						bs)
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 			})
 
 		t.Run("If Key Skipper == nil and MaxLength validator returns an error, UnmarshalValidMap should return it immediately",
@@ -1111,7 +1111,7 @@ func TestOrd(t *testing.T) {
 					wantErr                 = errors.New("MaxLength Validator error")
 					bs                      = []byte{4, 199, 1, 3, 4}
 					sk2                     = mock.NewSkipper()
-					maxLength               = muscom_mock.NewValidator[int]().RegisterValidate(
+					maxLength               = com_mock.NewValidator[int]().RegisterValidate(
 						func(v int) (err error) {
 							return wantErr
 						},
@@ -1123,7 +1123,7 @@ func TestOrd(t *testing.T) {
 						sk2,
 						bs)
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks,
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks,
 					t)
 			})
 
@@ -1135,7 +1135,7 @@ func TestOrd(t *testing.T) {
 					wantErr                 = errors.New("MaxLength Validator error")
 					bs                      = []byte{4, 199, 1, 3, 4}
 					sk1                     = mock.NewSkipper()
-					maxLength               = muscom_mock.NewValidator[int]().RegisterValidate(
+					maxLength               = com_mock.NewValidator[int]().RegisterValidate(
 						func(v int) (err error) {
 							return wantErr
 						},
@@ -1147,7 +1147,7 @@ func TestOrd(t *testing.T) {
 						nil,
 						bs)
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks,
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks,
 					t)
 			})
 
@@ -1163,7 +1163,7 @@ func TestOrd(t *testing.T) {
 							return 10, 1, nil
 						},
 					)
-					v1 = muscom_mock.NewValidator[uint]().RegisterValidate(
+					v1 = com_mock.NewValidator[uint]().RegisterValidate(
 						func(v uint) (err error) {
 							if v != 10 {
 								t.Errorf("unexpected v, want '%v' actual '%v'", 10, v)
@@ -1202,7 +1202,7 @@ func TestOrd(t *testing.T) {
 						sk2,
 						bs)
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 			})
 
 		t.Run("If Key Validator returns an error and Value Skipper returns an error, UnmarshalValidMap should return the last one",
@@ -1217,7 +1217,7 @@ func TestOrd(t *testing.T) {
 							return 10, 1, nil
 						},
 					)
-					v1 = muscom_mock.NewValidator[uint]().RegisterValidate(
+					v1 = com_mock.NewValidator[uint]().RegisterValidate(
 						func(v uint) (err error) {
 							return errors.New("key Validator error")
 						},
@@ -1237,7 +1237,7 @@ func TestOrd(t *testing.T) {
 						sk2,
 						bs)
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks,
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks,
 					t)
 			})
 
@@ -1253,7 +1253,7 @@ func TestOrd(t *testing.T) {
 							return 10, 1, nil
 						},
 					)
-					v1 = muscom_mock.NewValidator[uint]().RegisterValidate(
+					v1 = com_mock.NewValidator[uint]().RegisterValidate(
 						func(v uint) (err error) {
 							return wantErr
 						},
@@ -1263,7 +1263,7 @@ func TestOrd(t *testing.T) {
 						nil,
 						bs)
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks,
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks,
 					t)
 			})
 
@@ -1279,7 +1279,7 @@ func TestOrd(t *testing.T) {
 							return 10, 1, nil
 						},
 					)
-					v1 = muscom_mock.NewValidator[uint]().RegisterValidate(
+					v1 = com_mock.NewValidator[uint]().RegisterValidate(
 						func(v uint) (err error) {
 							return errors.New("key Validator error")
 						},
@@ -1309,7 +1309,7 @@ func TestOrd(t *testing.T) {
 						sk2,
 						bs)
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks,
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks,
 					t)
 			})
 
@@ -1330,7 +1330,7 @@ func TestOrd(t *testing.T) {
 							return 11, 1, nil
 						},
 					)
-					v2 = muscom_mock.NewValidator[uint]().RegisterValidate(
+					v2 = com_mock.NewValidator[uint]().RegisterValidate(
 						func(v uint) (err error) {
 							if v != 11 {
 								t.Errorf("unexpected v, want '%v' actual '%v'", 11, v)
@@ -1359,7 +1359,7 @@ func TestOrd(t *testing.T) {
 						sk2,
 						bs)
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 			})
 
 		t.Run("If value Validator returns an error and Key Skipper returns an error, UnmarshalValidMap should return the last one",
@@ -1379,7 +1379,7 @@ func TestOrd(t *testing.T) {
 							return 11, 1, nil
 						},
 					)
-					v2 = muscom_mock.NewValidator[uint]().RegisterValidate(
+					v2 = com_mock.NewValidator[uint]().RegisterValidate(
 						func(v uint) (err error) {
 							return errors.New("value Validator error")
 						},
@@ -1394,7 +1394,7 @@ func TestOrd(t *testing.T) {
 						sk2,
 						bs)
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks,
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks,
 					t)
 			})
 
@@ -1415,12 +1415,12 @@ func TestOrd(t *testing.T) {
 							return 11, 1, nil
 						},
 					)
-					v1 = muscom_mock.NewValidator[uint]().RegisterValidate(
+					v1 = com_mock.NewValidator[uint]().RegisterValidate(
 						func(v uint) (err error) {
 							return nil
 						},
 					)
-					v2 = muscom_mock.NewValidator[uint]().RegisterValidate(
+					v2 = com_mock.NewValidator[uint]().RegisterValidate(
 						func(v uint) (err error) {
 							return errors.New("value Validator error")
 						},
@@ -1438,7 +1438,7 @@ func TestOrd(t *testing.T) {
 						sk2,
 						bs)
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks,
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks,
 					t)
 			})
 
@@ -1446,11 +1446,11 @@ func TestOrd(t *testing.T) {
 			func(t *testing.T) {
 				var (
 					wantN   = 1
-					wantErr = muscom.ErrNegativeLength
+					wantErr = com.ErrNegativeLength
 					bs      = []byte{1}
 					n, err  = SkipMap(nil, nil, bs)
 				)
-				muscom_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+				com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
 			})
 
 		t.Run("SkipMap should return ErrTooSmallByteSlice if there is no space in bs",
@@ -1461,7 +1461,7 @@ func TestOrd(t *testing.T) {
 					bs      = []byte{}
 					n, err  = SkipMap(nil, nil, bs)
 				)
-				muscom_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+				com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
 			})
 
 	})

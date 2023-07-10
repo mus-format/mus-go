@@ -1,8 +1,6 @@
 package varint
 
-import (
-	muscom "github.com/mus-format/mus-common-go"
-)
+import com "github.com/mus-format/common-go"
 
 // MarshalByte fills bs with the MUS encoding (Varint) of a byte. Returns the
 // number of used bytes.
@@ -15,9 +13,9 @@ func MarshalByte(v byte, bs []byte) (n int) {
 // UnmarshalByte parses a MUS-encoded (Varint) byte from bs. In addition to the
 // byte, it returns the number of used bytes and an error.
 //
-// The error can be one of mus.ErrTooSmallByteSlice, or muscom.ErrOverflow.
+// The error can be one of mus.ErrTooSmallByteSlice, or com.ErrOverflow.
 func UnmarshalByte(bs []byte) (v byte, n int, err error) {
-	return unmarshalUint[byte](muscom.Uint8MaxVarintLen, muscom.Uint8MaxLastByte,
+	return unmarshalUint[byte](com.Uint8MaxVarintLen, com.Uint8MaxLastByte,
 		bs)
 }
 
@@ -29,7 +27,7 @@ func SizeByte(v byte) (size int) {
 // SkipByte skips a MUS-encoded (Varint) byte in bs. Returns the number of
 // skiped bytes and an error.
 //
-// The error can be one of mus.ErrTooSmallByteSlice, or muscom.ErrOverflow.
+// The error can be one of mus.ErrTooSmallByteSlice, or com.ErrOverflow.
 func SkipByte(bs []byte) (n int, err error) {
-	return skipUint(muscom.Uint8MaxVarintLen, muscom.Uint8MaxLastByte, bs)
+	return skipUint(com.Uint8MaxVarintLen, com.Uint8MaxLastByte, bs)
 }

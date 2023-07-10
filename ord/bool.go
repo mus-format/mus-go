@@ -1,7 +1,7 @@
 package ord
 
 import (
-	muscom "github.com/mus-format/mus-common-go"
+	com "github.com/mus-format/common-go"
 	"github.com/mus-format/mus-go"
 )
 
@@ -21,7 +21,7 @@ func MarshalBool(v bool, bs []byte) int {
 // UnmarshalBool parses a MUS-encoded bool from bs. In addition to the bool,
 // it returns the number of used bytes and an error.
 //
-// The error can be one of mus.ErrTooSmallByteSlice, or muscom.ErrWrongFormat.
+// The error can be one of mus.ErrTooSmallByteSlice, or com.ErrWrongFormat.
 func UnmarshalBool(bs []byte) (v bool, n int, err error) {
 	if len(bs) < 1 {
 		return false, 0, mus.ErrTooSmallByteSlice
@@ -32,7 +32,7 @@ func UnmarshalBool(bs []byte) (v bool, n int, err error) {
 	if bs[0] == 1 {
 		return true, 1, nil
 	}
-	return false, 0, muscom.ErrWrongFormat
+	return false, 0, com.ErrWrongFormat
 }
 
 // SizeBool returns the size of a MUS-encoded bool.
@@ -43,7 +43,7 @@ func SizeBool(v bool) (n int) {
 // SkipBool skips a MUS-encoded bool in bs. Returns the number of skiped bytes
 // and an error.
 //
-// The error can be one of mus.ErrTooSmallByteSlice, or muscom.ErrWrongFormat.
+// The error can be one of mus.ErrTooSmallByteSlice, or com.ErrWrongFormat.
 func SkipBool(bs []byte) (n int, err error) {
 	if len(bs) < 1 {
 		return 0, mus.ErrTooSmallByteSlice
@@ -51,5 +51,5 @@ func SkipBool(bs []byte) (n int, err error) {
 	if bs[0] == 0 || bs[0] == 1 {
 		return 1, nil
 	}
-	return 0, muscom.ErrWrongFormat
+	return 0, com.ErrWrongFormat
 }

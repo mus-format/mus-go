@@ -78,14 +78,14 @@ package main
 import (
   "errors"
 
-  muscom "github.com/mus-format/mus-common-go"
+  muscom "github.com/mus-format/common-go"
   "github.com/mus-format/mus-go/ord"
 )
 
 func main() {
   var (
     ErrTooLongString                         = errors.New("too long string")
-    maxLength        muscom.ValidatorFn[int] = func(length int) (err error) {
+    maxLength        com.ValidatorFn[int] = func(length int) (err error) {
       // Checks the length of the string.
       if length > 10 {
         err = ErrTooLongString
@@ -141,7 +141,7 @@ package main
 import (
   "errors"
 
-  muscom "github.com/mus-format/mus-common-go"
+  muscom "github.com/mus-format/common-go"
   "github.com/mus-format/mus-go"
   "github.com/mus-format/mus-go/ord"
   "github.com/mus-format/mus-go/varint"
@@ -155,14 +155,14 @@ func main() {
     sk                 = mus.SkipperFn(varint.SkipInt) // Implementation of the
     // mus.Skipper interface for slice elements, may be nil, in which case a
     // validation error will be returned immediately.
-    maxLength muscom.ValidatorFn[int] = func(length int) (err error) {
+    maxLength com.ValidatorFn[int] = func(length int) (err error) {
       // Checks the length of the slice.
       if length > 5 {
         err = ErrTooLongSlice
       }
       return
     }
-    vl muscom.ValidatorFn[int] = func(e int) (err error) {
+    vl com.ValidatorFn[int] = func(e int) (err error) {
       // Checks the slice elements.
       if e > 10 {
         err = ErrTooBigSliceElem
@@ -267,7 +267,7 @@ package main
 import (
   "errors"
 
-  muscom "github.com/mus-format/mus-common-go"
+  muscom "github.com/mus-format/common-go"
   "github.com/mus-format/mus-go"
   "github.com/mus-format/mus-go/ord"
   "github.com/mus-format/mus-go/varint"
@@ -276,7 +276,7 @@ import (
 // Continuation of the previous section.
 var (
   ErrTooBigA                         = errors.New("too bid a")
-  avl        muscom.ValidatorFn[int] = func(a int) (err error) {
+  avl        com.ValidatorFn[int] = func(a int) (err error) {
     // Checks if the Foo.a field is correct.
     if a > 10 {
       err = ErrTooBigA
@@ -296,7 +296,7 @@ var (
   }
 )
 
-func UnmarshalValidFoo(avl muscom.Validator[int], ask mus.Skipper, bs []byte) (
+func UnmarshalValidFoo(avl com.Validator[int], ask mus.Skipper, bs []byte) (
   v Foo, n int, err error) {
   v.a, n, err = varint.UnmarshalInt(bs)
   if err != nil {

@@ -48,7 +48,7 @@ func MarshalInt(v int, bs []byte) (n int) {
 // UnmarshalInt64 parses a MUS-encoded (Varint) int64 from bs. In addition to
 // the byte, it returns the number of used bytes and an error.
 //
-// The error can be one of mus.ErrTooSmallByteSlice, or muscom.ErrOverflow.
+// The error can be one of mus.ErrTooSmallByteSlice, or com.ErrOverflow.
 func UnmarshalInt64(bs []byte) (v int64, n int, err error) {
 	uv, n, err := UnmarshalUint64(bs)
 	if err != nil {
@@ -60,7 +60,7 @@ func UnmarshalInt64(bs []byte) (v int64, n int, err error) {
 // UnmarshalInt32 parses a MUS-encoded (Varint) int32 from bs. In addition to
 // the byte, it returns the number of used bytes and an error.
 //
-// The error can be one of mus.ErrTooSmallByteSlice, or muscom.ErrOverflow.
+// The error can be one of mus.ErrTooSmallByteSlice, or com.ErrOverflow.
 func UnmarshalInt32(bs []byte) (v int32, n int, err error) {
 	uv, n, err := UnmarshalUint32(bs)
 	if err != nil {
@@ -72,7 +72,7 @@ func UnmarshalInt32(bs []byte) (v int32, n int, err error) {
 // UnmarshalInt16 parses a MUS-encoded (Varint) int16 from bs. In addition to
 // the byte, it returns the number of used bytes and an error.
 //
-// The error can be one of mus.ErrTooSmallByteSlice, or muscom.ErrOverflow.
+// The error can be one of mus.ErrTooSmallByteSlice, or com.ErrOverflow.
 func UnmarshalInt16(bs []byte) (v int16, n int, err error) {
 	uv, n, err := UnmarshalUint16(bs)
 	if err != nil {
@@ -84,7 +84,7 @@ func UnmarshalInt16(bs []byte) (v int16, n int, err error) {
 // UnmarshalInt8 parses a MUS-encoded (Varint) int8 from bs. In addition to
 // the byte, it returns the number of used bytes and an error.
 //
-// The error can be one of mus.ErrTooSmallByteSlice, or muscom.ErrOverflow.
+// The error can be one of mus.ErrTooSmallByteSlice, or com.ErrOverflow.
 func UnmarshalInt8(bs []byte) (v int8, n int, err error) {
 	uv, n, err := UnmarshalUint8(bs)
 	if err != nil {
@@ -96,7 +96,7 @@ func UnmarshalInt8(bs []byte) (v int8, n int, err error) {
 // UnmarshalInt parses a MUS-encoded (Varint) int from bs. In addition to
 // the byte, it returns the number of used bytes and an error.
 //
-// The error can be one of mus.ErrTooSmallByteSlice, or muscom.ErrOverflow.
+// The error can be one of mus.ErrTooSmallByteSlice, or com.ErrOverflow.
 func UnmarshalInt(bs []byte) (v int, n int, err error) {
 	uv, n, err := UnmarshalUint(bs)
 	if err != nil {
@@ -135,7 +135,7 @@ func SizeInt(v int) (size int) {
 // SkipInt64 skips a MUS-encoded (Varint) int64 in bs. Returns the number of
 // skiped bytes and an error.
 //
-// The error can be one of mus.ErrTooSmallByteSlice, or muscom.ErrOverflow.
+// The error can be one of mus.ErrTooSmallByteSlice, or com.ErrOverflow.
 func SkipInt64(bs []byte) (n int, err error) {
 	return SkipUint64(bs)
 }
@@ -143,7 +143,7 @@ func SkipInt64(bs []byte) (n int, err error) {
 // SkipInt32 skips a MUS-encoded (Varint) int32 in bs. Returns the number of
 // skiped bytes and an error.
 //
-// The error can be one of mus.ErrTooSmallByteSlice, or muscom.ErrOverflow.
+// The error can be one of mus.ErrTooSmallByteSlice, or com.ErrOverflow.
 func SkipInt32(bs []byte) (n int, err error) {
 	return SkipUint32(bs)
 }
@@ -151,7 +151,7 @@ func SkipInt32(bs []byte) (n int, err error) {
 // SkipInt16 skips a MUS-encoded (Varint) int16 in bs. Returns the number of
 // skiped bytes and an error.
 //
-// The error can be one of mus.ErrTooSmallByteSlice, or muscom.ErrOverflow.
+// The error can be one of mus.ErrTooSmallByteSlice, or com.ErrOverflow.
 func SkipInt16(bs []byte) (n int, err error) {
 	return SkipUint16(bs)
 }
@@ -159,7 +159,7 @@ func SkipInt16(bs []byte) (n int, err error) {
 // SkipInt8 skips a MUS-encoded (Varint) int8 in bs. Returns the number of
 // skiped bytes and an error.
 //
-// The error can be one of mus.ErrTooSmallByteSlice, or muscom.ErrOverflow.
+// The error can be one of mus.ErrTooSmallByteSlice, or com.ErrOverflow.
 func SkipInt8(bs []byte) (n int, err error) {
 	return SkipUint8(bs)
 }
@@ -167,7 +167,7 @@ func SkipInt8(bs []byte) (n int, err error) {
 // SkipInt skips a MUS-encoded (Varint) int in bs. Returns the number of skiped
 // bytes and an error.
 //
-// The error can be one of mus.ErrTooSmallByteSlice, or muscom.ErrOverflow.
+// The error can be one of mus.ErrTooSmallByteSlice, or com.ErrOverflow.
 func SkipInt(bs []byte) (n int, err error) {
 	return SkipUint(bs)
 }

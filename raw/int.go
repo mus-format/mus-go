@@ -3,7 +3,7 @@ package raw
 import (
 	"strconv"
 
-	muscom "github.com/mus-format/mus-common-go"
+	com "github.com/mus-format/common-go"
 )
 
 func init() {
@@ -178,6 +178,6 @@ func setUpIntFuncs(intSize int) {
 		sizeInt = sizeNum32[int]
 		skipInt = skipInteger32
 	default:
-		panic(muscom.ErrUnsupportedIntSize)
+		panic(com.ErrUnsupportedIntSize)
 	}
 }

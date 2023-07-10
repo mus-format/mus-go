@@ -3,7 +3,7 @@ package unsafe
 import (
 	"strconv"
 
-	muscom "github.com/mus-format/mus-common-go"
+	com "github.com/mus-format/common-go"
 	"github.com/mus-format/mus-go/raw"
 )
 
@@ -175,7 +175,7 @@ func setUpUintFuncs(intSize int) {
 		marshalUint = marshalInteger32[uint]
 		unmarshalUint = unmarshalInteger32[uint]
 	default:
-		panic(muscom.ErrUnsupportedIntSize)
+		panic(com.ErrUnsupportedIntSize)
 	}
 	sizeUint = raw.SizeUint
 	skipUint = raw.SkipUint

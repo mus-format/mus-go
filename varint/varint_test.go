@@ -3,8 +3,8 @@ package varint
 import (
 	"testing"
 
-	muscom "github.com/mus-format/mus-common-go"
-	muscom_testdata "github.com/mus-format/mus-common-go/testdata"
+	com "github.com/mus-format/common-go"
+	com_testdata "github.com/mus-format/common-go/testdata"
 	"github.com/mus-format/mus-go"
 	"github.com/mus-format/mus-go/testdata"
 )
@@ -22,7 +22,7 @@ func TestVarint(t *testing.T) {
 					bs               = []byte{}
 					v, n, err        = unmarshalUint[uint64](0, 0, bs)
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
 		t.Run("unmarshalUint should return ErrOverflow if there is no varint end",
@@ -30,12 +30,12 @@ func TestVarint(t *testing.T) {
 				var (
 					wantV     uint16 = 0
 					wantN            = 3
-					wantErr          = muscom.ErrOverflow
+					wantErr          = com.ErrOverflow
 					bs               = []byte{200, 200, 200}
-					v, n, err        = unmarshalUint[uint16](muscom.Uint16MaxVarintLen,
-						muscom.Uint16MaxLastByte, bs)
+					v, n, err        = unmarshalUint[uint16](com.Uint16MaxVarintLen,
+						com.Uint16MaxLastByte, bs)
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
 		t.Run("unmarshalUint should return ErrTooSmallByteSlice if there is no space in bs",
@@ -45,10 +45,10 @@ func TestVarint(t *testing.T) {
 					wantN            = 2
 					wantErr          = mus.ErrTooSmallByteSlice
 					bs               = []byte{200, 200}
-					v, n, err        = unmarshalUint[uint16](muscom.Uint16MaxVarintLen,
-						muscom.Uint16MaxLastByte, bs)
+					v, n, err        = unmarshalUint[uint16](com.Uint16MaxVarintLen,
+						com.Uint16MaxLastByte, bs)
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
 	})
@@ -63,19 +63,19 @@ func TestVarint(t *testing.T) {
 					bs      = []byte{}
 					n, err  = skipUint(0, 0, bs)
 				)
-				muscom_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+				com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
 			})
 
 		t.Run("skipUint should return ErrOverflow if there is no varint end",
 			func(t *testing.T) {
 				var (
 					wantN   = 3
-					wantErr = muscom.ErrOverflow
+					wantErr = com.ErrOverflow
 					bs      = []byte{200, 200, 200, 200, 200}
-					n, err  = skipUint(muscom.Uint16MaxVarintLen, muscom.Uint16MaxLastByte,
+					n, err  = skipUint(com.Uint16MaxVarintLen, com.Uint16MaxLastByte,
 						bs)
 				)
-				muscom_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+				com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
 			})
 
 		t.Run("skipUint shold return ErrTooSmallByteSlice if there is no space in bs",
@@ -84,10 +84,10 @@ func TestVarint(t *testing.T) {
 					wantN   = 2
 					wantErr = mus.ErrTooSmallByteSlice
 					bs      = []byte{200, 200}
-					n, err  = skipUint(muscom.Uint16MaxVarintLen, muscom.Uint16MaxLastByte,
+					n, err  = skipUint(com.Uint16MaxVarintLen, com.Uint16MaxLastByte,
 						bs)
 				)
-				muscom_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+				com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
 
 			})
 
@@ -103,8 +103,8 @@ func TestVarint(t *testing.T) {
 					s  = mus.SizerFn[uint64](SizeUint64)
 					sk = mus.SkipperFn(SkipUint64)
 				)
-				testdata.Test[uint64](muscom_testdata.Uint64TestCases, m, u, s, t)
-				testdata.TestSkip[uint64](muscom_testdata.Uint64TestCases, m, sk, s, t)
+				testdata.Test[uint64](com_testdata.Uint64TestCases, m, u, s, t)
+				testdata.TestSkip[uint64](com_testdata.Uint64TestCases, m, sk, s, t)
 			})
 
 		t.Run("All MarshalUint32, UnmarshalUint32, SizeUint32, SkipUint32 functions must work correctly",
@@ -115,8 +115,8 @@ func TestVarint(t *testing.T) {
 					s  = mus.SizerFn[uint32](SizeUint32)
 					sk = mus.SkipperFn(SkipUint32)
 				)
-				testdata.Test[uint32](muscom_testdata.Uint32TestCases, m, u, s, t)
-				testdata.TestSkip[uint32](muscom_testdata.Uint32TestCases, m, sk, s, t)
+				testdata.Test[uint32](com_testdata.Uint32TestCases, m, u, s, t)
+				testdata.TestSkip[uint32](com_testdata.Uint32TestCases, m, sk, s, t)
 			})
 
 		t.Run("All Marshal16, Unmarshal16, Size16, Skip16 functions must work correctly",
@@ -127,8 +127,8 @@ func TestVarint(t *testing.T) {
 					s  = mus.SizerFn[uint16](SizeUint16)
 					sk = mus.SkipperFn(SkipUint16)
 				)
-				testdata.Test[uint16](muscom_testdata.Uint16TestCases, m, u, s, t)
-				testdata.TestSkip[uint16](muscom_testdata.Uint16TestCases, m, sk, s, t)
+				testdata.Test[uint16](com_testdata.Uint16TestCases, m, u, s, t)
+				testdata.TestSkip[uint16](com_testdata.Uint16TestCases, m, sk, s, t)
 			})
 
 		t.Run("All MarshalUint8, UnmarshalUint8, SizeUint8, SkipUint8 functions must work correctly",
@@ -139,8 +139,8 @@ func TestVarint(t *testing.T) {
 					s  = mus.SizerFn[uint8](SizeUint8)
 					sk = mus.SkipperFn(SkipUint8)
 				)
-				testdata.Test[uint8](muscom_testdata.Uint8TestCases, m, u, s, t)
-				testdata.TestSkip[uint8](muscom_testdata.Uint8TestCases, m, sk, s, t)
+				testdata.Test[uint8](com_testdata.Uint8TestCases, m, u, s, t)
+				testdata.TestSkip[uint8](com_testdata.Uint8TestCases, m, sk, s, t)
 			})
 
 		t.Run("All MarshalUint8, UnmarshalUint8, SizeUint8, SkipUint8 functions must work correctly",
@@ -151,8 +151,8 @@ func TestVarint(t *testing.T) {
 					s  = mus.SizerFn[uint](SizeUint)
 					sk = mus.SkipperFn(SkipUint)
 				)
-				testdata.Test[uint](muscom_testdata.UintTestCases, m, u, s, t)
-				testdata.TestSkip[uint](muscom_testdata.UintTestCases, m, sk, s, t)
+				testdata.Test[uint](com_testdata.UintTestCases, m, u, s, t)
+				testdata.TestSkip[uint](com_testdata.UintTestCases, m, sk, s, t)
 			})
 
 	})
@@ -167,8 +167,8 @@ func TestVarint(t *testing.T) {
 					s  = mus.SizerFn[int64](SizeInt64)
 					sk = mus.SkipperFn(SkipInt64)
 				)
-				testdata.Test[int64](muscom_testdata.Int64TestCases, m, u, s, t)
-				testdata.TestSkip[int64](muscom_testdata.Int64TestCases, m, sk, s, t)
+				testdata.Test[int64](com_testdata.Int64TestCases, m, u, s, t)
+				testdata.TestSkip[int64](com_testdata.Int64TestCases, m, sk, s, t)
 			})
 
 		t.Run("UnmarshalInt64 should return ErrTooSmallByteSlice if there is no space in bs",
@@ -180,7 +180,7 @@ func TestVarint(t *testing.T) {
 					bs              = []byte{}
 					v, n, err       = UnmarshalInt64(bs)
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
 		t.Run("All MarshalInt32, UnmarshalInt32, SizeInt32, SkipInt32 functions must work correctly",
@@ -191,8 +191,8 @@ func TestVarint(t *testing.T) {
 					s  = mus.SizerFn[int32](SizeInt32)
 					sk = mus.SkipperFn(SkipInt32)
 				)
-				testdata.Test[int32](muscom_testdata.Int32TestCases, m, u, s, t)
-				testdata.TestSkip[int32](muscom_testdata.Int32TestCases, m, sk, s, t)
+				testdata.Test[int32](com_testdata.Int32TestCases, m, u, s, t)
+				testdata.TestSkip[int32](com_testdata.Int32TestCases, m, sk, s, t)
 			})
 
 		t.Run("UnmarshalInt32 should return ErrTooSmallByteSlice if there is no space in bs",
@@ -204,7 +204,7 @@ func TestVarint(t *testing.T) {
 					bs              = []byte{}
 					v, n, err       = UnmarshalInt32(bs)
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
 		t.Run("Int16", func(t *testing.T) {
@@ -217,8 +217,8 @@ func TestVarint(t *testing.T) {
 						s  = mus.SizerFn[int16](SizeInt16)
 						sk = mus.SkipperFn(SkipInt16)
 					)
-					testdata.Test[int16](muscom_testdata.Int16TestCases, m, u, s, t)
-					testdata.TestSkip[int16](muscom_testdata.Int16TestCases, m, sk, s, t)
+					testdata.Test[int16](com_testdata.Int16TestCases, m, u, s, t)
+					testdata.TestSkip[int16](com_testdata.Int16TestCases, m, sk, s, t)
 				})
 
 			t.Run("UnmarshalInt16 should return ErrTooSmallByteSlice if there is no space in bs",
@@ -230,7 +230,7 @@ func TestVarint(t *testing.T) {
 						bs              = []byte{}
 						v, n, err       = UnmarshalInt16(bs)
 					)
-					muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+					com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 				})
 
 		})
@@ -243,8 +243,8 @@ func TestVarint(t *testing.T) {
 					s  = mus.SizerFn[int8](SizeInt8)
 					sk = mus.SkipperFn(SkipInt8)
 				)
-				testdata.Test[int8](muscom_testdata.Int8TestCases, m, u, s, t)
-				testdata.TestSkip[int8](muscom_testdata.Int8TestCases, m, sk, s, t)
+				testdata.Test[int8](com_testdata.Int8TestCases, m, u, s, t)
+				testdata.TestSkip[int8](com_testdata.Int8TestCases, m, sk, s, t)
 			})
 
 		t.Run("UnmarshalInt8 should return ErrTooSmallByteSlice if there is no space in bs",
@@ -256,7 +256,7 @@ func TestVarint(t *testing.T) {
 					bs             = []byte{}
 					v, n, err      = UnmarshalInt8(bs)
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
 		t.Run("All MarshalInt, UnmarshalInt, SizeInt, SkipInt functions must work correctly",
@@ -267,8 +267,8 @@ func TestVarint(t *testing.T) {
 					s  = mus.SizerFn[int](SizeInt)
 					sk = mus.SkipperFn(SkipInt)
 				)
-				testdata.Test[int](muscom_testdata.IntTestCases, m, u, s, t)
-				testdata.TestSkip[int](muscom_testdata.IntTestCases, m, sk, s, t)
+				testdata.Test[int](com_testdata.IntTestCases, m, u, s, t)
+				testdata.TestSkip[int](com_testdata.IntTestCases, m, sk, s, t)
 			})
 
 		t.Run("UnmarshalInt should return ErrTooSmallByteSlice if there is no space in bs",
@@ -280,7 +280,7 @@ func TestVarint(t *testing.T) {
 					bs            = []byte{}
 					v, n, err     = UnmarshalInt(bs)
 				)
-				muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
 	})
@@ -293,8 +293,8 @@ func TestVarint(t *testing.T) {
 				s  = mus.SizerFn[byte](SizeByte)
 				sk = mus.SkipperFn(SkipByte)
 			)
-			testdata.Test[byte](muscom_testdata.ByteTestCases, m, u, s, t)
-			testdata.TestSkip[byte](muscom_testdata.ByteTestCases, m, sk, s, t)
+			testdata.Test[byte](com_testdata.ByteTestCases, m, u, s, t)
+			testdata.TestSkip[byte](com_testdata.ByteTestCases, m, sk, s, t)
 		})
 
 	t.Run("float", func(t *testing.T) {
@@ -309,8 +309,8 @@ func TestVarint(t *testing.T) {
 						s  = mus.SizerFn[float64](SizeFloat64)
 						sk = mus.SkipperFn(SkipFloat64)
 					)
-					testdata.Test[float64](muscom_testdata.Float64TestCases, m, u, s, t)
-					testdata.TestSkip[float64](muscom_testdata.Float64TestCases, m, sk, s, t)
+					testdata.Test[float64](com_testdata.Float64TestCases, m, u, s, t)
+					testdata.TestSkip[float64](com_testdata.Float64TestCases, m, sk, s, t)
 				})
 
 			t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
@@ -322,7 +322,7 @@ func TestVarint(t *testing.T) {
 						bs                = []byte{}
 						v, n, err         = UnmarshalFloat64(bs)
 					)
-					muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err,
+					com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err,
 						nil, t)
 				})
 
@@ -338,8 +338,8 @@ func TestVarint(t *testing.T) {
 						s  = mus.SizerFn[float32](SizeFloat32)
 						sk = mus.SkipperFn(SkipFloat32)
 					)
-					testdata.Test[float32](muscom_testdata.Float32TestCases, m, u, s, t)
-					testdata.TestSkip[float32](muscom_testdata.Float32TestCases, m, sk, s, t)
+					testdata.Test[float32](com_testdata.Float32TestCases, m, u, s, t)
+					testdata.TestSkip[float32](com_testdata.Float32TestCases, m, sk, s, t)
 				})
 
 			t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
@@ -351,7 +351,7 @@ func TestVarint(t *testing.T) {
 						bs                = []byte{}
 						v, n, err         = UnmarshalFloat32(bs)
 					)
-					muscom_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err,
+					com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err,
 						nil, t)
 				})
 

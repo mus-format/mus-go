@@ -22,7 +22,7 @@ func MarshalFloat32(v float32, bs []byte) int {
 // UnmarshalFloat64 parses a MUS-encoded (Varint) float64 from bs. In addition
 // to the float64, it returns the number of used bytes and an error.
 //
-// The error can be one of mus.ErrTooSmallByteSlice, or muscom.ErrOverflow.
+// The error can be one of mus.ErrTooSmallByteSlice, or com.ErrOverflow.
 func UnmarshalFloat64(bs []byte) (v float64, n int, err error) {
 	uv, n, err := UnmarshalUint64(bs)
 	if err != nil {
@@ -35,7 +35,7 @@ func UnmarshalFloat64(bs []byte) (v float64, n int, err error) {
 // UnmarshalFloat32 parses a MUS-encoded (Varint) float32 from bs. In addition
 // to the float32, it returns the number of used bytes and an error.
 //
-// The error can be one of mus.ErrTooSmallByteSlice, or muscom.ErrOverflow.
+// The error can be one of mus.ErrTooSmallByteSlice, or com.ErrOverflow.
 func UnmarshalFloat32(bs []byte) (v float32, n int, err error) {
 	uv, n, err := UnmarshalUint32(bs)
 	if err != nil {
@@ -60,7 +60,7 @@ func SizeFloat32(v float32) (size int) {
 // SkipFloat64 skips a MUS-encoded (Varint) float64 in bs. Returns the number of
 // skiped bytes and an error.
 //
-// The error can be one of mus.ErrTooSmallByteSlice, or muscom.ErrOverflow.
+// The error can be one of mus.ErrTooSmallByteSlice, or com.ErrOverflow.
 func SkipFloat64(bs []byte) (n int, err error) {
 	return SkipUint64(bs)
 }
@@ -68,7 +68,7 @@ func SkipFloat64(bs []byte) (n int, err error) {
 // SkipFloat32 skips a MUS-encoded (Varint) float32 in bs. Returns the number of
 // skiped bytes and an error.
 //
-// The error can be one of mus.ErrTooSmallByteSlice, or muscom.ErrOverflow.
+// The error can be one of mus.ErrTooSmallByteSlice, or com.ErrOverflow.
 func SkipFloat32(bs []byte) (n int, err error) {
 	return SkipUint32(bs)
 }

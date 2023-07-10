@@ -3,7 +3,7 @@ package unsafe
 import (
 	unsafe_mod "unsafe"
 
-	muscom "github.com/mus-format/mus-common-go"
+	com "github.com/mus-format/common-go"
 	"github.com/mus-format/mus-go"
 	"github.com/mus-format/mus-go/ord"
 	"github.com/mus-format/mus-go/varint"
@@ -24,8 +24,8 @@ func MarshalString(v string, bs []byte) (n int) {
 // UnmarshalString parses a MUS-encoded string from bs. In addition to the
 // string, it returns the number of used bytes and an error.
 //
-// The error can be one of mus.ErrTooSmallByteSlice, muscom.ErrOverflow, or
-// muscom.ErrNegativeLength.
+// The error can be one of mus.ErrTooSmallByteSlice, com.ErrOverflow, or
+// com.ErrNegativeLength.
 func UnmarshalString(bs []byte) (v string, n int, err error) {
 	return UnmarshalValidString(nil, false, bs)
 }
@@ -37,16 +37,16 @@ func UnmarshalString(bs []byte) (v string, n int, err error) {
 // an error UnmarshalValidString skips the remaining string bytes.
 //
 // The error returned by UnmarshalValidString can be one of
-// mus.ErrTooSmallByteSlice, muscom.ErrOverflow, muscom.ErrNegativeLength, or a
+// mus.ErrTooSmallByteSlice, com.ErrOverflow, com.ErrNegativeLength, or a
 // Validator error.
-func UnmarshalValidString(maxLength muscom.Validator[int], skip bool, bs []byte) (
+func UnmarshalValidString(maxLength com.Validator[int], skip bool, bs []byte) (
 	v string, n int, err error) {
 	length, n, err := varint.UnmarshalInt(bs)
 	if err != nil || length == 0 {
 		return
 	}
 	if length < 0 {
-		err = muscom.ErrNegativeLength
+		err = com.ErrNegativeLength
 		return
 	}
 	if len(bs[n:]) < length {
@@ -73,7 +73,7 @@ func SizeString(v string) (n int) {
 // SkipString skips a MUS-encoded string in bs. Returns the number of skiped
 // bytes and an error.
 //
-// The error can be one of mus.ErrTooSmallByteSlice, muscom.ErrOverflow, or
+// The error can be one of mus.ErrTooSmallByteSlice, com.ErrOverflow, or
 // mus.ErrNegativeLength.
 func SkipString(bs []byte) (n int, err error) {
 	return ord.SkipString(bs)

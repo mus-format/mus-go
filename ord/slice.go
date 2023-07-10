@@ -1,7 +1,7 @@
 package ord
 
 import (
-	muscom "github.com/mus-format/mus-common-go"
+	com "github.com/mus-format/common-go"
 	"github.com/mus-format/mus-go"
 	"github.com/mus-format/mus-go/varint"
 )
@@ -26,7 +26,7 @@ func MarshalSlice[T any](v []T, m mus.Marshaler[T], bs []byte) (n int) {
 // The u argument specifies the Unmarshaler for the slice elements.
 //
 // The error returned by UnmarshalSlice can be one of mus.ErrTooSmallByteSlice,
-// muscom.ErrOverflow, muscom.ErrNegativeLength, or an Unmarshaler error.
+// com.ErrOverflow, com.ErrNegativeLength, or an Unmarshaler error.
 func UnmarshalSlice[T any](u mus.Unmarshaler[T], bs []byte) (v []T, n int,
 	err error) {
 	return UnmarshalValidSlice(nil, u, nil, nil, bs)
@@ -42,11 +42,11 @@ func UnmarshalSlice[T any](u mus.Unmarshaler[T], bs []byte) (v []T, n int,
 // immediately returns the validation error.
 //
 // The error returned by UnmarshalValidSlice can be one of
-// mus.ErrTooSmallByteSlice, muscom.ErrOverflow, muscom.ErrNegativeLength, an
+// mus.ErrTooSmallByteSlice, com.ErrOverflow, com.ErrNegativeLength, an
 // Unmarshaler, Validator, or Skipper error.
-func UnmarshalValidSlice[T any](maxLength muscom.Validator[int],
+func UnmarshalValidSlice[T any](maxLength com.Validator[int],
 	u mus.Unmarshaler[T],
-	vl muscom.Validator[T],
+	vl com.Validator[T],
 	sk mus.Skipper,
 	bs []byte,
 ) (v []T, n int, err error) {
@@ -55,7 +55,7 @@ func UnmarshalValidSlice[T any](maxLength muscom.Validator[int],
 		return
 	}
 	if length < 0 {
-		err = muscom.ErrNegativeLength
+		err = com.ErrNegativeLength
 		return
 	}
 	var (
@@ -114,14 +114,14 @@ func SizeSlice[T any](v []T, s mus.Sizer[T]) (size int) {
 // The sk argument specifies the Skipper for the slice elements.
 //
 // The error returned by SkipSlice can be one of mus.ErrTooSmallByteSlice,
-// muscom.ErrOverflow, muscom.ErrNegativeLength, or a Skipper error.
+// com.ErrOverflow, com.ErrNegativeLength, or a Skipper error.
 func SkipSlice(sk mus.Skipper, bs []byte) (n int, err error) {
 	length, n, err := varint.UnmarshalInt(bs)
 	if err != nil {
 		return
 	}
 	if length < 0 {
-		err = muscom.ErrNegativeLength
+		err = com.ErrNegativeLength
 		return
 	}
 	n1, err := skipRemainingSlice(0, length, sk, bs[n:])
