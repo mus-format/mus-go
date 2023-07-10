@@ -78,7 +78,7 @@ package main
 import (
   "errors"
 
-  muscom "github.com/mus-format/common-go"
+  com "github.com/mus-format/common-go"
   "github.com/mus-format/mus-go/ord"
 )
 
@@ -141,7 +141,7 @@ package main
 import (
   "errors"
 
-  muscom "github.com/mus-format/common-go"
+  com "github.com/mus-format/common-go"
   "github.com/mus-format/mus-go"
   "github.com/mus-format/mus-go/ord"
   "github.com/mus-format/mus-go/varint"
@@ -267,7 +267,7 @@ package main
 import (
   "errors"
 
-  muscom "github.com/mus-format/common-go"
+  com "github.com/mus-format/common-go"
   "github.com/mus-format/mus-go"
   "github.com/mus-format/mus-go/ord"
   "github.com/mus-format/mus-go/varint"
