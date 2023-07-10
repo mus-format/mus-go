@@ -13,14 +13,14 @@ func TestIntegrationOrd(t *testing.T) {
 
 	t.Run("pointer", func(t *testing.T) {
 		var (
-			m = func() mus.MarshalerFn[*string] {
+			m = func() mus.MarshallerFn[*string] {
 				return func(t *string, bs []byte) (n int) {
-					return MarshalPtr[string](t, mus.MarshalerFn[string](MarshalString), bs)
+					return MarshalPtr[string](t, mus.MarshallerFn[string](MarshalString), bs)
 				}
 			}()
-			u = func() mus.UnmarshalerFn[*string] {
+			u = func() mus.UnMarshallerFn[*string] {
 				return func(bs []byte) (t *string, n int, err error) {
-					return UnmarshalPtr[string](mus.UnmarshalerFn[string](UnmarshalString), bs)
+					return UnmarshalPtr[string](mus.UnMarshallerFn[string](UnmarshalString), bs)
 				}
 			}()
 			s = func() mus.SizerFn[*string] {
@@ -40,14 +40,14 @@ func TestIntegrationOrd(t *testing.T) {
 
 	t.Run("slice", func(t *testing.T) {
 		var (
-			m = func() mus.MarshalerFn[[]int] {
+			m = func() mus.MarshallerFn[[]int] {
 				return func(t []int, bs []byte) (n int) {
-					return MarshalSlice[int](t, mus.MarshalerFn[int](varint.MarshalInt), bs)
+					return MarshalSlice[int](t, mus.MarshallerFn[int](varint.MarshalInt), bs)
 				}
 			}()
-			u = func() mus.UnmarshalerFn[[]int] {
+			u = func() mus.UnMarshallerFn[[]int] {
 				return func(bs []byte) (t []int, n int, err error) {
-					return UnmarshalSlice[int](mus.UnmarshalerFn[int](varint.UnmarshalInt), bs)
+					return UnmarshalSlice[int](mus.UnMarshallerFn[int](varint.UnmarshalInt), bs)
 				}
 			}()
 			s = func() mus.SizerFn[[]int] {
@@ -67,19 +67,19 @@ func TestIntegrationOrd(t *testing.T) {
 
 	t.Run("map", func(t *testing.T) {
 		var (
-			m = func() mus.MarshalerFn[map[float32]uint8] {
+			m = func() mus.MarshallerFn[map[float32]uint8] {
 				return func(t map[float32]uint8, bs []byte) int {
 					return MarshalMap[float32, uint8](t,
-						mus.MarshalerFn[float32](varint.MarshalFloat32),
-						mus.MarshalerFn[uint8](varint.MarshalUint8),
+						mus.MarshallerFn[float32](varint.MarshalFloat32),
+						mus.MarshallerFn[uint8](varint.MarshalUint8),
 						bs)
 				}
 			}()
-			u = func() mus.UnmarshalerFn[map[float32]uint8] {
+			u = func() mus.UnMarshallerFn[map[float32]uint8] {
 				return func(bs []byte) (t map[float32]uint8, n int, err error) {
 					return UnmarshalMap[float32, uint8](
-						mus.UnmarshalerFn[float32](varint.UnmarshalFloat32),
-						mus.UnmarshalerFn[uint8](varint.UnmarshalUint8),
+						mus.UnMarshallerFn[float32](varint.UnmarshalFloat32),
+						mus.UnMarshallerFn[uint8](varint.UnmarshalUint8),
 						bs)
 				}
 			}()

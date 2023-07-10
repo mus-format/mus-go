@@ -8,10 +8,10 @@ import (
 // MarshalPtr fills bs with the MUS encoding of a pointer. Returns the number
 // of used bytes.
 //
-// The m argument specifies the Marshaler for the pointer base type.
+// The m argument specifies the Marshaller for the pointer base type.
 //
 // It will panic if receives too small bs.
-func MarshalPtr[T any](v *T, m mus.Marshaler[T], bs []byte) (n int) {
+func MarshalPtr[T any](v *T, m mus.Marshaller[T], bs []byte) (n int) {
 	if v == nil {
 		bs[0] = com.NilFlag
 		n = 1
@@ -24,11 +24,11 @@ func MarshalPtr[T any](v *T, m mus.Marshaler[T], bs []byte) (n int) {
 // UnmarshalPtr parses a MUS-encoded pointer from bs. In addition to the
 // pointer, it returns the number of used bytes and an error.
 //
-// The u argument specifies the Unmarshaler for the base pointer type.
+// The u argument specifies the UnMarshaller for the base pointer type.
 //
 // The error returned by UnmarshalPtr can be one of mus.ErrTooSmallByteSlice,
-// com.ErrWrongFormat, or an Unarshaler error.
-func UnmarshalPtr[T any](u mus.Unmarshaler[T], bs []byte) (v *T, n int,
+// com.ErrWrongFormat, or an Unarshaller error.
+func UnmarshalPtr[T any](u mus.UnMarshaller[T], bs []byte) (v *T, n int,
 	err error) {
 	if len(bs) < 1 {
 		err = mus.ErrTooSmallByteSlice

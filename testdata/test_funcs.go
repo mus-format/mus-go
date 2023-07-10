@@ -7,7 +7,7 @@ import (
 	"github.com/mus-format/mus-go"
 )
 
-func Test[T any](cases []T, m mus.Marshaler[T], u mus.Unmarshaler[T],
+func Test[T any](cases []T, m mus.Marshaller[T], u mus.UnMarshaller[T],
 	s mus.Sizer[T],
 	t *testing.T,
 ) {
@@ -35,7 +35,7 @@ func Test[T any](cases []T, m mus.Marshaler[T], u mus.Unmarshaler[T],
 	}
 }
 
-func TestSkip[T any](cases []T, m mus.Marshaler[T], sk mus.Skipper,
+func TestSkip[T any](cases []T, m mus.Marshaller[T], sk mus.Skipper,
 	s mus.Sizer[T],
 	t *testing.T,
 ) {

@@ -115,10 +115,10 @@ import (
 func main() {
   var (
     sl = []int{1, 2, 3, 4, 5}
-    m  = mus.MarshalerFn[int](varint.MarshalInt) // Implementation of the 
-    // mus.Marshaler interface for slice elements.
-    u = mus.UnmarshalerFn[int](varint.UnmarshalInt) // Implementation of the
-    // mus.Unmarshaler interface for slice elements.
+    m  = mus.MarshallerFn[int](varint.MarshalInt) // Implementation of the 
+    // mus.Marshaller interface for slice elements.
+    u = mus.UnMarshallerFn[int](varint.UnmarshalInt) // Implementation of the
+    // mus.UnMarshaller interface for slice elements.
     s = mus.SizerFn[int](varint.SizeInt) // Implementation of the mus.Sizer
     // interface for slice elements.
     size = ord.SizeSlice[int](sl, s)
@@ -151,7 +151,7 @@ func main() {
   var (
     ErrTooLongSlice    = errors.New("too long slice")
     ErrTooBigSliceElem = errors.New("too big slice elem")
-    u                  = mus.UnmarshalerFn[int](varint.UnmarshalInt)
+    u                  = mus.UnMarshallerFn[int](varint.UnmarshalInt)
     sk                 = mus.SkipperFn(varint.SkipInt) // Implementation of the
     // mus.Skipper interface for slice elements, may be nil, in which case a
     // validation error will be returned immediately.
@@ -187,7 +187,7 @@ Supports the following data types: `bool`, `string`, `byte`, and all `uint`,
 
 # Structs Support
 In fact, mus-go does not support structural data types. You will have to 
-implement the `mus.Marhsaler`, `mus.Unmarshaler`, `mus.Sizer` interfaces 
+implement the `mus.Marhsaler`, `mus.UnMarshaller`, `mus.Sizer` interfaces 
 yourself, but it is not difficult at all. For example:
 ```go
 package main
@@ -203,14 +203,14 @@ type Foo struct {
   c string
 }
 
-// MarshalFoo implements the mus.Marshaler interface.
+// MarshalFoo implements the mus.Marshaller interface.
 func MarshalFoo(v Foo, bs []byte) (n int) {
   n = varint.MarshalInt(v.a, bs)
   n += ord.MarshalBool(v.b, bs[n:])
   return n + ord.MarshalString(v.c, bs[n:])
 }
 
-// UnmarshalFoo implements the mus.Unmarshaler interface.
+// UnmarshalFoo implements the mus.UnMarshaller interface.
 func UnmarshalFoo(bs []byte) (v Foo, n int, err error) {
   v.a, n, err = varint.UnmarshalInt(bs)
   if err != nil {

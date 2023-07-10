@@ -209,8 +209,8 @@ func TestRaw(t *testing.T) {
 
 	t.Run("All MarshalByte, UnmarshalByte, SizeByte, SkipByte functions must work correctly", func(t *testing.T) {
 		var (
-			m  = mus.MarshalerFn[byte](MarshalByte)
-			u  = mus.UnmarshalerFn[byte](UnmarshalByte)
+			m  = mus.MarshallerFn[byte](MarshalByte)
+			u  = mus.UnMarshallerFn[byte](UnmarshalByte)
 			s  = mus.SizerFn[byte](SizeByte)
 			sk = mus.SkipperFn(SkipByte)
 		)
@@ -223,8 +223,8 @@ func TestRaw(t *testing.T) {
 		t.Run("All MarshalUint64, UnmarshalUint64, SizeUint64, SkipUint64 functions must work correctly",
 			func(t *testing.T) {
 				var (
-					m  = mus.MarshalerFn[uint64](MarshalUint64)
-					u  = mus.UnmarshalerFn[uint64](UnmarshalUint64)
+					m  = mus.MarshallerFn[uint64](MarshalUint64)
+					u  = mus.UnMarshallerFn[uint64](UnmarshalUint64)
 					s  = mus.SizerFn[uint64](SizeUint64)
 					sk = mus.SkipperFn(SkipUint64)
 				)
@@ -235,8 +235,8 @@ func TestRaw(t *testing.T) {
 		t.Run("All MarshalUint32, UnmarshalUint32, SizeUint32, SkipUint32 functions must work correctly",
 			func(t *testing.T) {
 				var (
-					m  = mus.MarshalerFn[uint32](MarshalUint32)
-					u  = mus.UnmarshalerFn[uint32](UnmarshalUint32)
+					m  = mus.MarshallerFn[uint32](MarshalUint32)
+					u  = mus.UnMarshallerFn[uint32](UnmarshalUint32)
 					s  = mus.SizerFn[uint32](SizeUint32)
 					sk = mus.SkipperFn(SkipUint32)
 				)
@@ -247,8 +247,8 @@ func TestRaw(t *testing.T) {
 		t.Run("All MarshalUint16, UnmarshalUint16, SizeUint16, SkipUint16 functions must work correctly",
 			func(t *testing.T) {
 				var (
-					m  = mus.MarshalerFn[uint16](MarshalUint16)
-					u  = mus.UnmarshalerFn[uint16](UnmarshalUint16)
+					m  = mus.MarshallerFn[uint16](MarshalUint16)
+					u  = mus.UnMarshallerFn[uint16](UnmarshalUint16)
 					s  = mus.SizerFn[uint16](SizeUint16)
 					sk = mus.SkipperFn(SkipUint16)
 				)
@@ -259,8 +259,8 @@ func TestRaw(t *testing.T) {
 		t.Run("All MarshalUint8, UnmarshalUint8, SizeUint8, SkipUint8 functions must work correctly",
 			func(t *testing.T) {
 				var (
-					m  = mus.MarshalerFn[uint8](MarshalUint8)
-					u  = mus.UnmarshalerFn[uint8](UnmarshalUint8)
+					m  = mus.MarshallerFn[uint8](MarshalUint8)
+					u  = mus.UnMarshallerFn[uint8](UnmarshalUint8)
 					s  = mus.SizerFn[uint8](SizeUint8)
 					sk = mus.SkipperFn(SkipUint8)
 				)
@@ -271,8 +271,8 @@ func TestRaw(t *testing.T) {
 		t.Run("All MarshalUint, UnmarshalUint, SizeUint, SkipUint functions must work correctly",
 			func(t *testing.T) {
 				var (
-					m  = mus.MarshalerFn[uint](MarshalUint)
-					u  = mus.UnmarshalerFn[uint](UnmarshalUint)
+					m  = mus.MarshallerFn[uint](MarshalUint)
+					u  = mus.UnMarshallerFn[uint](UnmarshalUint)
 					s  = mus.SizerFn[uint](SizeUint)
 					sk = mus.SkipperFn(SkipUint)
 				)
@@ -287,8 +287,8 @@ func TestRaw(t *testing.T) {
 		t.Run("All MarshalInt64, UnmarshalInt64, SizeInt64, SkipInt64 functions must work correctly",
 			func(t *testing.T) {
 				var (
-					m  = mus.MarshalerFn[int64](MarshalInt64)
-					u  = mus.UnmarshalerFn[int64](UnmarshalInt64)
+					m  = mus.MarshallerFn[int64](MarshalInt64)
+					u  = mus.UnMarshallerFn[int64](UnmarshalInt64)
 					s  = mus.SizerFn[int64](SizeInt64)
 					sk = mus.SkipperFn(SkipInt64)
 				)
@@ -299,8 +299,8 @@ func TestRaw(t *testing.T) {
 		t.Run("All MarshalInt32, UnmarshalInt32, SizeInt32, SkipInt32 functions must work correctly",
 			func(t *testing.T) {
 				var (
-					m  = mus.MarshalerFn[int32](MarshalInt32)
-					u  = mus.UnmarshalerFn[int32](UnmarshalInt32)
+					m  = mus.MarshallerFn[int32](MarshalInt32)
+					u  = mus.UnMarshallerFn[int32](UnmarshalInt32)
 					s  = mus.SizerFn[int32](SizeInt32)
 					sk = mus.SkipperFn(SkipInt32)
 				)
@@ -311,8 +311,8 @@ func TestRaw(t *testing.T) {
 		t.Run("All MarshalInt16, UnmarshalInt16, SizeInt16, SkipInt16 functions must work correctly",
 			func(t *testing.T) {
 				var (
-					m  = mus.MarshalerFn[int16](MarshalInt16)
-					u  = mus.UnmarshalerFn[int16](UnmarshalInt16)
+					m  = mus.MarshallerFn[int16](MarshalInt16)
+					u  = mus.UnMarshallerFn[int16](UnmarshalInt16)
 					s  = mus.SizerFn[int16](SizeInt16)
 					sk = mus.SkipperFn(SkipInt16)
 				)
@@ -323,8 +323,8 @@ func TestRaw(t *testing.T) {
 		t.Run("All MarshalInt8, UnmarshalInt8, SizeInt8, SkipInt8 functions must work correctly",
 			func(t *testing.T) {
 				var (
-					m  = mus.MarshalerFn[int8](MarshalInt8)
-					u  = mus.UnmarshalerFn[int8](UnmarshalInt8)
+					m  = mus.MarshallerFn[int8](MarshalInt8)
+					u  = mus.UnMarshallerFn[int8](UnmarshalInt8)
 					s  = mus.SizerFn[int8](SizeInt8)
 					sk = mus.SkipperFn(SkipInt8)
 				)
@@ -335,8 +335,8 @@ func TestRaw(t *testing.T) {
 		t.Run("All MarshalInt, UnmarshalInt, SizeInt, SkipInt functions must work correctly",
 			func(t *testing.T) {
 				var (
-					m  = mus.MarshalerFn[int](MarshalInt)
-					u  = mus.UnmarshalerFn[int](UnmarshalInt)
+					m  = mus.MarshallerFn[int](MarshalInt)
+					u  = mus.UnMarshallerFn[int](UnmarshalInt)
 					s  = mus.SizerFn[int](SizeInt)
 					sk = mus.SkipperFn(SkipInt)
 				)
@@ -353,8 +353,8 @@ func TestRaw(t *testing.T) {
 			t.Run("All MarshalFloat64, UnmarshalFloat64, SizeFloat64, SkipFloat64 functions must work correctly",
 				func(t *testing.T) {
 					var (
-						m  = mus.MarshalerFn[float64](MarshalFloat64)
-						u  = mus.UnmarshalerFn[float64](UnmarshalFloat64)
+						m  = mus.MarshallerFn[float64](MarshalFloat64)
+						u  = mus.UnMarshallerFn[float64](UnmarshalFloat64)
 						s  = mus.SizerFn[float64](SizeFloat64)
 						sk = mus.SkipperFn(SkipFloat64)
 					)
@@ -392,8 +392,8 @@ func TestRaw(t *testing.T) {
 			t.Run("All MarshalFloat32, UnmarshalFloat32, SizeFloat32, SkipFloat32 functions must work correctly",
 				func(t *testing.T) {
 					var (
-						m  = mus.MarshalerFn[float32](MarshalFloat32)
-						u  = mus.UnmarshalerFn[float32](UnmarshalFloat32)
+						m  = mus.MarshallerFn[float32](MarshalFloat32)
+						u  = mus.UnMarshallerFn[float32](UnmarshalFloat32)
 						s  = mus.SizerFn[float32](SizeFloat32)
 						sk = mus.SkipperFn(SkipFloat32)
 					)
