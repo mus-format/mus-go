@@ -24,11 +24,11 @@ func MarshalPtr[T any](v *T, m mus.Marshaller[T], bs []byte) (n int) {
 // UnmarshalPtr parses a MUS-encoded pointer from bs. In addition to the
 // pointer, it returns the number of used bytes and an error.
 //
-// The u argument specifies the UnMarshaller for the base pointer type.
+// The u argument specifies the Unmarshaller for the base pointer type.
 //
 // The error returned by UnmarshalPtr can be one of mus.ErrTooSmallByteSlice,
 // com.ErrWrongFormat, or an Unarshaller error.
-func UnmarshalPtr[T any](u mus.UnMarshaller[T], bs []byte) (v *T, n int,
+func UnmarshalPtr[T any](u mus.Unmarshaller[T], bs []byte) (v *T, n int,
 	err error) {
 	if len(bs) < 1 {
 		err = mus.ErrTooSmallByteSlice

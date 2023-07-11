@@ -7,7 +7,7 @@ import (
 	"github.com/mus-format/mus-go"
 )
 
-func Test[T any](cases []T, m mus.Marshaller[T], u mus.UnMarshaller[T],
+func Test[T any](cases []T, m mus.Marshaller[T], u mus.Unmarshaller[T],
 	s mus.Sizer[T],
 	t *testing.T,
 ) {

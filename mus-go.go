@@ -17,18 +17,18 @@ func (fn MarshallerFn[T]) MarshalMUS(t T, bs []byte) (n int) {
 	return fn(t, bs)
 }
 
-// UnMarshaller is the interface that wraps the UnmarshalMUS method.
+// Unmarshaller is the interface that wraps the UnmarshalMUS method.
 //
 // UnmarshalMUS unmarshals data from the MUS format. Returns data, the number of
 // used bytes and an error.
-type UnMarshaller[T any] interface {
+type Unmarshaller[T any] interface {
 	UnmarshalMUS(bs []byte) (t T, n int, err error)
 }
 
-// UnMarshallerFn is a functional implementation of the UnMarshaller interface.
-type UnMarshallerFn[T any] func(bs []byte) (t T, n int, err error)
+// UnmarshallerFn is a functional implementation of the Unmarshaller interface.
+type UnmarshallerFn[T any] func(bs []byte) (t T, n int, err error)
 
-func (fn UnMarshallerFn[T]) UnmarshalMUS(bs []byte) (t T, n int, err error) {
+func (fn UnmarshallerFn[T]) UnmarshalMUS(bs []byte) (t T, n int, err error) {
 	return fn(bs)
 }
 

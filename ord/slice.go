@@ -23,11 +23,11 @@ func MarshalSlice[T any](v []T, m mus.Marshaller[T], bs []byte) (n int) {
 // UnmarshalSlice parses a MUS-encoded slice from bs. In addition to the slice,
 // it returns the number of used bytes and an error.
 //
-// The u argument specifies the UnMarshaller for the slice elements.
+// The u argument specifies the Unmarshaller for the slice elements.
 //
 // The error returned by UnmarshalSlice can be one of mus.ErrTooSmallByteSlice,
-// com.ErrOverflow, com.ErrNegativeLength, or an UnMarshaller error.
-func UnmarshalSlice[T any](u mus.UnMarshaller[T], bs []byte) (v []T, n int,
+// com.ErrOverflow, com.ErrNegativeLength, or an Unmarshaller error.
+func UnmarshalSlice[T any](u mus.Unmarshaller[T], bs []byte) (v []T, n int,
 	err error) {
 	return UnmarshalValidSlice(nil, u, nil, nil, bs)
 }
@@ -36,16 +36,16 @@ func UnmarshalSlice[T any](u mus.UnMarshaller[T], bs []byte) (v []T, n int,
 // to the slice, it returns the number of used bytes and an error.
 //
 // The maxLength argument specifies the slice length Validator. Arguments u,
-// vl, sk - the UnMarshaller, Validator and Skipper for slice elements. If one
+// vl, sk - the Unmarshaller, Validator and Skipper for slice elements. If one
 // of the Validators returns an error, UnmarshalValidSlice uses the Skipper to
 // skip the remaining bytes of the slice. If the value of the Skipper is nil, it
 // immediately returns the validation error.
 //
 // The error returned by UnmarshalValidSlice can be one of
 // mus.ErrTooSmallByteSlice, com.ErrOverflow, com.ErrNegativeLength, an
-// UnMarshaller, Validator, or Skipper error.
+// Unmarshaller, Validator, or Skipper error.
 func UnmarshalValidSlice[T any](maxLength com.Validator[int],
-	u mus.UnMarshaller[T],
+	u mus.Unmarshaller[T],
 	vl com.Validator[T],
 	sk mus.Skipper,
 	bs []byte,

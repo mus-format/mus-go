@@ -23,7 +23,7 @@ func TestOrd(t *testing.T) {
 			func(t *testing.T) {
 				var (
 					m  = mus.MarshallerFn[bool](MarshalBool)
-					u  = mus.UnMarshallerFn[bool](UnmarshalBool)
+					u  = mus.UnmarshallerFn[bool](UnmarshalBool)
 					s  = mus.SizerFn[bool](SizeBool)
 					sk = mus.SkipperFn(SkipBool)
 				)
@@ -85,7 +85,7 @@ func TestOrd(t *testing.T) {
 			func(t *testing.T) {
 				var (
 					m  = mus.MarshallerFn[string](MarshalString)
-					u  = mus.UnMarshallerFn[string](UnmarshalString)
+					u  = mus.UnmarshallerFn[string](UnmarshalString)
 					s  = mus.SizerFn[string](SizeString)
 					sk = mus.SkipperFn(SkipString)
 				)
@@ -206,7 +206,7 @@ func TestOrd(t *testing.T) {
 							return MarshalPtr(v, nil, bs)
 						}
 					}()
-					u = func() mus.UnMarshallerFn[*string] {
+					u = func() mus.UnmarshallerFn[*string] {
 						return func(bs []byte) (t *string, n int, err error) {
 							return UnmarshalPtr[string](nil, bs)
 						}
@@ -245,8 +245,8 @@ func TestOrd(t *testing.T) {
 							},
 						)
 					}()
-					u1 = func() mock.UnMarshaller[string] {
-						return mock.NewUnMarshaller[string]().RegisterNUnmarshalMUS(1,
+					u1 = func() mock.Unmarshaller[string] {
+						return mock.NewUnmarshaller[string]().RegisterNUnmarshalMUS(1,
 							func(bs []byte) (v string, n int, err error) {
 								if bytes.Equal(bs[:len(str1Raw)], str1Raw) {
 									return str1, len(str1Raw), nil
@@ -287,9 +287,9 @@ func TestOrd(t *testing.T) {
 							return MarshalPtr(v, mus.Marshaller[string](m1), bs)
 						}
 					}()
-					u = func() mus.UnMarshallerFn[*string] {
+					u = func() mus.UnmarshallerFn[*string] {
 						return func(bs []byte) (t *string, n int, err error) {
-							return UnmarshalPtr(mus.UnMarshaller[string](u1), bs)
+							return UnmarshalPtr(mus.Unmarshaller[string](u1), bs)
 						}
 					}()
 					s = func() mus.SizerFn[*string] {
@@ -329,13 +329,13 @@ func TestOrd(t *testing.T) {
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
-		t.Run("If UnMarshaller fails with an error, UnmarshalPtr should return it",
+		t.Run("If Unmarshaller fails with an error, UnmarshalPtr should return it",
 			func(t *testing.T) {
 				var (
 					wantV   *string = nil
 					wantN           = 5
-					wantErr         = errors.New("unMarshaller error")
-					u               = mock.NewUnMarshaller[string]().RegisterUnmarshalMUS(
+					wantErr         = errors.New("Unmarshaller error")
+					u               = mock.NewUnmarshaller[string]().RegisterUnmarshalMUS(
 						func(bs []byte) (v string, n int, err error) {
 							return "", 4, wantErr
 						},
@@ -393,7 +393,7 @@ func TestOrd(t *testing.T) {
 							return MarshalSlice(v, nil, bs)
 						}
 					}()
-					u = func() mus.UnMarshallerFn[[]string] {
+					u = func() mus.UnmarshallerFn[[]string] {
 						return func(bs []byte) (v []string, n int, err error) {
 							return UnmarshalSlice[string](nil, bs)
 						}
@@ -438,8 +438,8 @@ func TestOrd(t *testing.T) {
 							},
 						)
 					}()
-					u1 = func() mock.UnMarshaller[string] {
-						return mock.NewUnMarshaller[string]().RegisterNUnmarshalMUS(2,
+					u1 = func() mock.Unmarshaller[string] {
+						return mock.NewUnmarshaller[string]().RegisterNUnmarshalMUS(2,
 							func(bs []byte) (v string, n int, err error) {
 								if bytes.Equal(bs[:len(str1Raw)], str1Raw) {
 									return str1, len(str1Raw), nil
@@ -489,9 +489,9 @@ func TestOrd(t *testing.T) {
 							return MarshalSlice(v, mus.Marshaller[string](m1), bs)
 						}
 					}()
-					u = func() mus.UnMarshallerFn[[]string] {
+					u = func() mus.UnmarshallerFn[[]string] {
 						return func(bs []byte) (t []string, n int, err error) {
-							return UnmarshalSlice(mus.UnMarshaller[string](u1), bs)
+							return UnmarshalSlice(mus.Unmarshaller[string](u1), bs)
 						}
 					}()
 					s = func() mus.SizerFn[[]string] {
@@ -531,13 +531,13 @@ func TestOrd(t *testing.T) {
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
-		t.Run("If UnMarshaller fails with an error, UnmarshalSlice should return it",
+		t.Run("If Unmarshaller fails with an error, UnmarshalSlice should return it",
 			func(t *testing.T) {
 				var (
 					wantV   []uint = make([]uint, 1)
 					wantN          = 3
-					wantErr        = errors.New("unMarshaller error")
-					u              = mock.NewUnMarshaller[uint]().RegisterUnmarshalMUS(
+					wantErr        = errors.New("Unmarshaller error")
+					u              = mock.NewUnmarshaller[uint]().RegisterUnmarshalMUS(
 						func(bs []byte) (v uint, n int, err error) {
 							return 0, 2, wantErr
 						},
@@ -638,7 +638,7 @@ func TestOrd(t *testing.T) {
 							return wantErr
 						},
 					)
-					u = mock.NewUnMarshaller[uint]().RegisterUnmarshalMUS(
+					u = mock.NewUnmarshaller[uint]().RegisterUnmarshalMUS(
 						func(bs []byte) (v uint, n int, err error) {
 							return 10, 1, nil
 						},
@@ -676,7 +676,7 @@ func TestOrd(t *testing.T) {
 							return errors.New("validator error")
 						},
 					)
-					u = mock.NewUnMarshaller[uint]().RegisterUnmarshalMUS(
+					u = mock.NewUnmarshaller[uint]().RegisterUnmarshalMUS(
 						func(bs []byte) (v uint, n int, err error) {
 							return 10, 1, nil
 						},
@@ -764,8 +764,8 @@ func TestOrd(t *testing.T) {
 							},
 						)
 					}()
-					u1 = func() mock.UnMarshaller[string] {
-						return mock.NewUnMarshaller[string]().RegisterNUnmarshalMUS(2,
+					u1 = func() mock.Unmarshaller[string] {
+						return mock.NewUnmarshaller[string]().RegisterNUnmarshalMUS(2,
 							func(bs []byte) (v string, n int, err error) {
 								if bytes.Equal(bs[:len(str1Raw)], str1Raw) {
 									return str1, len(str1Raw), nil
@@ -779,8 +779,8 @@ func TestOrd(t *testing.T) {
 							},
 						)
 					}()
-					u2 = func() mock.UnMarshaller[uint] {
-						return mock.NewUnMarshaller[uint]().RegisterNUnmarshalMUS(2,
+					u2 = func() mock.Unmarshaller[uint] {
+						return mock.NewUnmarshaller[uint]().RegisterNUnmarshalMUS(2,
 							func(bs []byte) (v uint, n int, err error) {
 								if bytes.Equal(bs[:len(int1Raw)], int1Raw) {
 									return int1, len(int1Raw), nil
@@ -864,11 +864,11 @@ func TestOrd(t *testing.T) {
 								bs)
 						}
 					}()
-					u = func() mus.UnMarshallerFn[map[string]uint] {
+					u = func() mus.UnmarshallerFn[map[string]uint] {
 						return func(bs []byte) (t map[string]uint, n int, err error) {
 							return UnmarshalMap(
-								mus.UnMarshaller[string](u1),
-								mus.UnMarshaller[uint](u2),
+								mus.Unmarshaller[string](u1),
+								mus.Unmarshaller[uint](u2),
 								bs)
 						}
 					}()
@@ -921,9 +921,9 @@ func TestOrd(t *testing.T) {
 				var (
 					wantV   = make(map[uint]uint, 1)
 					wantN   = 3
-					wantErr = errors.New("unMarshaller error")
+					wantErr = errors.New("Unmarshaller error")
 					bs      = []byte{2, 100}
-					u1      = mock.NewUnMarshaller[uint]().RegisterUnmarshalMUS(
+					u1      = mock.NewUnmarshaller[uint]().RegisterUnmarshalMUS(
 						func(bs []byte) (v uint, n int, err error) {
 							if !reflect.DeepEqual(bs, []byte{100}) {
 								t.Errorf("unexpected bs, want '%v' actual '%v'", []byte{100},
@@ -943,14 +943,14 @@ func TestOrd(t *testing.T) {
 				var (
 					wantV   = make(map[uint]uint, 1)
 					wantN   = 4
-					wantErr = errors.New("unMarshaller error")
+					wantErr = errors.New("Unmarshaller error")
 					bs      = []byte{2, 1, 200, 200}
-					u1      = mock.NewUnMarshaller[uint]().RegisterUnmarshalMUS(
+					u1      = mock.NewUnmarshaller[uint]().RegisterUnmarshalMUS(
 						func(bs []byte) (v uint, n int, err error) {
 							return 1, 1, nil
 						},
 					)
-					u2 = mock.NewUnMarshaller[uint]().RegisterUnmarshalMUS(
+					u2 = mock.NewUnmarshaller[uint]().RegisterUnmarshalMUS(
 						func(bs []byte) (v uint, n int, err error) {
 							if !reflect.DeepEqual(bs, []byte{200, 200}) {
 								t.Errorf("unexpected bs, want '%v' actual '%v'", []byte{200, 200},
@@ -1158,7 +1158,7 @@ func TestOrd(t *testing.T) {
 					wantN   = 5
 					wantErr = errors.New("key Validator error")
 					bs      = []byte{4, 10, 1, 3, 4}
-					u1      = mock.NewUnMarshaller[uint]().RegisterUnmarshalMUS(
+					u1      = mock.NewUnmarshaller[uint]().RegisterUnmarshalMUS(
 						func(bs []byte) (v uint, n int, err error) {
 							return 10, 1, nil
 						},
@@ -1212,7 +1212,7 @@ func TestOrd(t *testing.T) {
 					wantN   = 4
 					wantErr = errors.New("value Skipper error")
 					bs      = []byte{4, 10, 100, 1, 3, 4}
-					u1      = mock.NewUnMarshaller[uint]().RegisterUnmarshalMUS(
+					u1      = mock.NewUnmarshaller[uint]().RegisterUnmarshalMUS(
 						func(bs []byte) (v uint, n int, err error) {
 							return 10, 1, nil
 						},
@@ -1248,7 +1248,7 @@ func TestOrd(t *testing.T) {
 					wantN   = 2
 					wantErr = errors.New("key Validator error")
 					bs      = []byte{4, 10, 100, 1, 3, 4}
-					u1      = mock.NewUnMarshaller[uint]().RegisterUnmarshalMUS(
+					u1      = mock.NewUnmarshaller[uint]().RegisterUnmarshalMUS(
 						func(bs []byte) (v uint, n int, err error) {
 							return 10, 1, nil
 						},
@@ -1274,7 +1274,7 @@ func TestOrd(t *testing.T) {
 					wantN   = 5
 					wantErr = errors.New("key Validator error")
 					bs      = []byte{4, 10, 1, 200, 1, 4}
-					u1      = mock.NewUnMarshaller[uint]().RegisterUnmarshalMUS(
+					u1      = mock.NewUnmarshaller[uint]().RegisterUnmarshalMUS(
 						func(bs []byte) (v uint, n int, err error) {
 							return 10, 1, nil
 						},
@@ -1320,12 +1320,12 @@ func TestOrd(t *testing.T) {
 					wantN   = 5
 					wantErr = errors.New("value Validator error")
 					bs      = []byte{4, 10, 11, 3, 4}
-					u1      = mock.NewUnMarshaller[uint]().RegisterUnmarshalMUS(
+					u1      = mock.NewUnmarshaller[uint]().RegisterUnmarshalMUS(
 						func(bs []byte) (v uint, n int, err error) {
 							return 10, 1, nil
 						},
 					)
-					u2 = mock.NewUnMarshaller[uint]().RegisterUnmarshalMUS(
+					u2 = mock.NewUnmarshaller[uint]().RegisterUnmarshalMUS(
 						func(bs []byte) (v uint, n int, err error) {
 							return 11, 1, nil
 						},
@@ -1369,12 +1369,12 @@ func TestOrd(t *testing.T) {
 					wantN   = 4
 					wantErr = errors.New("skip key error")
 					bs      = []byte{4, 10, 11, 201, 4, 4}
-					u1      = mock.NewUnMarshaller[uint]().RegisterUnmarshalMUS(
+					u1      = mock.NewUnmarshaller[uint]().RegisterUnmarshalMUS(
 						func(bs []byte) (v uint, n int, err error) {
 							return 10, 1, nil
 						},
 					)
-					u2 = mock.NewUnMarshaller[uint]().RegisterUnmarshalMUS(
+					u2 = mock.NewUnmarshaller[uint]().RegisterUnmarshalMUS(
 						func(bs []byte) (v uint, n int, err error) {
 							return 11, 1, nil
 						},
@@ -1405,12 +1405,12 @@ func TestOrd(t *testing.T) {
 					wantN   = 5
 					wantErr = errors.New("skip key error")
 
-					u1 = mock.NewUnMarshaller[uint]().RegisterUnmarshalMUS(
+					u1 = mock.NewUnmarshaller[uint]().RegisterUnmarshalMUS(
 						func(bs []byte) (v uint, n int, err error) {
 							return 10, 1, nil
 						},
 					)
-					u2 = mock.NewUnMarshaller[uint]().RegisterUnmarshalMUS(
+					u2 = mock.NewUnmarshaller[uint]().RegisterUnmarshalMUS(
 						func(bs []byte) (v uint, n int, err error) {
 							return 11, 1, nil
 						},

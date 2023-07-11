@@ -117,8 +117,8 @@ func main() {
     sl = []int{1, 2, 3, 4, 5}
     m  = mus.MarshallerFn[int](varint.MarshalInt) // Implementation of the 
     // mus.Marshaller interface for slice elements.
-    u = mus.UnMarshallerFn[int](varint.UnmarshalInt) // Implementation of the
-    // mus.UnMarshaller interface for slice elements.
+    u = mus.UnmarshallerFn[int](varint.UnmarshalInt) // Implementation of the
+    // mus.Unmarshaller interface for slice elements.
     s = mus.SizerFn[int](varint.SizeInt) // Implementation of the mus.Sizer
     // interface for slice elements.
     size = ord.SizeSlice[int](sl, s)
@@ -151,7 +151,7 @@ func main() {
   var (
     ErrTooLongSlice    = errors.New("too long slice")
     ErrTooBigSliceElem = errors.New("too big slice elem")
-    u                  = mus.UnMarshallerFn[int](varint.UnmarshalInt)
+    u                  = mus.UnmarshallerFn[int](varint.UnmarshalInt)
     sk                 = mus.SkipperFn(varint.SkipInt) // Implementation of the
     // mus.Skipper interface for slice elements, may be nil, in which case a
     // validation error will be returned immediately.
@@ -187,7 +187,7 @@ Supports the following data types: `bool`, `string`, `byte`, and all `uint`,
 
 # Structs Support
 In fact, mus-go does not support structural data types. You will have to 
-implement the `mus.Marhsaler`, `mus.UnMarshaller`, `mus.Sizer` interfaces 
+implement the `mus.Marhsaler`, `mus.Unmarshaller`, `mus.Sizer` interfaces 
 yourself, but it is not difficult at all. For example:
 ```go
 package main
@@ -210,7 +210,7 @@ func MarshalFoo(v Foo, bs []byte) (n int) {
   return n + ord.MarshalString(v.c, bs[n:])
 }
 
-// UnmarshalFoo implements the mus.UnMarshaller interface.
+// UnmarshalFoo implements the mus.Unmarshaller interface.
 func UnmarshalFoo(bs []byte) (v Foo, n int, err error) {
   v.a, n, err = varint.UnmarshalInt(bs)
   if err != nil {
