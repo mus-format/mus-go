@@ -60,8 +60,8 @@ func main() {
   // ...
 }
 ```
-More details about Varint and Raw encoding can be found in the 
-[MUS Serialization Format](https://github.com/mus-format/mus) documentation.
+More details about Varint and Raw encodings can be found in the 
+[MUS format specification](https://github.com/mus-format/specification).
 If in doubt, use Varint.
 
 ## ord (ordinary) Package
@@ -187,7 +187,7 @@ Supports the following data types: `bool`, `string`, `byte`, and all `uint`,
 
 # Structs Support
 In fact, mus-go does not support structural data types. You will have to 
-implement the `mus.Marhsaler`, `mus.Unmarshaller`, `mus.Sizer` interfaces 
+implement the `mus.Marshaller`, `mus.Unmarshaller`, `mus.Sizer` interfaces 
 yourself, but it is not difficult at all. For example:
 ```go
 package main
