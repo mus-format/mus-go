@@ -1,7 +1,7 @@
 # MUS Format Serializer
 mus-go is a [MUS format](https://github.com/mus-format/mus) extremely fast 
-serializer with validation support for Golang. Also it supports out of order 
-deserialization, zero allocations deserialization and has a 
+serializer with validation support for Golang. It also supports out of order 
+deserialization, zero allocation deserialization, and has a
 [streaming version](https://github.com/mus-format/mus-stream-go).
 
 # Tests
@@ -16,8 +16,7 @@ Test coverage is 100%.
 # How To Use
 Don't forget to visit [mus-examples-go](https://github.com/mus-format/mus-examples-go).
 
-mus-go offers several encoding options, all of which are located in separate 
-packages.
+mus-go offers several encoding options, each of which is in a separate package.
 
 ## varint Package
 Serializes all `uint` (`uint64`, `uint32`, `uint16`, `uint8`, `uint`), `int`, 
@@ -132,8 +131,8 @@ func main() {
 
 ### Valid Slice
 When deserializing a slice, we can set a limit on its length, a restriction on 
-the elements present in it, as well as `Skipper`. If one of the validators 
-returns an error, the rest of the data will be skipped, thanks to `Skipper`.
+the elements present in it, as well as a `Skipper`. If one of the validators 
+returns an error, the rest of the data will be skipped, thanks to the `Skipper`.
 All this is done using the `ord.UnmarshalValidSlice()` function:
 ```go
 package main
@@ -153,8 +152,8 @@ func main() {
     ErrTooBigSliceElem = errors.New("too big slice elem")
     u                  = mus.UnmarshallerFn[int](varint.UnmarshalInt)
     sk                 = mus.SkipperFn(varint.SkipInt) // Implementation of the
-    // mus.Skipper interface for slice elements, may be nil, in which case a
-    // validation error will be returned immediately.
+    // mus.Skipper interface for the slice elements, may be nil, in which case 
+    // a validation error will be returned immediately.
     maxLength com.ValidatorFn[int] = func(length int) (err error) {
       // Checks the length of the slice.
       if length > 5 {
@@ -372,7 +371,7 @@ func main() {
 }
 ```
 
-# Zero Allocations Deserialization
+# Zero Allocation Deserialization
 You can achieve this using `bool`, `byte`, all `uint`, `int`, `float` types and
 unsafe package. Please note that the length of variable-length data types 
 (such as `string`, `slice` or `map`) is encoded using Varint encoding.
