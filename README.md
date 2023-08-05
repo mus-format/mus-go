@@ -4,7 +4,7 @@ serializer with validation support for Golang. It also supports out of order
 deserialization, zero allocation deserialization, and has a
 [streaming version](https://github.com/mus-format/mus-stream-go), which you can
 try with [cmd-stream-go](https://github.com/cmd-stream/cmd-stream-go) - a 
-high-performance RCE (Remote Command Execution) library.
+high-performance RCX (Remote Command eXecution) library.
 
 # Tests
 Test coverage is 100%.
