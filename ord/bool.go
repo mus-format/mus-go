@@ -5,10 +5,9 @@ import (
 	"github.com/mus-format/mus-go"
 )
 
-// MarshalBool fills bs with the MUS encoding of a bool. Returns the number of
-// used bytes.
+// MarshalBool fills bs with the MUS encoding of a bool value.
 //
-// It will panic if receives too small bs.
+// Returns the number of used bytes. It will panic if receives too small bs.
 func MarshalBool(v bool, bs []byte) int {
 	if v {
 		bs[0] = 1
@@ -18,10 +17,10 @@ func MarshalBool(v bool, bs []byte) int {
 	return 1
 }
 
-// UnmarshalBool parses a MUS-encoded bool from bs. In addition to the bool,
-// it returns the number of used bytes and an error.
+// UnmarshalBool parses a MUS-encoded bool value from bs.
 //
-// The error can be one of mus.ErrTooSmallByteSlice, or com.ErrWrongFormat.
+// In addition to the bool value, returns the number of used bytes and one the
+// of mus.ErrTooSmallByteSlice or com.ErrWrongFormat errors.
 func UnmarshalBool(bs []byte) (v bool, n int, err error) {
 	if len(bs) < 1 {
 		return false, 0, mus.ErrTooSmallByteSlice
@@ -35,15 +34,15 @@ func UnmarshalBool(bs []byte) (v bool, n int, err error) {
 	return false, 0, com.ErrWrongFormat
 }
 
-// SizeBool returns the size of a MUS-encoded bool.
+// SizeBool returns the size of a MUS-encoded bool value.
 func SizeBool(v bool) (n int) {
 	return 1
 }
 
-// SkipBool skips a MUS-encoded bool in bs. Returns the number of skiped bytes
-// and an error.
+// SkipBool skips a MUS-encoded bool value.
 //
-// The error can be one of mus.ErrTooSmallByteSlice, or com.ErrWrongFormat.
+// Returns the number of skiped bytes and one of the mus.ErrTooSmallByteSlice
+// or com.ErrWrongFormat errors.
 func SkipBool(bs []byte) (n int, err error) {
 	if len(bs) < 1 {
 		return 0, mus.ErrTooSmallByteSlice

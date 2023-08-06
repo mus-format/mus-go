@@ -4,51 +4,46 @@ import (
 	"golang.org/x/exp/constraints"
 )
 
-// MarshalInt64 fills bs with the MUS encoding (Varint) of a int64. Returns the
-// number of used bytes.
+// MarshalInt64 fills bs with the MUS encoding (Varint) of a int64 value.
 //
-// It will panic if receives too small bs.
+// Returns the number of used bytes. It will panic if receives too small bs.
 func MarshalInt64(v int64, bs []byte) (n int) {
 	return marshalUint(uint64(EncodeZigZag(v)), bs)
 }
 
-// MarshalInt32 fills bs with the MUS encoding (Varint) of a int32. Returns the
-// number of used bytes.
+// MarshalInt32 fills bs with the MUS encoding (Varint) of a int32 value.
 //
-// It will panic if receives too small bs.
+// Returns the number of used bytes. It will panic if receives too small bs.
 func MarshalInt32(v int32, bs []byte) (n int) {
 	return marshalUint(uint32(EncodeZigZag(v)), bs)
 }
 
-// MarshalInt16 fills bs with the MUS encoding (Varint) of a int16. Returns the
-// number of used bytes.
+// MarshalInt16 fills bs with the MUS encoding (Varint) of a int16 value.
 //
-// It will panic if receives too small bs.
+// Returns the number of used bytes. It will panic if receives too small bs.
 func MarshalInt16(v int16, bs []byte) (n int) {
 	return marshalUint(uint16(EncodeZigZag(v)), bs)
 }
 
-// MarshalInt8 fills bs with the MUS encoding (Varint) of a int8. Returns the
-// number of used bytes.
+// MarshalInt8 fills bs with the MUS encoding (Varint) of a int8 value.
 //
-// It will panic if receives too small bs.
+// Returns the number of used bytes. It will panic if receives too small bs.
 func MarshalInt8(v int8, bs []byte) (n int) {
 	return marshalUint(uint8(EncodeZigZag(v)), bs)
 }
 
-// MarshalInt fills bs with the MUS encoding (Varint) of a int. Returns the
-// number of used bytes.
+// MarshalInt fills bs with the MUS encoding (Varint) of a int value.
 //
-// It will panic if receives too small bs.
+// Returns the number of used bytes. It will panic if receives too small bs.
 func MarshalInt(v int, bs []byte) (n int) {
 	return marshalUint(uint(EncodeZigZag(v)), bs)
 }
 
 // -----------------------------------------------------------------------------
-// UnmarshalInt64 parses a MUS-encoded (Varint) int64 from bs. In addition to
-// the byte, it returns the number of used bytes and an error.
+// UnmarshalInt64 parses a MUS-encoded (Varint) int64 value from bs.
 //
-// The error can be one of mus.ErrTooSmallByteSlice, or com.ErrOverflow.
+// In addition to the int64 value, returns the number of used bytes and one of
+// the mus.ErrTooSmallByteSlice or com.ErrOverflow errors.
 func UnmarshalInt64(bs []byte) (v int64, n int, err error) {
 	uv, n, err := UnmarshalUint64(bs)
 	if err != nil {
@@ -57,10 +52,10 @@ func UnmarshalInt64(bs []byte) (v int64, n int, err error) {
 	return int64(DecodeZigZag(uv)), n, nil
 }
 
-// UnmarshalInt32 parses a MUS-encoded (Varint) int32 from bs. In addition to
-// the byte, it returns the number of used bytes and an error.
+// UnmarshalInt32 parses a MUS-encoded (Varint) int32 value from bs.
 //
-// The error can be one of mus.ErrTooSmallByteSlice, or com.ErrOverflow.
+// In addition to the int32 value, returns the number of used bytes and one of
+// the mus.ErrTooSmallByteSlice or com.ErrOverflow errors.
 func UnmarshalInt32(bs []byte) (v int32, n int, err error) {
 	uv, n, err := UnmarshalUint32(bs)
 	if err != nil {
@@ -69,10 +64,10 @@ func UnmarshalInt32(bs []byte) (v int32, n int, err error) {
 	return int32(DecodeZigZag(uv)), n, nil
 }
 
-// UnmarshalInt16 parses a MUS-encoded (Varint) int16 from bs. In addition to
-// the byte, it returns the number of used bytes and an error.
+// UnmarshalInt16 parses a MUS-encoded (Varint) int16 value from bs.
 //
-// The error can be one of mus.ErrTooSmallByteSlice, or com.ErrOverflow.
+// In addition to the int16 value, returns the number of used bytes and one of
+// the mus.ErrTooSmallByteSlice or com.ErrOverflow errors.
 func UnmarshalInt16(bs []byte) (v int16, n int, err error) {
 	uv, n, err := UnmarshalUint16(bs)
 	if err != nil {
@@ -81,10 +76,10 @@ func UnmarshalInt16(bs []byte) (v int16, n int, err error) {
 	return int16(DecodeZigZag(uv)), n, nil
 }
 
-// UnmarshalInt8 parses a MUS-encoded (Varint) int8 from bs. In addition to
-// the byte, it returns the number of used bytes and an error.
+// UnmarshalInt8 parses a MUS-encoded (Varint) int8 value from bs.
 //
-// The error can be one of mus.ErrTooSmallByteSlice, or com.ErrOverflow.
+// In addition to the int8 value, returns the number of used bytes and one of
+// the mus.ErrTooSmallByteSlice or com.ErrOverflow errors.
 func UnmarshalInt8(bs []byte) (v int8, n int, err error) {
 	uv, n, err := UnmarshalUint8(bs)
 	if err != nil {
@@ -93,10 +88,10 @@ func UnmarshalInt8(bs []byte) (v int8, n int, err error) {
 	return int8(DecodeZigZag(uv)), n, nil
 }
 
-// UnmarshalInt parses a MUS-encoded (Varint) int from bs. In addition to
-// the byte, it returns the number of used bytes and an error.
+// UnmarshalInt parses a MUS-encoded (Varint) int value from bs.
 //
-// The error can be one of mus.ErrTooSmallByteSlice, or com.ErrOverflow.
+// In addition to the int value, returns the number of used bytes and one of
+// the mus.ErrTooSmallByteSlice or com.ErrOverflow errors.
 func UnmarshalInt(bs []byte) (v int, n int, err error) {
 	uv, n, err := UnmarshalUint(bs)
 	if err != nil {
@@ -106,68 +101,68 @@ func UnmarshalInt(bs []byte) (v int, n int, err error) {
 }
 
 // -----------------------------------------------------------------------------
-// SizeInt64 returns the size of a MUS-encoded (Varint) int64.
+// SizeInt64 returns the size of a MUS-encoded (Varint) int64 value.
 func SizeInt64(v int64) int {
 	return sizeUint(uint64(EncodeZigZag(v)))
 }
 
-// SizeInt32 returns the size of a MUS-encoded (Varint) int32.
+// SizeInt32 returns the size of a MUS-encoded (Varint) int32 value.
 func SizeInt32(v int32) int {
 	return SizeUint32(uint32(EncodeZigZag(v)))
 }
 
-// SizeInt16 returns the size of a MUS-encoded (Varint) int16.
+// SizeInt16 returns the size of a MUS-encoded (Varint) int16 value.
 func SizeInt16(v int16) (size int) {
 	return SizeUint16(uint16(EncodeZigZag(v)))
 }
 
-// SizeInt8 returns the size of a MUS-encoded (Varint) int8.
+// SizeInt8 returns the size of a MUS-encoded (Varint) int8 value.
 func SizeInt8(v int8) (size int) {
 	return SizeUint8(uint8(EncodeZigZag(v)))
 }
 
-// SizeInt returns the size of a MUS-encoded (Varint) int.
+// SizeInt returns the size of a MUS-encoded (Varint) int value.
 func SizeInt(v int) (size int) {
 	return SizeUint(uint(EncodeZigZag(v)))
 }
 
 // -----------------------------------------------------------------------------
-// SkipInt64 skips a MUS-encoded (Varint) int64 in bs. Returns the number of
-// skiped bytes and an error.
+// SkipInt64 skips a MUS-encoded (Varint) int64 value.
 //
-// The error can be one of mus.ErrTooSmallByteSlice, or com.ErrOverflow.
+// Returns the number of skiped bytes and one of the mus.ErrTooSmallByteSlice or
+// com.ErrOverflow errors.
 func SkipInt64(bs []byte) (n int, err error) {
 	return SkipUint64(bs)
 }
 
-// SkipInt32 skips a MUS-encoded (Varint) int32 in bs. Returns the number of
-// skiped bytes and an error.
+// SkipInt32 skips a MUS-encoded (Varint) int32 value.
 //
-// The error can be one of mus.ErrTooSmallByteSlice, or com.ErrOverflow.
+// Returns the number of skiped bytes and one of the mus.ErrTooSmallByteSlice or
+// com.ErrOverflow errors.
 func SkipInt32(bs []byte) (n int, err error) {
 	return SkipUint32(bs)
 }
 
-// SkipInt16 skips a MUS-encoded (Varint) int16 in bs. Returns the number of
-// skiped bytes and an error.
+// SkipInt16 skips a MUS-encoded (Varint) int16 value.
 //
-// The error can be one of mus.ErrTooSmallByteSlice, or com.ErrOverflow.
+// Returns the number of skiped bytes and one of the mus.ErrTooSmallByteSlice or
+// com.ErrOverflow errors.
 func SkipInt16(bs []byte) (n int, err error) {
 	return SkipUint16(bs)
 }
 
-// SkipInt8 skips a MUS-encoded (Varint) int8 in bs. Returns the number of
-// skiped bytes and an error.
+// SkipInt8 skips a MUS-encoded (Varint) int8 value.
 //
-// The error can be one of mus.ErrTooSmallByteSlice, or com.ErrOverflow.
+// Returns the number of skiped bytes and one of the mus.ErrTooSmallByteSlice or
+// com.ErrOverflow errors.
 func SkipInt8(bs []byte) (n int, err error) {
 	return SkipUint8(bs)
 }
 
-// SkipInt skips a MUS-encoded (Varint) int in bs. Returns the number of skiped
-// bytes and an error.
+// SkipInt skips a MUS-encoded (Varint) int value.
 //
-// The error can be one of mus.ErrTooSmallByteSlice, or com.ErrOverflow.
+// Returns the number of skiped bytes and one of the mus.ErrTooSmallByteSlice or
+// com.ErrOverflow errors.
 func SkipInt(bs []byte) (n int, err error) {
 	return SkipUint(bs)
 }
