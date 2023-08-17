@@ -5,8 +5,8 @@ deserialization, zero allocation deserialization, and has a
 [streaming version](https://github.com/mus-format/mus-stream-go).
 
 # cmd-stream-go
-If you're looking for a inter-server communication library that supports the MUS 
-format, try [cmd-stream-go](https://github.com/cmd-stream/cmd-stream-go). It 
+If you're looking for a client-server communication library that supports the 
+MUS format, try [cmd-stream-go](https://github.com/cmd-stream/cmd-stream-go). It 
 also has excellent performance.
 
 # Tests
