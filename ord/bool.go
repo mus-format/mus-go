@@ -19,8 +19,8 @@ func MarshalBool(v bool, bs []byte) int {
 
 // UnmarshalBool parses a MUS-encoded bool value from bs.
 //
-// In addition to the bool value, returns the number of used bytes and one the
-// of mus.ErrTooSmallByteSlice or com.ErrWrongFormat errors.
+// In addition to the bool value, returns the number of used bytes and one of
+// the mus.ErrTooSmallByteSlice or com.ErrWrongFormat errors.
 func UnmarshalBool(bs []byte) (v bool, n int, err error) {
 	if len(bs) < 1 {
 		return false, 0, mus.ErrTooSmallByteSlice
