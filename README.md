@@ -16,7 +16,7 @@ Test coverage is 100%.
 [github.com/alecthomas/go_serialization_benchmarks](https://github.com/alecthomas/go_serialization_benchmarks)
 
 # Versioning
-[mus-vs-go](https://github.com/mus-format/mus-vs-go)
+[mus-vs-go](https://github.com/mus-format/mus-vs-go) provides versioning support.
 
 # How To Use
 Don't forget to visit [mus-examples-go](https://github.com/mus-format/mus-examples-go).
