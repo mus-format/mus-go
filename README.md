@@ -16,8 +16,8 @@ Test coverage is 100%.
 [github.com/alecthomas/go_serialization_benchmarks](https://github.com/alecthomas/go_serialization_benchmarks)
 
 # Data Versioning
-[mus-vs-go](https://github.com/mus-format/mus-vs-go) provides data versioning 
-support. Using mus-vs-go imposes almost no restrictions. In the new version of 
+[mus-dvs-go](https://github.com/mus-format/mus-dvs-go) provides data versioning 
+support. Using mus-dvs-go imposes almost no restrictions. In the new version of 
 the data, you can change the field type, remove a field, and generally do 
 anything you want as long as you can migrate from one version to another.
 
