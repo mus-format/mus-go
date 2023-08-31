@@ -1,5 +1,5 @@
 # MUS Format Serializer
-mus-go is a [MUS format](https://github.com/mus-format/mus) extremely fast 
+mus-go is a [MUS format](https://github.com/mus-format/specification) extremely fast 
 serializer with validation support for Golang. It supports out of order 
 deserialization, zero allocation deserialization, and has a
 [streaming version](https://github.com/mus-format/mus-stream-go).
@@ -14,12 +14,6 @@ Test coverage is 100%.
 
 # Benchmarks
 [github.com/alecthomas/go_serialization_benchmarks](https://github.com/alecthomas/go_serialization_benchmarks)
-
-# Data Versioning
-[mus-dvs-go](https://github.com/mus-format/mus-dvs-go) provides data versioning 
-support. Using mus-dvs-go imposes almost no restrictions. In the new version of 
-the data, you can change the field type, remove a field, and generally do 
-anything you want as long as you can migrate from one version to another.
 
 # How To Use
 Don't forget to visit [mus-examples-go](https://github.com/mus-format/mus-examples-go).
@@ -344,6 +338,16 @@ Therefore, to serialize an array, you must first make a slice of it. Or for
 greater performance, you can implement `Marshal`, `Unmarshal`, ... functions for 
 it yourself. This is not very difficult to do, you can also refer to the 
 [ord/slice.go](ord/slice.go) file for an example.
+
+# DTM Support
+[mus-dts-go](https://github.com/mus-format/mus-dts-go) provides 
+[DTM](https://github.com/mus-format/specification#data-type-metadata-dtm) support.
+
+# Data Versioning Support
+[mus-dvs-go](https://github.com/mus-format/mus-dvs-go) provides data versioning 
+support. Using mus-dvs-go imposes almost no restrictions. In the new version of 
+the data, you can change the field type, remove a field, and generally do 
+anything you want as long as you can migrate from one version to another.
 
 # Out of Order Deserialization
 A simple example:
