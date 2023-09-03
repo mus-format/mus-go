@@ -372,41 +372,41 @@ var (
 // Marshal/Unmarshal/Size functions for the Instruction interface.
 
 func MarshalInstructionMUS(instr Instruction, bs []byte) (n int) {
-	switch in := instr.(type) {
-	case Copy:
-		return CopyDTS.MarshalMUS(in, bs)
-	case Insert:
-		return InsertDTS.MarshalMUS(in, bs)
-	default:
-		panic(ErrUnexpectedInstructionType)
-	}
+  switch in := instr.(type) {
+  case Copy:
+    return CopyDTS.MarshalMUS(in, bs)
+  case Insert:
+    return InsertDTS.MarshalMUS(in, bs)
+  default:
+    panic(ErrUnexpectedInstructionType)
+  }
 }
 
 func UnmarshalInstructionMUS(bs []byte) (instr Instruction, n int, err error) {
-	dtm, n, err := dts.UnmarshalDTMUS(bs)
-	if err != nil {
-		return
-	}
-	switch dtm {
-	case CopyDTM:
-		return CopyDTS.UnmarshalDataMUS(bs[n:])
-	case InsertDTM:
-		return InsertDTS.UnmarshalDataMUS(bs[n:])
-	default:
-		err = ErrUnexpectedDTM
-		return
-	}
+  dtm, n, err := dts.UnmarshalDTMUS(bs)
+  if err != nil {
+    return
+  }
+  switch dtm {
+  case CopyDTM:
+    return CopyDTS.UnmarshalDataMUS(bs[n:])
+  case InsertDTM:
+    return InsertDTS.UnmarshalDataMUS(bs[n:])
+  default:
+    err = ErrUnexpectedDTM
+    return
+  }
 }
 
 func SizeInstructionMUS(instr Instruction) (size int) {
-	switch in := instr.(type) {
-	case Copy:
-		return CopyDTS.SizeMUS(in)
-	case Insert:
-		return InsertDTS.SizeMUS(in)
-	default:
-		panic(ErrUnexpectedInstructionType)
-	}
+  switch in := instr.(type) {
+  case Copy:
+    return CopyDTS.SizeMUS(in)
+  case Insert:
+    return InsertDTS.SizeMUS(in)
+  default:
+    panic(ErrUnexpectedInstructionType)
+  }
 }
 ```
 A full example you can find [here](https://github.com/mus-format/mus-examples-go/tree/main/oneof).
