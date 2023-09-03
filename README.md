@@ -178,7 +178,7 @@ func main() {
 ```
 
 ### Map and Valid Map
-The story is the same as for slice.
+All of the above about slice applies to map.
 
 ## Unsafe Package
 With this package you can get maximum performance. But be careful, it uses 
@@ -339,15 +339,79 @@ greater performance, you can implement `Marshal`, `Unmarshal`, ... functions for
 it yourself. This is not very difficult to do, you can also refer to the 
 [ord/slice.go](ord/slice.go) file for an example.
 
-# DTM Support
-[mus-dts-go](https://github.com/mus-format/mus-dts-go) provides 
-[DTM](https://github.com/mus-format/specification#data-type-metadata-dtm) support.
+# Data Type Metadata (DTM) Support
+[mus-dts-go](https://github.com/mus-format/mus-dts-go) provides DTM support.
 
 # Data Versioning Support
 [mus-dvs-go](https://github.com/mus-format/mus-dvs-go) provides data versioning 
 support. Using mus-dvs-go imposes almost no restrictions. In the new version of 
 the data, you can change the field type, remove a field, and generally do 
 anything you want as long as you can migrate from one version to another.
+
+# Marshal/Unmarshal interfaces (or oneof feature)
+You should read the [mus-dts-go](https://github.com/mus-format/mus-dts-go)
+documentation first.
+
+A simple example:
+```go
+// Interface to Marshal/Unmarshal.
+type Instruction interface {...}
+
+// Copy implements the Instruction interface.
+type Copy struct {...}
+
+// Insert implements the Instruction interface.
+type Insert struct {...}
+
+var (
+  CopyDTS = ...
+  InsertDTS = ...
+)
+
+// With help of the type switch and regular switch we can implement 
+// Marshal/Unmarshal/Size functions for the Instruction interface.
+
+func MarshalInstructionMUS(instr Instruction, bs []byte) (n int) {
+	switch in := instr.(type) {
+	case Copy:
+		return CopyDTS.MarshalMUS(in, bs)
+	case Insert:
+		return InsertDTS.MarshalMUS(in, bs)
+	default:
+		panic(ErrUnexpectedInstructionType)
+	}
+}
+
+func UnmarshalInstructionMUS(bs []byte) (instr Instruction, n int, err error) {
+	dtm, n, err := dts.UnmarshalDTMUS(bs)
+	if err != nil {
+		return
+	}
+	switch dtm {
+	case CopyDTM:
+		return CopyDTS.UnmarshalDataMUS(bs[n:])
+	case InsertDTM:
+		return InsertDTS.UnmarshalDataMUS(bs[n:])
+	default:
+		err = ErrUnexpectedDTM
+		return
+	}
+}
+
+func SizeInstructionMUS(instr Instruction) (size int) {
+	switch in := instr.(type) {
+	case Copy:
+		return CopyDTS.SizeMUS(in)
+	case Insert:
+		return InsertDTS.SizeMUS(in)
+	default:
+		panic(ErrUnexpectedInstructionType)
+	}
+}
+```
+A full example you can find [here](https://github.com/mus-format/mus-examples-go/tree/main/oneof).
+Take a note, nothing will stop you to Marshal/Unmarshal, for example, a slice of
+Instructions.
 
 # Out of Order Deserialization
 A simple example:
