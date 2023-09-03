@@ -409,7 +409,7 @@ func SizeInstructionMUS(instr Instruction) (size int) {
   }
 }
 ```
-A full example you can find [here](https://github.com/mus-format/mus-examples-go/tree/main/oneof).
+A full example you can find at [mus-examples-go](https://github.com/mus-format/mus-examples-go/tree/main/oneof).
 Take a note, nothing will stop you to Marshal/Unmarshal, for example, a slice of
 Instructions.
 
