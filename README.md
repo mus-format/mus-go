@@ -4,7 +4,31 @@ serializer with validation support for Golang. It supports out of order
 deserialization, zero allocation deserialization, and has a
 [streaming version](https://github.com/mus-format/mus-stream-go).
 
-# cmd-stream-go
+# Contents
+- [MUS Format Serializer](#mus-format-serializer)
+- [Contents](#contents)
+- [cmd-stream-go library](#cmd-stream-go-library)
+- [Tests](#tests)
+- [Benchmarks](#benchmarks)
+- [How To Use](#how-to-use)
+  - [varint Package](#varint-package)
+  - [raw Package](#raw-package)
+  - [ord (ordinary) Package](#ord-ordinary-package)
+    - [Valid String](#valid-string)
+    - [Slice](#slice)
+    - [Valid Slice](#valid-slice)
+    - [Map](#map)
+  - [Unsafe Package](#unsafe-package)
+- [Structs Support](#structs-support)
+  - [Valid Struct](#valid-struct)
+- [Arrays Support](#arrays-support)
+- [Data Type Metadata (DTM) Support](#data-type-metadata-dtm-support)
+- [Data Versioning Support](#data-versioning-support)
+- [Marshal/Unmarshal interfaces (or oneof feature)](#marshalunmarshal-interfaces-or-oneof-feature)
+- [Out of Order Deserialization](#out-of-order-deserialization)
+- [Zero Allocation Deserialization](#zero-allocation-deserialization)
+
+# cmd-stream-go library
 If you're looking for a client-server communication library that supports the 
 MUS format, try [cmd-stream-go](https://github.com/cmd-stream/cmd-stream-go). It 
 also has excellent performance.
@@ -177,7 +201,7 @@ func main() {
 }
 ```
 
-### Map and Valid Map
+### Map
 All of the above about slice applies to map.
 
 ## Unsafe Package
