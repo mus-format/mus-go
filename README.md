@@ -1,7 +1,8 @@
 # MUS Format Serializer
 mus-go is a [MUS format](https://ymz-ncnk.medium.com/mus-serialization-format-21d7be309e8d)
 extremely fast serializer with validation support for Golang. It supports out of 
-order deserialization, zero allocation deserialization, and has a
+order deserialization, zero allocation deserialization, can encode data 
+structures such as a graph or a linked list, and also has a
 [streaming version](https://github.com/mus-format/mus-stream-go).
 
 # Contents
@@ -18,7 +19,8 @@ order deserialization, zero allocation deserialization, and has a
     - [Slice](#slice)
     - [Valid Slice](#valid-slice)
     - [Map](#map)
-  - [Unsafe Package](#unsafe-package)
+  - [unsafe Package](#unsafe-package)
+  - [pm (pointer mapping) package](#pm-pointer-mapping-package)
 - [Structs Support](#structs-support)
   - [Valid Struct](#valid-struct)
 - [Arrays Support](#arrays-support)
@@ -204,11 +206,19 @@ func main() {
 ### Map
 All of the above about slice applies to map.
 
-## Unsafe Package
+## unsafe Package
 With this package you can get maximum performance. But be careful, it uses 
 unsafe type conversion.
 Supports the following data types: `bool`, `string`, `byte`, and all `uint`, 
 `int`, `float`.
+
+## pm (pointer mapping) package
+Unlike the `ord` package, `pm` encodes pointers with the Mapping pointer flag,
+which is described in the 
+[MUS format specification](https://github.com/mus-format/specification#format-features).
+Thanks to this package, you can encode data structures such as a graph or a 
+linked list (corresponding examples can be found at 
+[mus-examples-go](https://github.com/mus-format/mus-examples-go/pm)).
 
 # Structs Support
 In fact, mus-go does not support structural data types. You will have to 
