@@ -63,7 +63,7 @@ func TestVarint(t *testing.T) {
 					bs      = []byte{}
 					n, err  = skipUint(0, 0, bs)
 				)
-				com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+				com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
 			})
 
 		t.Run("skipUint should return ErrOverflow if there is no varint end",
@@ -75,7 +75,7 @@ func TestVarint(t *testing.T) {
 					n, err  = skipUint(com.Uint16MaxVarintLen, com.Uint16MaxLastByte,
 						bs)
 				)
-				com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+				com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
 			})
 
 		t.Run("skipUint shold return ErrTooSmallByteSlice if there is no space in bs",
@@ -87,7 +87,7 @@ func TestVarint(t *testing.T) {
 					n, err  = skipUint(com.Uint16MaxVarintLen, com.Uint16MaxLastByte,
 						bs)
 				)
-				com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+				com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
 
 			})
 

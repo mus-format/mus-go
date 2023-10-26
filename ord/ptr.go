@@ -12,11 +12,11 @@ import (
 // Returns the number of used bytes. It will panic if receives too small bs.
 func MarshalPtr[T any](v *T, m mus.Marshaller[T], bs []byte) (n int) {
 	if v == nil {
-		bs[0] = com.NilFlag
+		bs[0] = byte(com.Nil)
 		n = 1
 		return
 	}
-	bs[0] = com.NotNilFlag
+	bs[0] = byte(com.NotNil)
 	return 1 + m.MarshalMUS(*v, bs[1:])
 }
 
@@ -32,11 +32,11 @@ func UnmarshalPtr[T any](u mus.Unmarshaller[T], bs []byte) (v *T, n int,
 		err = mus.ErrTooSmallByteSlice
 		return
 	}
-	if bs[0] == com.NilFlag {
+	if bs[0] == byte(com.Nil) {
 		n = 1
 		return
 	}
-	if bs[0] != com.NotNilFlag {
+	if bs[0] != byte(com.NotNil) {
 		err = com.ErrWrongFormat
 		return
 	}
@@ -69,11 +69,11 @@ func SkipPtr(sk mus.Skipper, bs []byte) (n int, err error) {
 		err = mus.ErrTooSmallByteSlice
 		return
 	}
-	if bs[0] == com.NilFlag {
+	if bs[0] == byte(com.Nil) {
 		n = 1
 		return
 	}
-	if bs[0] != com.NotNilFlag {
+	if bs[0] != byte(com.NotNil) {
 		err = com.ErrWrongFormat
 		return
 	}

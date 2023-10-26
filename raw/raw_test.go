@@ -135,7 +135,7 @@ func TestRaw(t *testing.T) {
 				bs      = []byte{1, 2, 3, 4, 5, 6, 7}
 				n, err  = skipInteger64(bs)
 			)
-			com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+			com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
 		})
 
 	t.Run("unmarshalInteger32 should return ErrTooSmallByteSlice if there is no space in bs",
@@ -158,7 +158,7 @@ func TestRaw(t *testing.T) {
 				bs      = []byte{1, 2, 3}
 				n, err  = skipInteger32(bs)
 			)
-			com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+			com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
 		})
 
 	t.Run("unmarshalInteger16 should return ErrTooSmallByteSlice if there is no space in bs",
@@ -181,7 +181,7 @@ func TestRaw(t *testing.T) {
 				bs      = []byte{1}
 				n, err  = skipInteger16(bs)
 			)
-			com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+			com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
 		})
 
 	t.Run("unmarshalInteger8 should return ErrTooSmallByteSlice if there is no space in bs",
@@ -204,7 +204,7 @@ func TestRaw(t *testing.T) {
 				bs      = []byte{}
 				n, err  = skipInteger8(bs)
 			)
-			com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+			com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
 		})
 
 	t.Run("All MarshalByte, UnmarshalByte, SizeByte, SkipByte functions must work correctly", func(t *testing.T) {
@@ -382,7 +382,7 @@ func TestRaw(t *testing.T) {
 						bs      = []byte{1, 2, 3, 4, 5}
 						n, err  = SkipFloat64(bs)
 					)
-					com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+					com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
 				})
 
 		})
@@ -421,7 +421,7 @@ func TestRaw(t *testing.T) {
 						bs      = []byte{1, 2}
 						n, err  = SkipFloat32(bs)
 					)
-					com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+					com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
 				})
 
 		})

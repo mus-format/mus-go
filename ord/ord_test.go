@@ -63,7 +63,7 @@ func TestOrd(t *testing.T) {
 					bs      = []byte{}
 					n, err  = SkipBool(bs)
 				)
-				com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+				com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
 			})
 
 		t.Run("SkipBool should return ErrWrongFormat if meets wrong format",
@@ -74,7 +74,7 @@ func TestOrd(t *testing.T) {
 					bs      = []byte{3}
 					n, err  = SkipBool(bs)
 				)
-				com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+				com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
 			})
 
 	})
@@ -169,7 +169,7 @@ func TestOrd(t *testing.T) {
 					bs      = []byte{1}
 					n, err  = SkipString(bs)
 				)
-				com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+				com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
 			})
 
 		t.Run("SkipString should return ErrTooSmallByteSlice if there is no space in bs",
@@ -180,7 +180,7 @@ func TestOrd(t *testing.T) {
 					bs      = []byte{4, 2}
 					n, err  = SkipString(bs)
 				)
-				com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+				com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
 			})
 
 		t.Run("If SkipString should return an error if it fails to unmarshal a length",
@@ -191,7 +191,7 @@ func TestOrd(t *testing.T) {
 					bs      = []byte{}
 					n, err  = SkipString(bs)
 				)
-				com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+				com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
 			})
 
 	})
@@ -340,7 +340,7 @@ func TestOrd(t *testing.T) {
 							return "", 4, wantErr
 						},
 					)
-					v, n, err = UnmarshalPtr[string](u, []byte{com.NotNilFlag})
+					v, n, err = UnmarshalPtr[string](u, []byte{byte(com.NotNil)})
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
@@ -352,7 +352,7 @@ func TestOrd(t *testing.T) {
 					wantErr = mus.ErrTooSmallByteSlice
 					n, err  = SkipPtr(nil, []byte{})
 				)
-				com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+				com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
 			})
 
 		t.Run("SkipPtr should return ErrWrongFormat if meets wrong format",
@@ -362,7 +362,7 @@ func TestOrd(t *testing.T) {
 					wantErr = com.ErrWrongFormat
 					n, err  = SkipPtr(nil, []byte{2})
 				)
-				com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+				com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
 			})
 
 		t.Run("If Skipper fails with an error, Skip should return it",
@@ -375,9 +375,9 @@ func TestOrd(t *testing.T) {
 							return 2, wantErr
 						},
 					)
-					n, err = SkipPtr(s, []byte{com.NotNilFlag})
+					n, err = SkipPtr(s, []byte{byte(com.NotNil)})
 				)
-				com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+				com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
 			})
 
 	})
@@ -703,7 +703,7 @@ func TestOrd(t *testing.T) {
 					wantErr = mus.ErrTooSmallByteSlice
 					n, err  = SkipSlice(nil, []byte{})
 				)
-				com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+				com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
 			})
 
 		t.Run("SkipSlice should return ErrNegativeLength if there is no space in bs",
@@ -713,7 +713,7 @@ func TestOrd(t *testing.T) {
 					wantErr = com.ErrNegativeLength
 					n, err  = SkipSlice(nil, []byte{1})
 				)
-				com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+				com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
 			})
 
 	})
@@ -1450,7 +1450,7 @@ func TestOrd(t *testing.T) {
 					bs      = []byte{1}
 					n, err  = SkipMap(nil, nil, bs)
 				)
-				com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+				com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
 			})
 
 		t.Run("SkipMap should return ErrTooSmallByteSlice if there is no space in bs",
@@ -1461,7 +1461,7 @@ func TestOrd(t *testing.T) {
 					bs      = []byte{}
 					n, err  = SkipMap(nil, nil, bs)
 				)
-				com_testdata.TestSkipResults(wantN, n, wantErr, err, t)
+				com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
 			})
 
 	})
