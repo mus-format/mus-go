@@ -218,7 +218,7 @@ which is described in the
 [MUS format specification](https://github.com/mus-format/specification#format-features).
 Thanks to this package, you can encode data structures such as a graph or a 
 linked list (corresponding examples can be found at 
-[mus-examples-go](https://github.com/mus-format/mus-examples-go/pm)).
+[mus-examples-go](https://github.com/mus-format/mus-examples-go/tree/main/pm)).
 
 # Structs Support
 In fact, mus-go does not support structural data types. You will have to 
