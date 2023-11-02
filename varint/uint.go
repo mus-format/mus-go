@@ -41,7 +41,6 @@ func MarshalUint(v uint, bs []byte) (n int) {
 	return marshalUint(v, bs)
 }
 
-// -----------------------------------------------------------------------------
 // UnmarshalUint64 parses a MUS-encoded (Varint) uint64 value from bs.
 //
 // In addition to the uint64, returns the number of used bytes and one of the
@@ -92,7 +91,6 @@ func UnmarshalUint(bs []byte) (v uint, n int, err error) {
 		bs)
 }
 
-// -----------------------------------------------------------------------------
 // SizeUint64 returns the size of a MUS-encoded uint64 value.
 func SizeUint64(v uint64) (size int) {
 	return sizeUint(v)
@@ -118,7 +116,6 @@ func SizeUint(v uint) (size int) {
 	return sizeUint(v)
 }
 
-// -----------------------------------------------------------------------------
 // SkipUint64 skips a MUS-encoded uint64.
 //
 // Returns the number of skiped bytes and one of the mus.ErrTooSmallByteSlice or

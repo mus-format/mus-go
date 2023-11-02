@@ -53,7 +53,6 @@ func MarshalInt(v int, bs []byte) (n int) {
 	return marshalInt(v, bs)
 }
 
-// -----------------------------------------------------------------------------
 // UnmarshalInt64 parses a MUS-encoded (Raw) int64 value from bs.
 //
 // In addition to the int64 value, returns the number of used bytes and the
@@ -94,7 +93,6 @@ func UnmarshalInt(bs []byte) (v int, n int, err error) {
 	return unmarshalInt(bs)
 }
 
-// -----------------------------------------------------------------------------
 // SizeInt64 returns the size of a MUS-encoded (Raw) int64 value.
 func SizeInt64(v int64) (n int) {
 	return raw.SizeInt64(v)
@@ -120,7 +118,6 @@ func SizeInt(v int) (n int) {
 	return sizeInt(v)
 }
 
-// -----------------------------------------------------------------------------
 // SkipInt64 skips a MUS-encoded (Raw) int64 value.
 //
 // Returns the number of skiped bytes and the mus.ErrTooSmallByteSlice.

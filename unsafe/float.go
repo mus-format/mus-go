@@ -20,7 +20,6 @@ func MarshalFloat32(v float32, bs []byte) (n int) {
 	return marshalInteger32(math.Float32bits(v), bs)
 }
 
-// -----------------------------------------------------------------------------
 // UnmarshalFloat64 parses a MUS-encoded (Raw) float64 value from bs.
 //
 // In addition to the float64 value, returns the number of used bytes and the
@@ -45,7 +44,6 @@ func UnmarshalFloat32(bs []byte) (v float32, n int, err error) {
 	return math.Float32frombits(uv), n, nil
 }
 
-// -----------------------------------------------------------------------------
 // SizeFloat64 returns the size of a MUS-encoded (Raw) float64 value.
 func SizeFloat64(v float64) (n int) {
 	return raw.SizeFloat64(v)
@@ -56,7 +54,6 @@ func SizeFloat32(v float32) (n int) {
 	return raw.SizeFloat32(v)
 }
 
-// -----------------------------------------------------------------------------
 // SkipFloat64 skips a MUS-encoded (Raw) float64 value.
 //
 // Returns the number of skiped bytes and the mus.ErrTooSmallByteSlice error.
