@@ -36,7 +36,6 @@ func marshalInteger8[T com.Integer8](t T, bs []byte) int {
 	return com.Num8RawSize
 }
 
-// -----------------------------------------------------------------------------
 func unmarshalInteger64[T com.Integer64](bs []byte) (T, int, error) {
 	var t T
 	if len(bs) < com.Num64RawSize {
@@ -83,7 +82,6 @@ func unmarshalInteger8[T com.Integer8](bs []byte) (T, int, error) {
 	return T(bs[0]), com.Num8RawSize, nil
 }
 
-// -----------------------------------------------------------------------------
 func sizeNum64[T com.Num64](t T) int {
 	return com.Num64RawSize
 }
@@ -100,7 +98,6 @@ func sizeInteger8[T com.Integer8](t T) int {
 	return com.Num8RawSize
 }
 
-// -----------------------------------------------------------------------------
 func skipInteger64(bs []byte) (int, error) {
 	if len(bs) < com.Num64RawSize {
 		return 0, mus.ErrTooSmallByteSlice
