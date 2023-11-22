@@ -209,6 +209,13 @@ All of the above about slice applies to map.
 ## unsafe Package
 With this package you can get maximum performance. But be careful, it uses 
 unsafe type conversion.
+
+To a large extent, this warning applies to the `string` type. With this package, 
+we can unmarshal a byte slice into a string, so that if we than change it, the 
+string will change as well. This allows us to unmarshal strings very quickly. 
+However, the slice in this case should be reused only after processing the 
+result. There is no such behavior for other types.
+
 Supports the following data types: `bool`, `string`, `byte`, and all `uint`, 
 `int`, `float`.
 
