@@ -156,10 +156,9 @@ func main() {
 ```
 
 ### Valid Slice
-When deserializing a slice, we can set a limit on its length, a restriction on 
-the elements present in it, as well as a `Skipper`. If one of the validators 
-returns an error, the rest of the data will be skipped, thanks to the `Skipper`.
-All this is done using the `ord.UnmarshalValidSlice()` function:
+When deserializing a slice, using the `ord.UnmarshalValidSlice()` function, we 
+can set length and elements validators as well as `Skipper` that will skip the 
+rest of the data if one of the validators returns an error:
 ```go
 package main
 
@@ -202,17 +201,16 @@ func main() {
 ```
 
 ### Map
-All of the above about slice applies to map.
+All of the above about the slice type also applies to the map type.
 
 ## unsafe Package
-With this package you can get maximum performance. But be careful, it uses 
+You can get maximum performance with this package, but be careful it uses an 
 unsafe type conversion.
 
-To a large extent, this warning applies to the `string` type. With this package, 
-we can unmarshal a byte slice into a string, so that if we than change it, the 
-string will change as well. This allows us to unmarshal strings very quickly. 
-However, the slice in this case should be reused only after processing the 
-result. There is no such behavior for other types.
+To a large extent, this warning applies to the `string` type - if we change a 
+byte slice, the string obtained from it will also change. In this case, we must 
+first process the result, i.e. the string, and only then reuse the byte slice. 
+For other types, there is no such behavior.
 
 Supports the following data types: `bool`, `string`, `byte`, and all `uint`, 
 `int`, `float`.
@@ -221,14 +219,14 @@ Supports the following data types: `bool`, `string`, `byte`, and all `uint`,
 Unlike the `ord` package, `pm` encodes pointers with the Mapping pointer flag,
 which is described in the 
 [MUS format specification](https://github.com/mus-format/specification#format-features).
-Thanks to this package, you can encode data structures such as a graph or a 
-linked list (corresponding examples can be found at 
+Thanks to this package, we can encode data structures such as graphs or 
+linked lists (corresponding examples can be found at 
 [mus-examples-go](https://github.com/mus-format/mus-examples-go/tree/main/pm)).
 
 # Structs Support
-In fact, mus-go does not support structural data types. You will have to 
-implement the `mus.Marshaller`, `mus.Unmarshaller`, `mus.Sizer` interfaces 
-yourself, but it is not difficult at all. For example:
+In fact, mus-go does not support structural data types, which means that we will
+have to implement the `mus.Marshaller`, `mus.Unmarshaller` and `mus.Sizer` 
+interfaces ourselves. But it's not difficult at all, for example:
 ```go
 package main
 
@@ -372,20 +370,21 @@ func UnmarshalValidFoo(avl com.Validator[int], ask mus.Skipper, bs []byte) (
 ```
 
 # Arrays Support
-Unfortunately, Golang does not support generic parameterization of array sizes.
-Therefore, to serialize an array, you must first make a slice of it. Or for 
-greater performance, you can implement `Marshal`, `Unmarshal`, ... functions for 
-it yourself. This is not very difficult to do, you can also refer to the 
-[ord/slice.go](ord/slice.go) file for an example.
+Unfortunately, Golang does not support generic parameterization of array sizes. 
+Therefore, to serialize an array, we must make a slice of it. Or, for better 
+performance, we can implement the necessary `Marshal`, `Unmarshal`, ... 
+functions ourselves, as done in the [ord/slice.go](ord/slice.go) file.
 
 # Data Type Metadata (DTM) Support
 [mus-dts-go](https://github.com/mus-format/mus-dts-go) provides DTM support.
 
 # Data Versioning Support
 [mus-dvs-go](https://github.com/mus-format/mus-dvs-go) provides data versioning 
-support. Using mus-dvs-go imposes almost no restrictions. In the new version of 
-the data, you can change the field type, remove a field, and generally do 
-anything you want as long as you can migrate from one version to another.
+support. 
+
+Using mus-dvs-go imposes almost no restrictions - in the new version of the data
+type, we can change the field type, remove a field, and generally do anything we
+want as long as we can migrate from one version to another.
 
 # Marshal/Unmarshal interfaces (or oneof feature)
 You should read the [mus-dts-go](https://github.com/mus-format/mus-dts-go)
@@ -448,9 +447,9 @@ func SizeInstructionMUS(instr Instruction) (size int) {
   }
 }
 ```
-A full example you can find at [mus-examples-go](https://github.com/mus-format/mus-examples-go/tree/main/oneof).
-Take a note, nothing will stop you to Marshal/Unmarshal, for example, a slice of
-Instructions.
+A full example can be found at [mus-examples-go](https://github.com/mus-format/mus-examples-go/tree/main/oneof).
+Take a note, nothing will stop us to Marshal/Unmarshal, for example, a slice of 
+interfaces.
 
 # Out of Order Deserialization
 A simple example:
