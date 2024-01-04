@@ -29,9 +29,9 @@ encode data structures such as graphs or linked lists, and also has a [streaming
 - [Zero Allocation Deserialization](#zero-allocation-deserialization)
 
 # cmd-stream-go library
-If you're looking for a client-server communication library that supports the 
-MUS format, try [cmd-stream-go](https://github.com/cmd-stream/cmd-stream-go). It 
-also has [excellent performance](https://github.com/ymz-ncnk/go-client-server-communication-benchmarks).
+[cmd-stream-go](https://github.com/cmd-stream/cmd-stream-go) - high-performance 
+RCX (Remote Command eXecution) library for Golang, which also supports the MUS 
+format.
 
 # Tests
 Test coverage is 100%.
