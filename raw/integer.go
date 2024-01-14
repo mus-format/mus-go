@@ -6,6 +6,7 @@ import (
 )
 
 func marshalInteger64[T com.Integer64](t T, bs []byte) int {
+	_ = bs[7]
 	bs[0] = byte(t)
 	bs[1] = byte(t >> 8)
 	bs[2] = byte(t >> 16)
@@ -18,6 +19,7 @@ func marshalInteger64[T com.Integer64](t T, bs []byte) int {
 }
 
 func marshalInteger32[T com.Integer32](t T, bs []byte) int {
+	_ = bs[3]
 	bs[0] = byte(t)
 	bs[1] = byte(t >> 8)
 	bs[2] = byte(t >> 16)
@@ -26,6 +28,7 @@ func marshalInteger32[T com.Integer32](t T, bs []byte) int {
 }
 
 func marshalInteger16[T com.Integer16](t T, bs []byte) int {
+	_ = bs[1]
 	bs[0] = byte(t)
 	bs[1] = byte(t >> 8)
 	return com.Num16RawSize
