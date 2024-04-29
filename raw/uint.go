@@ -13,7 +13,7 @@ func init() {
 var (
 	marshalUint   func(v uint, bs []byte) int
 	unmarshalUint func(bs []byte) (uint, int, error)
-	sizeUint      func(v uint) int
+	sizeUint      int
 	skipUint      func(bs []byte) (int, error)
 )
 
@@ -94,27 +94,27 @@ func UnmarshalUint(bs []byte) (v uint, n int, err error) {
 
 // SizeUint64 returns the size of a MUS-encoded (Raw) uint64 value.
 func SizeUint64(v uint64) (n int) {
-	return sizeNum64(v)
+	return com.Num64RawSize
 }
 
 // SizeUint32 returns the size of a MUS-encoded (Raw) uint32 value.
 func SizeUint32(v uint32) (n int) {
-	return sizeNum32(v)
+	return com.Num32RawSize
 }
 
 // SizeUint16 returns the size of a MUS-encoded (Raw) uint16 value.
 func SizeUint16(v uint16) (n int) {
-	return sizeInteger16(v)
+	return com.Num16RawSize
 }
 
 // SizeUint8 returns the size of a MUS-encoded (Raw) uint8 value.
 func SizeUint8(v uint8) (n int) {
-	return sizeInteger8(v)
+	return com.Num8RawSize
 }
 
 // SizeUint returns the size of a MUS-encoded (Raw) uint value.
 func SizeUint(v uint) (n int) {
-	return sizeUint(v)
+	return sizeUint
 }
 
 // SkipUint64 skips a MUS-encoded (Raw) uint64.
@@ -157,12 +157,12 @@ func setUpUintFuncs(intSize int) {
 	case 64:
 		marshalUint = marshalInteger64[uint]
 		unmarshalUint = unmarshalInteger64[uint]
-		sizeUint = sizeNum64[uint]
+		sizeUint = com.Num64RawSize
 		skipUint = skipInteger64
 	case 32:
 		marshalUint = marshalInteger32[uint]
 		unmarshalUint = unmarshalInteger32[uint]
-		sizeUint = sizeNum32[uint]
+		sizeUint = com.Num32RawSize
 		skipUint = skipInteger32
 	default:
 		panic(com.ErrUnsupportedIntSize)

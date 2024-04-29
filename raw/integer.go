@@ -44,6 +44,7 @@ func unmarshalInteger64[T com.Integer64](bs []byte) (T, int, error) {
 	if len(bs) < com.Num64RawSize {
 		return t, 0, mus.ErrTooSmallByteSlice
 	}
+	_ = bs[7]
 	t = T(bs[0])
 	t |= T(bs[1]) << 8
 	t |= T(bs[2]) << 16
@@ -60,6 +61,7 @@ func unmarshalInteger32[T com.Integer32](bs []byte) (T, int, error) {
 	if len(bs) < com.Num32RawSize {
 		return t, 0, mus.ErrTooSmallByteSlice
 	}
+	_ = bs[3]
 	t = T(bs[0])
 	t |= T(bs[1]) << 8
 	t |= T(bs[2]) << 16
@@ -72,6 +74,7 @@ func unmarshalInteger16[T com.Integer16](bs []byte) (T, int, error) {
 	if len(bs) < com.Num16RawSize {
 		return t, 0, mus.ErrTooSmallByteSlice
 	}
+	_ = bs[1]
 	t = T(bs[0])
 	t |= T(bs[1]) << 8
 	return t, com.Num16RawSize, nil
@@ -83,22 +86,6 @@ func unmarshalInteger8[T com.Integer8](bs []byte) (T, int, error) {
 		return t, 0, mus.ErrTooSmallByteSlice
 	}
 	return T(bs[0]), com.Num8RawSize, nil
-}
-
-func sizeNum64[T com.Num64](t T) int {
-	return com.Num64RawSize
-}
-
-func sizeNum32[T com.Num32](t T) int {
-	return com.Num32RawSize
-}
-
-func sizeInteger16[T com.Integer16](t T) int {
-	return com.Num16RawSize
-}
-
-func sizeInteger8[T com.Integer8](t T) int {
-	return com.Num8RawSize
 }
 
 func skipInteger64(bs []byte) (int, error) {

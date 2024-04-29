@@ -13,11 +13,13 @@ import (
 //
 // Returns the number of used bytes. It will panic if receives too small bs.
 func MarshalString(v string, bs []byte) (n int) {
-	n = varint.MarshalInt(len(v), bs)
-	if len(bs[n:]) < len(v) {
+	length := len(v)
+	n = varint.MarshalInt(length, bs)
+	bs = bs[n:]
+	if len(bs) < length {
 		panic(mus.ErrTooSmallByteSlice)
 	}
-	return n + copy(bs[n:], unsafe_mod.Slice(unsafe_mod.StringData(v), len(v)))
+	return n + copy(bs, unsafe_mod.Slice(unsafe_mod.StringData(v), length))
 }
 
 // UnmarshalString parses a MUS-encoded string value from bs.
@@ -48,7 +50,8 @@ func UnmarshalValidString(maxLength com.Validator[int], skip bool, bs []byte) (
 		err = com.ErrNegativeLength
 		return
 	}
-	if len(bs[n:]) < length {
+	bs = bs[n:]
+	if len(bs) < length {
 		err = mus.ErrTooSmallByteSlice
 		return
 	}
@@ -60,8 +63,7 @@ func UnmarshalValidString(maxLength com.Validator[int], skip bool, bs []byte) (
 			return
 		}
 	}
-	c := bs[n : n+length]
-	return unsafe_mod.String(&c[0], len(c)), n + length, nil
+	return unsafe_mod.String(&bs[0], length), n + length, nil
 }
 
 // SizeString returns the size of a MUS-encoded string value.

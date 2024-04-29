@@ -1,5 +1,7 @@
 package raw
 
+import com "github.com/mus-format/common-go"
+
 // MarshalByte fills bs with the MUS encoding (Raw) of a byte value.
 //
 // Returns the number of used bytes. It will panic if receives too small bs.
@@ -17,7 +19,7 @@ func UnmarshalByte(bs []byte) (v byte, n int, err error) {
 
 // SizeByte returns the size of a MUS-encoded (Raw) byte value.
 func SizeByte(v byte) (n int) {
-	return sizeInteger8(v)
+	return com.Num8RawSize
 }
 
 // SkipByte skips a MUS-encoded (Raw) byte value.

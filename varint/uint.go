@@ -172,6 +172,9 @@ func unmarshalUint[T constraints.Unsigned](maxVarintLen int, maxLastByte byte,
 		err = mus.ErrTooSmallByteSlice
 		return
 	}
+	if bs[0] < 0x80 {
+		return T(bs[0]), 1, nil
+	}
 	var (
 		b     byte
 		shift int

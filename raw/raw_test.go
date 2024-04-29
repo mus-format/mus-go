@@ -36,7 +36,7 @@ func TestRaw(t *testing.T) {
 				if !com_testdata.ComparePtrs(unmarshalUint, unmarshalInteger32[uint]) {
 					t.Error("unexpected unmarshalUint func")
 				}
-				if !com_testdata.ComparePtrs(sizeUint, sizeNum32[uint]) {
+				if sizeUint != com.Num32RawSize {
 					t.Error("unexpected sizeUint func")
 				}
 				if !com_testdata.ComparePtrs(skipUint, skipInteger32) {
@@ -53,7 +53,7 @@ func TestRaw(t *testing.T) {
 				if !com_testdata.ComparePtrs(unmarshalUint, unmarshalInteger64[uint]) {
 					t.Error("unexpected unmarshalUint func")
 				}
-				if !com_testdata.ComparePtrs(sizeUint, sizeNum64[uint]) {
+				if sizeUint != com.Num64RawSize {
 					t.Error("unexpected sizeUint func")
 				}
 				if !com_testdata.ComparePtrs(skipUint, skipInteger64) {
@@ -88,7 +88,7 @@ func TestRaw(t *testing.T) {
 				if !com_testdata.ComparePtrs(unmarshalInt, unmarshalInteger32[int]) {
 					t.Error("unexpected unmarshalInt func")
 				}
-				if !com_testdata.ComparePtrs(sizeInt, sizeNum32[int]) {
+				if sizeInt != com.Num32RawSize {
 					t.Error("unexpected sizeInt func")
 				}
 				if !com_testdata.ComparePtrs(skipInt, skipInteger32) {
@@ -105,7 +105,7 @@ func TestRaw(t *testing.T) {
 				if !com_testdata.ComparePtrs(unmarshalInt, unmarshalInteger64[int]) {
 					t.Error("unexpected unmarshalInt func")
 				}
-				if !com_testdata.ComparePtrs(sizeInt, sizeNum64[int]) {
+				if sizeInt != com.Num64RawSize {
 					t.Error("unexpected sizeInt func")
 				}
 				if !com_testdata.ComparePtrs(skipInt, skipInteger64) {

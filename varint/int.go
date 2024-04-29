@@ -167,15 +167,13 @@ func SkipInt(bs []byte) (n int, err error) {
 func EncodeZigZag[T constraints.Signed](t T) T {
 	if t < 0 {
 		return ^(t << 1)
-	} else {
-		return t << 1
 	}
+	return t << 1
 }
 
 func DecodeZigZag[T constraints.Unsigned](t T) T {
 	if t&1 == 1 {
 		return ^(t >> 1)
-	} else {
-		return t >> 1
 	}
+	return t >> 1
 }

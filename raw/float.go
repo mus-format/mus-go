@@ -2,6 +2,8 @@ package raw
 
 import (
 	"math"
+
+	com "github.com/mus-format/common-go"
 )
 
 // MarshalFloat64 fills bs with the MUS encoding (Raw) of a float64 value.
@@ -44,12 +46,12 @@ func UnmarshalFloat32(bs []byte) (v float32, n int, err error) {
 
 // SizeFloat64 returns the size of a MUS-encoded (Raw) float64 value.
 func SizeFloat64(v float64) (n int) {
-	return sizeNum64(v)
+	return com.Num64RawSize
 }
 
 // SizeFloat32 returns the size of a MUS-encoded (Raw) float32 value.
 func SizeFloat32(v float32) (n int) {
-	return sizeNum32(v)
+	return com.Num32RawSize
 }
 
 // SkipFloat64 skips a MUS-encoded (Raw) float64 value.
