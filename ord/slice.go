@@ -23,9 +23,9 @@ func MarshalSlice[T any](v []T, m mus.Marshaller[T], bs []byte) (n int) {
 //
 // The u argument specifies the Unmarshaller for the slice elements.
 //
-// In addition to the slice, returns the number of used bytes and one of the
-// mus.ErrTooSmallByteSlice, com.ErrOverflow, com.ErrNegativeLength or
-// Unmarshaller errors.
+// In addition to the slice value and the number of used bytes, it can also
+// return mus.ErrTooSmallByteSlice, com.ErrOverflow, com.ErrNegativeLength or
+// Unmarshaller error.
 func UnmarshalSlice[T any](u mus.Unmarshaller[T], bs []byte) (v []T, n int,
 	err error) {
 	return UnmarshalValidSlice(nil, u, nil, nil, bs)
@@ -39,9 +39,9 @@ func UnmarshalSlice[T any](u mus.Unmarshaller[T], bs []byte) (v []T, n int,
 // skip the remaining bytes of the slice. If the value of the Skipper is nil, it
 // immediately returns the validation error.
 //
-// In addition to the slice value, returns the number of used bytes and one of
-// the mus.ErrTooSmallByteSlice, com.ErrOverflow, com.ErrNegativeLength,
-// Unmarshaller, Validator or Skipper errors.
+// In addition to the slice value and the number of used bytes, it can also
+// return mus.ErrTooSmallByteSlice, com.ErrOverflow, com.ErrNegativeLength or
+// Unmarshaller, Validator or Skipper error.
 func UnmarshalValidSlice[T any](maxLength com.Validator[int],
 	u mus.Unmarshaller[T],
 	vl com.Validator[T],
@@ -110,8 +110,9 @@ func SizeSlice[T any](v []T, s mus.Sizer[T]) (size int) {
 //
 // The sk argument specifies the Skipper for the slice elements.
 //
-// Returns the number of skiped bytes and one of the mus.ErrTooSmallByteSlice,
-// com.ErrOverflow, com.ErrNegativeLength or Skipper errors.
+// In addition to the number of skipped bytes, it can also return
+// mus.ErrTooSmallByteSlice, com.ErrOverflow, com.ErrNegativeLength or Skipper
+// error.
 func SkipSlice(sk mus.Skipper, bs []byte) (n int, err error) {
 	length, n, err := varint.UnmarshalInt(bs)
 	if err != nil {

@@ -55,40 +55,40 @@ func MarshalInt(v int, bs []byte) (n int) {
 
 // UnmarshalInt64 parses a MUS-encoded (Raw) int64 value from bs.
 //
-// In addition to the int64 value, returns the number of used bytes and the
-// mus.ErrTooSmallByteSlice error.
+// In addition to the int64 value and the number of used bytes, it can also
+// return mus.ErrTooSmallByteSlice.
 func UnmarshalInt64(bs []byte) (v int64, n int, err error) {
 	return unmarshalInteger64[int64](bs)
 }
 
 // UnmarshalInt32 parses a MUS-encoded (Raw) int32 value from bs.
 //
-// In addition to the int32 value, returns the number of used bytes and the
-// mus.ErrTooSmallByteSlice error.
+// In addition to the int32 value and the number of used bytes, it can also
+// return mus.ErrTooSmallByteSlice.
 func UnmarshalInt32(bs []byte) (v int32, n int, err error) {
 	return unmarshalInteger32[int32](bs)
 }
 
 // UnmarshalInt16 parses a MUS-encoded (Raw) int16 value from bs.
 //
-// In addition to the int16 value, returns the number of used bytes and the
-// mus.ErrTooSmallByteSlice error.
+// In addition to the int16 value and the number of used bytes, it can also
+// return mus.ErrTooSmallByteSlice.
 func UnmarshalInt16(bs []byte) (v int16, n int, err error) {
 	return unmarshalInteger16[int16](bs)
 }
 
 // UnmarshalInt8 parses a MUS-encoded (Raw) int8 value from bs.
 //
-// In addition to the int8 value, returns the number of used bytes and the
-// mus.ErrTooSmallByteSlice error.
+// In addition to the int8 value and the number of used bytes, it can also
+// return mus.ErrTooSmallByteSlice.
 func UnmarshalInt8(bs []byte) (v int8, n int, err error) {
 	return unmarshalInteger8[int8](bs)
 }
 
 // UnmarshalInt parses a MUS-encoded (Raw) int value from bs.
 //
-// In addition to the int value, returns the number of used bytes and the
-// mus.ErrTooSmallByteSlice error.
+// In addition to the int value and the number of used bytes, it can also
+// return mus.ErrTooSmallByteSlice.
 func UnmarshalInt(bs []byte) (v int, n int, err error) {
 	return unmarshalInt(bs)
 }
@@ -120,35 +120,40 @@ func SizeInt(v int) (n int) {
 
 // SkipInt64 skips a MUS-encoded (Raw) int64 value.
 //
-// Returns the number of skiped bytes and the mus.ErrTooSmallByteSlice.
+// In addition to the number of skipped bytes, it can also return
+// mus.ErrTooSmallByteSlice.
 func SkipInt64(bs []byte) (n int, err error) {
 	return raw.SkipInt64(bs)
 }
 
 // SkipInt32 skips a MUS-encoded (Raw) int32 value.
 //
-// Returns the number of skiped bytes and the mus.ErrTooSmallByteSlice.
+// In addition to the number of skipped bytes, it can also return
+// mus.ErrTooSmallByteSlice.
 func SkipInt32(bs []byte) (n int, err error) {
 	return raw.SkipInt32(bs)
 }
 
 // SkipInt16 skips a MUS-encoded (Raw) int16 value.
 //
-// Returns the number of skiped bytes and the mus.ErrTooSmallByteSlice.
+// In addition to the number of skipped bytes, it can also return
+// mus.ErrTooSmallByteSlice.
 func SkipInt16(bs []byte) (n int, err error) {
 	return raw.SkipInt16(bs)
 }
 
 // SkipInt8 skips a MUS-encoded (Raw) int8 value.
 //
-// Returns the number of skiped bytes and the mus.ErrTooSmallByteSlice.
+// In addition to the number of skipped bytes, it can also return
+// mus.ErrTooSmallByteSlice.
 func SkipInt8(bs []byte) (n int, err error) {
 	return raw.SkipInt8(bs)
 }
 
 // SkipInt skips a MUS-encoded (Raw) int value.
 //
-// Returns the number of skiped bytes and the mus.ErrTooSmallByteSlice.
+// In addition to the number of skipped bytes, it can also return
+// mus.ErrTooSmallByteSlice.
 func SkipInt(bs []byte) (n int, err error) {
 	return skipInt(bs)
 }

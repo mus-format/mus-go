@@ -22,8 +22,8 @@ func MarshalFloat32(v float32, bs []byte) (n int) {
 
 // UnmarshalFloat64 parses a MUS-encoded (Raw) float64 value from bs.
 //
-// In addition to the float64 value, returns the number of used bytes and the
-// mus.ErrTooSmallByteSlice error.
+// In addition to the float64 value and the number of used bytes, it can also
+// return mus.ErrTooSmallByteSlice.
 func UnmarshalFloat64(bs []byte) (v float64, n int, err error) {
 	uv, n, err := unmarshalInteger64[uint64](bs)
 	if err != nil {
@@ -34,8 +34,8 @@ func UnmarshalFloat64(bs []byte) (v float64, n int, err error) {
 
 // UnmarshalFloat32 parses a MUS-encoded (Raw) float32 value from bs.
 //
-// In addition to the float64 value, returns the number of used bytes and the
-// mus.ErrTooSmallByteSlice error.
+// In addition to the float32 value and the number of used bytes, it can also
+// return mus.ErrTooSmallByteSlice.
 func UnmarshalFloat32(bs []byte) (v float32, n int, err error) {
 	uv, n, err := unmarshalInteger32[uint32](bs)
 	if err != nil {
@@ -56,14 +56,16 @@ func SizeFloat32(v float32) (n int) {
 
 // SkipFloat64 skips a MUS-encoded (Raw) float64 value.
 //
-// Returns the number of skiped bytes and the mus.ErrTooSmallByteSlice error.
+// In addition to the number of skipped bytes, it can also return
+// mus.ErrTooSmallByteSlice.
 func SkipFloat64(bs []byte) (n int, err error) {
 	return skipInteger64(bs)
 }
 
 // SkipFloat32 skips a MUS-encoded (Raw) float32 value.
 //
-// Returns the number of skiped bytes and the mus.ErrTooSmallByteSlice error.
+// In addition to the number of skipped bytes, it can also return
+// mus.ErrTooSmallByteSlice.
 func SkipFloat32(bs []byte) (n int, err error) {
 	return skipInteger32(bs)
 }

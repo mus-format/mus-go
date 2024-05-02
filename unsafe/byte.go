@@ -13,8 +13,8 @@ func MarshalByte(v byte, bs []byte) (n int) {
 
 // UnmarshalByte parses a MUS-encoded (Raw) byte value from bs.
 //
-// In addition to the byte value, returns the number of used bytes and the
-// mus.ErrTooSmallByteSlice error.
+// In addition to the byte value and the number of used bytes, it can also
+// return mus.ErrTooSmallByteSlice.
 func UnmarshalByte(bs []byte) (v byte, n int, err error) {
 	return unmarshalInteger8[byte](bs)
 }
@@ -26,7 +26,8 @@ func SizeByte(v byte) (n int) {
 
 // SkipByte skips a MUS-encoded (Raw) byte value.
 //
-// Returns the number of skiped bytes and the mus.ErrTooSmallByteSlice error.
+// In addition to the number of skipped bytes, it can also return
+// mus.ErrTooSmallByteSlice.
 func SkipByte(bs []byte) (n int, err error) {
 	return raw.SkipByte(bs)
 }

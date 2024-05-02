@@ -24,8 +24,8 @@ func MarshalPtr[T any](v *T, m mus.Marshaller[T], bs []byte) (n int) {
 //
 // The u argument specifies the Unmarshaller for the base pointer type.
 //
-// In addition to the pointer, returns the number of used bytes and one of the
-// mus.ErrTooSmallByteSlice, com.ErrWrongFormat or Unarshaller errors.
+// In addition to the pointer value and the number of used bytes, it can also
+// return mus.ErrTooSmallByteSlice, com.ErrWrongFormat or Unarshaller error.
 func UnmarshalPtr[T any](u mus.Unmarshaller[T], bs []byte) (v *T, n int,
 	err error) {
 	if len(bs) < 1 {
@@ -62,8 +62,8 @@ func SizePtr[T any](v *T, s mus.Sizer[T]) (size int) {
 //
 // The sk argument specifies the Skipper for the pointer base type.
 //
-// Returns the number of skiped bytes and one of the mus.ErrTooSmallByteSlice,
-// com.ErrWrongFormat or Skipper errors.
+// In addition to the number of skipped bytes, it can also return
+// mus.ErrTooSmallByteSlice, com.ErrWrongFormat or Skipper error.
 func SkipPtr(sk mus.Skipper, bs []byte) (n int, err error) {
 	if len(bs) < 1 {
 		err = mus.ErrTooSmallByteSlice

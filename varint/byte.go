@@ -11,8 +11,8 @@ func MarshalByte(v byte, bs []byte) (n int) {
 
 // UnmarshalByte parses a MUS-encoded (Varint) byte value from bs.
 //
-// In addition to the byte value, returns the number of used bytes and one of
-// the mus.ErrTooSmallByteSlice or com.ErrOverflow errors.
+// In addition to the byte value and the number of used bytes, it can also
+// return mus.ErrTooSmallByteSlice or com.ErrOverflow.
 func UnmarshalByte(bs []byte) (v byte, n int, err error) {
 	return unmarshalUint[byte](com.Uint8MaxVarintLen, com.Uint8MaxLastByte,
 		bs)
@@ -25,8 +25,8 @@ func SizeByte(v byte) (size int) {
 
 // SkipByte skips a MUS-encoded (Varint) byte.
 //
-// Returns the number of skiped bytes and one of the mus.ErrTooSmallByteSlice or
-// com.ErrOverflow errors.
+// In addition to the number of skipped bytes, it can also return
+// mus.ErrTooSmallByteSlice or com.ErrOverflow.
 func SkipByte(bs []byte) (n int, err error) {
 	return skipUint(com.Uint8MaxVarintLen, com.Uint8MaxLastByte, bs)
 }

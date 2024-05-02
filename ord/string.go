@@ -21,9 +21,8 @@ func MarshalString(v string, bs []byte) (n int) {
 
 // UnmarshalString parses a MUS-encoded string value from bs.
 //
-// In addition to the string value, returns the number of used bytes and one of
-// the mus.ErrTooSmallByteSlice, com.ErrOverflow or com.ErrNegativeLength
-// errors.
+// In addition to the string value and the number of used bytes, it can also
+// return mus.ErrTooSmallByteSlice, com.ErrOverflow or com.ErrNegativeLength.
 func UnmarshalString(bs []byte) (v string, n int, err error) {
 	return UnmarshalValidString(nil, false, bs)
 }
@@ -34,9 +33,9 @@ func UnmarshalString(bs []byte) (v string, n int, err error) {
 // an error and skip == true UnmarshalValidString skips the remaining bytes of
 // the string.
 //
-// In addition to the string value, returns the number of used bytes and one of
-// the mus.ErrTooSmallByteSlice, com.ErrOverflow, com.ErrNegativeLength or
-// Validator errors.
+// In addition to the string value and the number of used bytes, it can also
+// return mus.ErrTooSmallByteSlice, com.ErrOverflow, com.ErrNegativeLength or
+// Validator error.
 func UnmarshalValidString(maxLength com.Validator[int], skip bool, bs []byte) (
 	v string, n int, err error) {
 	length, n, err := varint.UnmarshalInt(bs)
@@ -71,8 +70,8 @@ func SizeString(v string) (n int) {
 
 // SkipString skips a MUS-encoded string value.
 //
-// Returns the number of skiped bytes and one of the mus.ErrTooSmallByteSlice,
-// com.ErrOverflow or mus.ErrNegativeLength errors.
+// In addition to the number of skipped bytes, it can also return
+// mus.ErrTooSmallByteSlice, com.ErrOverflow or mus.ErrNegativeLength.
 func SkipString(bs []byte) (n int, err error) {
 	length, n, err := varint.UnmarshalInt(bs)
 	if err != nil {

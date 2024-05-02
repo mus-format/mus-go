@@ -29,9 +29,9 @@ func MarshalMap[T comparable, V any](v map[T]V, m1 mus.Marshaller[T],
 // Arguments u1, u2 specify Unmarshallers for the keys and map values,
 // respectively.
 //
-// In addition to the map value, returns the number of used bytes and one of the
-// mus.ErrTooSmallByteSlice, com.ErrOverflow, com.ErrNegativeLength or
-// Unmarshaller errors.
+// In addition to the map value and the number of used bytes, it can also
+// return mus.ErrTooSmallByteSlice, com.ErrOverflow, com.ErrNegativeLength or
+// Unmarshaller error.
 func UnmarshalMap[T comparable, V any](u1 mus.Unmarshaller[T],
 	u2 mus.Unmarshaller[V],
 	bs []byte,
@@ -48,9 +48,9 @@ func UnmarshalMap[T comparable, V any](u1 mus.Unmarshaller[T],
 // Skippers to skip the remaining bytes of the map. If one of the Skippers is
 // nil, it immediately returns a validation error.
 //
-// In addition to the map value, returns the number of used bytes and one of the
-// mus.ErrTooSmallByteSlice, com.ErrOverflow, com.ErrNegativeLength,
-// Unmarshaller, Validator or Skipper errors.
+// In addition to the map value and the number of used bytes, it can also
+// return mus.ErrTooSmallByteSlice, com.ErrOverflow, com.ErrNegativeLength,
+// Unmarshaller, Validator or Skipper error.
 func UnmarshalValidMap[T comparable, V any](maxLength com.Validator[int],
 	u1 mus.Unmarshaller[T],
 	u2 mus.Unmarshaller[V],
@@ -144,8 +144,8 @@ func SizeMap[T comparable, V any](v map[T]V, s1 mus.Sizer[T],
 // Arguments sk1, sk2 specify Skippers for the keys and map  values,
 // respectively.
 //
-// Returns the number of skiped bytes and one of the mus.ErrTooSmallByteSlice,
-// com.ErrOverflow, com.ErrNegativeLength or Skipper errors.
+// In addition to the number of skipped bytes, it can also return
+// mus.ErrTooSmallByteSlice, com.ErrNegativeLength or Skipper error.
 func SkipMap(sk1, sk2 mus.Skipper, bs []byte) (n int, err error) {
 	length, n, err := varint.UnmarshalInt(bs)
 	if err != nil {
