@@ -46,20 +46,20 @@ func UnmarshalValidString(maxLength com.Validator[int], skip bool, bs []byte) (
 		err = com.ErrNegativeLength
 		return
 	}
-	bs = bs[n:]
-	if len(bs) < length {
+	l := n + length
+	if len(bs) < l {
 		err = mus.ErrTooSmallByteSlice
 		return
 	}
 	if maxLength != nil {
 		if err = maxLength.Validate(length); err != nil {
 			if skip {
-				n += length
+				n = l
 			}
 			return
 		}
 	}
-	return string(bs[:length]), n + length, nil
+	return string(bs[n:l]), l, nil
 }
 
 // SizeString returns the size of a MUS-encoded string value.

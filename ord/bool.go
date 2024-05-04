@@ -25,14 +25,10 @@ func UnmarshalBool(bs []byte) (v bool, n int, err error) {
 	if len(bs) < 1 {
 		return false, 0, mus.ErrTooSmallByteSlice
 	}
-	switch bs[0] {
-	case 0:
-		return false, 1, nil
-	case 1:
-		return true, 1, nil
-	default:
+	if bs[0] > 1 {
 		return false, 0, com.ErrWrongFormat
 	}
+	return bs[0] == 1, 1, nil
 }
 
 // SizeBool returns the size of a MUS-encoded bool value.
