@@ -227,11 +227,11 @@ type TwoPtr struct {
 
 func main() {
   str := "the same pointer in two fields"
-	ptr := &str
-	twoPtr := TwoPtr{
-		ptr1: ptr,
-		ptr2: ptr,
-	}
+  ptr := &str
+  twoPtr := TwoPtr{
+    ptr1: ptr,
+    ptr2: ptr,
+  }
   // ...
 }
 ```
@@ -354,38 +354,38 @@ var (
 )
 
 func UnmarshalValidFoo(vl com.Validator[int], sk mus.Skipper, bs []byte) (
-	v Foo, n int, err error) {
-	v.a, n, err = varint.UnmarshalInt(bs)
-	if err != nil {
-		return
-	}
-	var n1 int
-	n1, err = validate(v.a, vl, sk, bs[n:])
-	n += n1
-	if err != nil {
-		return
-	}
-	v.b, n1, err = ord.UnmarshalBool(bs[n:])
-	n += n1
-	if err != nil {
-		return
-	}
-	v.c, n1, err = ord.UnmarshalString(bs[n:])
-	n += n1
-	return
+  v Foo, n int, err error) {
+  v.a, n, err = varint.UnmarshalInt(bs)
+  if err != nil {
+    return
+  }
+  var n1 int
+  n1, err = validate(v.a, vl, sk, bs[n:])
+  n += n1
+  if err != nil {
+    return
+  }
+  v.b, n1, err = ord.UnmarshalBool(bs[n:])
+  n += n1
+  if err != nil {
+    return
+  }
+  v.c, n1, err = ord.UnmarshalString(bs[n:])
+  n += n1
+  return
 }
 
 func validate(field int, vl com.Validator[int], sk mus.Skipper, bs []byte) (
-	n int, err error) {
-	var skErr error
-	err = vl.Validate(field)
-	if err != nil && sk != nil { // If Skipper != nil, applies it, otherwise
-		// returns a validation error immediately.
-		if n, skErr = sk.SkipMUS(bs); skErr != nil {
-			err = skErr
-		}
-	}
-	return
+  n int, err error) {
+  var skErr error
+  err = vl.Validate(field)
+  if err != nil && sk != nil { // If Skipper != nil, applies it, otherwise
+    // returns a validation error immediately.
+    if n, skErr = sk.SkipMUS(bs); skErr != nil {
+      err = skErr
+    }
+  }
+  return
 }
 ```
 
