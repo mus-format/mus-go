@@ -216,10 +216,29 @@ Supports the following data types: `bool`, `string`, `byte`, and all `uint`,
 `int`, `float`.
 
 ## pm (pointer mapping) package
+Let's consider the following struct:
+```go
+package main
+
+type TwoPtr struct {
+  ptr1 *string
+  ptr2 *string
+}
+
+func main() {
+  str := "the same pointer in two fields"
+	ptr := &str
+	twoPtr := TwoPtr{
+		ptr1: ptr,
+		ptr2: ptr,
+	}
+  // ...
+}
+```
+If we use the `ord` package to serialize this structure, then after unmarshal `twoPtr.ptr1 != twoPtr.ptr2`. But with `pm` package, these fields will be equal.
 Unlike the `ord` package, `pm` encodes pointers with the Mapping pointer flag,
-which is described in the 
-[MUS format specification](https://github.com/mus-format/specification#format-features).
-Thanks to this package, we can encode data structures such as graphs or 
+described in the [MUS format specification](https://github.com/mus-format/specification#format-features).
+Also with its help, we can encode data structures such as graphs or 
 linked lists (corresponding examples can be found at 
 [mus-examples-go](https://github.com/mus-format/mus-examples-go/tree/main/pm)).
 
@@ -314,14 +333,14 @@ import (
 // Continuation of the previous section.
 var (
   ErrTooBigA                         = errors.New("too bid a")
-  avl        com.ValidatorFn[int] = func(a int) (err error) {
+  vl        com.ValidatorFn[int] = func(a int) (err error) {
     // Checks if the Foo.a field is correct.
     if a > 10 {
       err = ErrTooBigA
     }
     return
   }
-  ask mus.SkipperFn = func(bs []byte) (n int, err error) { // Skipper for the
+  sk mus.SkipperFn = func(bs []byte) (n int, err error) { // Skipper for the
     // Foo.a field, skips all subsequent Foo fields.
     n, err = ord.SkipBool(bs)
     if err != nil {
@@ -334,38 +353,39 @@ var (
   }
 )
 
-func UnmarshalValidFoo(avl com.Validator[int], ask mus.Skipper, bs []byte) (
-  v Foo, n int, err error) {
-  v.a, n, err = varint.UnmarshalInt(bs)
-  if err != nil {
-    return
-  }
-  var (
-    n1   int
-    err1 error
-  )
-  if avl != nil {
-    err = avl.Validate(v.a)
-    if err != nil {
-      if ask != nil { // If Skipper != nil, applies it, otherwise returns a
-        // validation error immediately.
-        n1, err1 = ask.SkipMUS(bs[n:])
-        n += n1
-        if err1 != nil {
-          err = err1
-        }
-      }
-      return
-    }
-  }
-  v.b, n1, err = ord.UnmarshalBool(bs[n:])
-  n += n1
-  if err != nil {
-    return
-  }
-  v.c, n1, err = ord.UnmarshalString(bs[n:])
-  n += n1
-  return
+func UnmarshalValidFoo(vl com.Validator[int], sk mus.Skipper, bs []byte) (
+	v Foo, n int, err error) {
+	v.a, n, err = varint.UnmarshalInt(bs)
+	if err != nil {
+		return
+	}
+	var n1 int
+	n1, err = validate(v.a, vl, sk, bs[n:])
+	n += n1
+	if err != nil {
+		return
+	}
+	v.b, n1, err = ord.UnmarshalBool(bs[n:])
+	n += n1
+	if err != nil {
+		return
+	}
+	v.c, n1, err = ord.UnmarshalString(bs[n:])
+	n += n1
+	return
+}
+
+func validate(field int, vl com.Validator[int], sk mus.Skipper, bs []byte) (
+	n int, err error) {
+	var skErr error
+	err = vl.Validate(field)
+	if err != nil && sk != nil { // If Skipper != nil, applies it, otherwise
+		// returns a validation error immediately.
+		if n, skErr = sk.SkipMUS(bs); skErr != nil {
+			err = skErr
+		}
+	}
+	return
 }
 ```
 
