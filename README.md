@@ -3,12 +3,12 @@ mus-go is a [MUS format](https://ymz-ncnk.medium.com/mus-serialization-format-21
 
 ## Brief Description
 - It has a [streaming version](https://github.com/mus-format/mus-stream-go).
-- Can run on both 32 and 64-bit systems.
+- It can run on both 32 and 64-bit systems.
 - The length of variable-length data types (`string`, `slice`, `map`) is encoded
   using `int64` (varint).
 - Supports data versioning.
-- Returns an error (one of the following: `ErrOverflow`, `ErrNegativeLength`,
-  `ErrTooSmallByteSlice`, `ErrWrongFormat`) when unmarshalling incorrect data.
+- If invalid data is encountered during deserialization, it returns one
+  of the following errors: `ErrOverflow`, `ErrNegativeLength`, `ErrTooSmallByteSlice`, `ErrWrongFormat`.
 - Can validate and skip data while unmarshalling.
 - Supports pointers.
 - Can encode data structures such as graphs or linked lists.
