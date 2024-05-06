@@ -15,11 +15,10 @@ import (
 func MarshalString(v string, bs []byte) (n int) {
 	length := len(v)
 	n = varint.MarshalInt(length, bs)
-	bs = bs[n:]
-	if len(bs) < length {
+	if len(bs) < n+length {
 		panic(mus.ErrTooSmallByteSlice)
 	}
-	return n + copy(bs, unsafe_mod.Slice(unsafe_mod.StringData(v), length))
+	return n + copy(bs[n:], unsafe_mod.Slice(unsafe_mod.StringData(v), length))
 }
 
 // UnmarshalString parses a MUS-encoded string value from bs.
