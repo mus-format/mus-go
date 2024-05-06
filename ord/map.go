@@ -41,7 +41,7 @@ func UnmarshalMap[T comparable, V any](u1 mus.Unmarshaller[T],
 
 // UnmarshalValidMap parses a MUS-encoded valid map value from bs.
 //
-// The maxLength argument specifies the map length Validator, arguments
+// The lenVl argument specifies the map length Validator, arguments
 // u1, u2, vl1, vl2, sk1, sk2 - Unmarshallers, Validators and Skippers for the
 // keys and map values, respectively.
 // If one of the Validators returns an error, UnmarshalValidMap uses the
@@ -51,7 +51,7 @@ func UnmarshalMap[T comparable, V any](u1 mus.Unmarshaller[T],
 // In addition to the map value and the number of used bytes, it can also
 // return mus.ErrTooSmallByteSlice, com.ErrOverflow, com.ErrNegativeLength,
 // Unmarshaller, Validator or Skipper error.
-func UnmarshalValidMap[T comparable, V any](maxLength com.Validator[int],
+func UnmarshalValidMap[T comparable, V any](lenVl com.Validator[int],
 	u1 mus.Unmarshaller[T],
 	u2 mus.Unmarshaller[V],
 	vl1 com.Validator[T],
@@ -74,8 +74,8 @@ func UnmarshalValidMap[T comparable, V any](maxLength com.Validator[int],
 		k    T
 		p    V
 	)
-	if maxLength != nil {
-		if err = maxLength.Validate(length); err != nil {
+	if lenVl != nil {
+		if err = lenVl.Validate(length); err != nil {
 			goto SkipRemainingBytes
 		}
 	}

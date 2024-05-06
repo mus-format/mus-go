@@ -234,12 +234,12 @@ func TestUnsafe(t *testing.T) {
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
-		t.Run("If skip == true and MaxLength validator returns an error, UnmarshalValidString should return it",
+		t.Run("If skip == true and lenVl validator returns an error, UnmarshalValidString should return it",
 			func(t *testing.T) {
 				var (
 					wantV     = ""
 					wantN     = 4
-					wantErr   = errors.New("MaxLength validator error")
+					wantErr   = errors.New("lenVl validator error")
 					maxLength = com_mock.NewValidator[int]().RegisterValidate(
 						func(v int) (err error) {
 							var wantV = 3
@@ -255,12 +255,12 @@ func TestUnsafe(t *testing.T) {
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
-		t.Run("If skip == false and MaxLength validator returns an error, UnmarshalValidString should return it",
+		t.Run("If skip == false and lenVl validator returns an error, UnmarshalValidString should return it",
 			func(t *testing.T) {
 				var (
 					wantV     = ""
 					wantN     = 1
-					wantErr   = errors.New("MaxLength validator error")
+					wantErr   = errors.New("lenVl validator error")
 					maxLength = com_mock.NewValidator[int]().RegisterValidate(
 						func(v int) (err error) {
 							var wantV = 3
@@ -275,6 +275,20 @@ func TestUnsafe(t *testing.T) {
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
+
+		t.Run("If string length == 0 lenVl should work", func(t *testing.T) {
+			var (
+				wantV                        = ""
+				wantN                        = 1
+				wantErr                      = errors.New("empty string")
+				bs                           = []byte{0}
+				lenVl   com.ValidatorFn[int] = func(t int) (err error) {
+					return wantErr
+				}
+				v, n, err = UnmarshalValidString(lenVl, false, bs)
+			)
+			com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+		})
 
 	})
 
