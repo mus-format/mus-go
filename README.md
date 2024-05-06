@@ -1,10 +1,25 @@
 # MUS Format Serializer
-mus-go is a [MUS format](https://ymz-ncnk.medium.com/mus-serialization-format-21d7be309e8d) extremely fast serializer with validation support for Golang. 
-It supports out-of-order deserialization, zero allocation deserialization, can 
-encode data structures such as graphs or linked lists, and also has a [streaming version](https://github.com/mus-format/mus-stream-go).
+mus-go is a [MUS format](https://ymz-ncnk.medium.com/mus-serialization-format-21d7be309e8d) extremely fast serializer with validation support for Golang.
+
+## Brief Description
+- Has a [streaming version](https://github.com/mus-format/mus-stream-go).
+- Can run on both 32 and 64-bit systems.
+- The length of variable-length data types (`string`, `slice`, `map`) is encoded
+  using `int64` (varint).
+- Supports data versioning.
+- Returns an error (one of the following: `ErrOverflow`, `ErrNegativeLength`,
+  `ErrTooSmallByteSlice`, `ErrWrongFormat`) when unmarshalling incorrect data.
+- Can validate and skip data while unmarshalling.
+- Supports pointers.
+- Can encode data structures such as graphs or linked lists.
+- Supports private fields.
+- Supports oneof feature.
+- Supports out-of-order deserialization.
+- Supports zero allocation deserialization.
 
 # Contents
 - [MUS Format Serializer](#mus-format-serializer)
+  - [Brief Description](#brief-description)
 - [Contents](#contents)
 - [cmd-stream-go library](#cmd-stream-go-library)
 - [Tests](#tests)
