@@ -5,7 +5,7 @@ mus-go is a [MUS format](https://ymz-ncnk.medium.com/mus-serialization-format-21
 - It has a [streaming version](https://github.com/mus-format/mus-stream-go).
 - It can run on both 32 and 64-bit systems.
 - The length of variable-length data types (`string`, `slice`, `map`) is encoded
-  using `int64` (varint).
+  using `int64` (Varint).
 - Supports data versioning.
 - If invalid data is encountered during deserialization, it returns one
   of the following errors: `ErrOverflow`, `ErrNegativeLength`, `ErrTooSmallByteSlice`, `ErrWrongFormat`.
