@@ -2,10 +2,13 @@
 mus-go is a [MUS format](https://ymz-ncnk.medium.com/mus-serialization-format-21d7be309e8d) extremely fast serializer with validation support for Golang.
 
 ## Brief Description
-- It has a [streaming version](https://github.com/mus-format/mus-stream-go).
-- It can run on both 32 and 64-bit systems.
-- The length of variable-length data types (`string`, `slice`, `map`) is encoded
-  using `int64` (Varint).
+Fast and well tested mus-go:
+- Has a [streaming version](https://github.com/mus-format/mus-stream-go).
+- Can run on both 32 and 64-bit systems.
+- The maximum length of a `string`, `slice`, or `map` supported by mus-go is
+  limited by the maximum value of the `int` type on your system. The length of
+  these types is encoded using Varint (so if, for examplle, on a 32-bit system 
+  we will try to unmarshal too long string, we will get `ErrOverflow`).
 - Supports data versioning.
 - If invalid data is encountered during deserialization, it returns one
   of the following errors: `ErrOverflow`, `ErrNegativeLength`, `ErrTooSmallByteSlice`, `ErrWrongFormat`.
