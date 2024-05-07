@@ -8,7 +8,7 @@ Fast and well tested mus-go:
 - The maximum length of a `string`, `slice`, or `map` supported by mus-go is
   limited by the maximum value of the `int` type on your system. The length of
   these types is encoded using Varint (so if, for examplle, on a 32-bit system 
-  we will try to unmarshal too long string, we will get `ErrOverflow`).
+  we try to unmarshal too long string, we will get `ErrOverflow`).
 - Supports data versioning.
 - If invalid data is encountered during deserialization, it returns one
   of the following errors: `ErrOverflow`, `ErrNegativeLength`, `ErrTooSmallByteSlice`, `ErrWrongFormat`.
