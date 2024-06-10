@@ -352,7 +352,7 @@ import (
 
 // Continuation of the previous section.
 var (
-  ErrTooBigA                         = errors.New("too bid a")
+  ErrTooBigA                         = errors.New("too big a")
   vl        com.ValidatorFn[int] = func(a int) (err error) {
     // Checks if the Foo.a field is correct.
     if a > 10 {
