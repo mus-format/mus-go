@@ -36,7 +36,7 @@ Fast and well tested mus-go:
     - [Valid Slice](#valid-slice)
     - [Map](#map)
   - [unsafe Package](#unsafe-package)
-  - [pm (pointer mapping) package](#pm-pointer-mapping-package)
+  - [pm (pointer mapping) Package](#pm-pointer-mapping-package)
 - [Structs Support](#structs-support)
   - [Valid Struct](#valid-struct)
 - [Arrays Support](#arrays-support)
@@ -228,12 +228,14 @@ unsafe type conversion.
 To a large extent, this warning applies to the `string` type - if we change a 
 byte slice, the string obtained from it will also change. In this case, we must 
 first process the result, i.e. the string, and only then reuse the byte slice. 
-For other types, there is no such behavior.
+For other types, there is no such behavior. Please visit this 
+[example](https://github.com/mus-format/mus-examples-go/blob/main/unasafe/main.go), 
+it tries to make things more clear.
 
 Supports the following data types: `bool`, `string`, `byte`, and all `uint`, 
 `int`, `float`.
 
-## pm (pointer mapping) package
+## pm (pointer mapping) Package
 Let's consider the following struct:
 ```go
 package main
