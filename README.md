@@ -469,9 +469,9 @@ func UnmarshalInstructionMUS(bs []byte) (instr Instruction, n int, err error) {
   }
   switch dtm {
   case CopyDTM:
-    return CopyDTS.UnmarshalDataMUS(bs[n:])
+    return CopyDTS.UnmarshalData(bs[n:])
   case InsertDTM:
-    return InsertDTS.UnmarshalDataMUS(bs[n:])
+    return InsertDTS.UnmarshalData(bs[n:])
   default:
     err = ErrUnexpectedDTM
     return
