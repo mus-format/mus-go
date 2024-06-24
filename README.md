@@ -463,7 +463,7 @@ func MarshalInstructionMUS(instr Instruction, bs []byte) (n int) {
 }
 
 func UnmarshalInstructionMUS(bs []byte) (instr Instruction, n int, err error) {
-  dtm, n, err := dts.UnmarshalDTMUS(bs)
+  dtm, n, err := dts.UnmarshalDTS(bs)
   if err != nil {
     return
   }
