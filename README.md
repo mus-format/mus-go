@@ -55,7 +55,9 @@ format.
 Test coverage is 100%.
 
 # Benchmarks
-[github.com/alecthomas/go_serialization_benchmarks](https://github.com/alecthomas/go_serialization_benchmarks)
+- [github.com/alecthomas/go_serialization_benchmarks](https://github.com/alecthomas/go_serialization_benchmarks)
+- [github.com/ymz-ncnk/go-serialization-benchmarks](https://github.com/ymz-ncnk/go-serialization-benchmarks) - contains the results of running the serializers 
+  in different modes.
 
 # How To Use
 Don't forget to visit [mus-examples-go](https://github.com/mus-format/mus-examples-go).
