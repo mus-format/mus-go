@@ -15,22 +15,22 @@ func TestIntegrationOrd(t *testing.T) {
 		var (
 			m = func() mus.MarshallerFn[*string] {
 				return func(t *string, bs []byte) (n int) {
-					return MarshalPtr[string](t, mus.MarshallerFn[string](MarshalString), bs)
+					return MarshalPtr[string](t, mus.MarshallerFn[string](MarshalStringVarint), bs)
 				}
 			}()
 			u = func() mus.UnmarshallerFn[*string] {
 				return func(bs []byte) (t *string, n int, err error) {
-					return UnmarshalPtr[string](mus.UnmarshallerFn[string](UnmarshalString), bs)
+					return UnmarshalPtr[string](mus.UnmarshallerFn[string](UnmarshalStringVarint), bs)
 				}
 			}()
 			s = func() mus.SizerFn[*string] {
 				return func(t *string) (size int) {
-					return SizePtr[string](t, mus.SizerFn[string](SizeString))
+					return SizePtr[string](t, mus.SizerFn[string](SizeStringVarint))
 				}
 			}()
 			sk = func() mus.SkipperFn {
 				return func(bs []byte) (n int, err error) {
-					return SkipPtr(mus.SkipperFn(SkipString), bs)
+					return SkipPtr(mus.SkipperFn(SkipStringVarint), bs)
 				}
 			}()
 		)
@@ -42,22 +42,24 @@ func TestIntegrationOrd(t *testing.T) {
 		var (
 			m = func() mus.MarshallerFn[[]int] {
 				return func(t []int, bs []byte) (n int) {
-					return MarshalSlice[int](t, mus.MarshallerFn[int](varint.MarshalInt), bs)
+					return MarshalSliceVarint[int](t,
+						mus.MarshallerFn[int](varint.MarshalInt), bs)
 				}
 			}()
 			u = func() mus.UnmarshallerFn[[]int] {
 				return func(bs []byte) (t []int, n int, err error) {
-					return UnmarshalSlice[int](mus.UnmarshallerFn[int](varint.UnmarshalInt), bs)
+					return UnmarshalSliceVarint[int](
+						mus.UnmarshallerFn[int](varint.UnmarshalInt), bs)
 				}
 			}()
 			s = func() mus.SizerFn[[]int] {
 				return func(t []int) (size int) {
-					return SizeSlice[int](t, mus.SizerFn[int](varint.SizeInt))
+					return SizeSliceVarint[int](t, mus.SizerFn[int](varint.SizeInt))
 				}
 			}()
 			sk = func() mus.SkipperFn {
 				return func(bs []byte) (n int, err error) {
-					return SkipSlice(mus.SkipperFn(varint.SkipInt), bs)
+					return SkipSliceVarint(mus.SkipperFn(varint.SkipInt), bs)
 				}
 			}()
 		)
@@ -69,7 +71,7 @@ func TestIntegrationOrd(t *testing.T) {
 		var (
 			m = func() mus.MarshallerFn[map[float32]uint8] {
 				return func(t map[float32]uint8, bs []byte) int {
-					return MarshalMap[float32, uint8](t,
+					return MarshalMapVarint[float32, uint8](t,
 						mus.MarshallerFn[float32](varint.MarshalFloat32),
 						mus.MarshallerFn[uint8](varint.MarshalUint8),
 						bs)
@@ -77,7 +79,7 @@ func TestIntegrationOrd(t *testing.T) {
 			}()
 			u = func() mus.UnmarshallerFn[map[float32]uint8] {
 				return func(bs []byte) (t map[float32]uint8, n int, err error) {
-					return UnmarshalMap[float32, uint8](
+					return UnmarshalMapVarint[float32, uint8](
 						mus.UnmarshallerFn[float32](varint.UnmarshalFloat32),
 						mus.UnmarshallerFn[uint8](varint.UnmarshalUint8),
 						bs)
@@ -85,14 +87,14 @@ func TestIntegrationOrd(t *testing.T) {
 			}()
 			s = func() mus.SizerFn[map[float32]uint8] {
 				return func(t map[float32]uint8) (size int) {
-					return SizeMap[float32, uint8](t,
+					return SizeMapVarint[float32, uint8](t,
 						mus.SizerFn[float32](varint.SizeFloat32),
 						mus.SizerFn[uint8](varint.SizeUint8))
 				}
 			}()
 			sk = func() mus.SkipperFn {
 				return func(bs []byte) (n int, err error) {
-					return SkipMap(mus.SkipperFn(varint.SkipFloat32),
+					return SkipMapVarint(mus.SkipperFn(varint.SkipFloat32),
 						mus.SkipperFn(varint.SkipUint8),
 						bs)
 				}

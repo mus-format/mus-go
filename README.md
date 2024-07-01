@@ -1,14 +1,20 @@
 # MUS Format Serializer
-mus-go is a [MUS format](https://ymz-ncnk.medium.com/mus-serialization-format-21d7be309e8d) extremely fast serializer with validation support for Golang.
+mus-go is a [MUS format](https://ymz-ncnk.medium.com/mus-serialization-format-21d7be309e8d) extremely fast serializer with validation support for Golang. Thanks to its minimalist 
+design and a wide range of serialization primitives, it can be used to 
+implement other binary serialization formats (
+[here](https://github.com/mus-format/mus-examples-go/blob/main/protobuf/main.go) 
+is an example where mus-go is used to implement Protobuf encoding).
 
-## Brief Description
-Fast and well tested mus-go:
+## Brief mus-go Description
 - Has a [streaming version](https://github.com/mus-format/mus-stream-go).
 - Can run on both 32 and 64-bit systems.
-- The maximum length of a `string`, `slice`, or `map` supported by mus-go is
-  limited by the maximum value of the `int` type on your system. 
-- The length of variable-length data types is encoded using Varint (so if, for
-  examplle, on a 32-bit system we try to unmarshal too long string, we will get `ErrOverflow`).
+- Variable-length data types (like `string`, `slice`, or `map`) are encoded as: 
+  `length + data`. You can choose binary representation for both of these parts. 
+  By default, the length is encoded using Varint (actually, positive Varint). 
+  In this case the maximum length is limited by the maximum value of the `int` 
+  type on your system. This is ok for use on different architectures, 
+  because, if, for example, we try to unmarshal too long string on a 32-bit 
+  system, we will get `ErrOverflow`.
 - Supports data versioning.
 - If invalid data is encountered during deserialization, it returns one
   of the following errors: `ErrOverflow`, `ErrNegativeLength`, `ErrTooSmallByteSlice`, `ErrWrongFormat`.
@@ -22,7 +28,7 @@ Fast and well tested mus-go:
 
 # Contents
 - [MUS Format Serializer](#mus-format-serializer)
-  - [Brief Description](#brief-description)
+  - [Brief mus-go Description](#brief-mus-go-description)
 - [Contents](#contents)
 - [cmd-stream-go library](#cmd-stream-go-library)
 - [Tests](#tests)
@@ -139,10 +145,15 @@ func main() {
     }
   )
   // ...
-  str, n, err := ord.UnmarshalValidString(maxLength, bs)
-  // If the encoded string str does not meet the requirements of the validator,
-  // then all bytes belonging to it will be skipped, that is, n will be equal to
-  // SizeString(str).
+  // UnmarshalValidString accepts:
+  // - length unmarshaller (if nil the default value is used)
+  // - length validator
+  // - skip flag
+  // - bs
+  str, n, err := ord.UnmarshalValidString(nil, maxLength, true, bs)
+  // If skip flag == true and the encoded string str does not meet the 
+  // requirements of the validator, then all bytes belonging to this string will
+  // be skipped, that is, n will be equal to SizeString(str).
   // ...
 }
 ```
@@ -169,8 +180,17 @@ func main() {
     size = ord.SizeSlice[int](sl, s)
     bs   = make([]byte, size)
   )
-  n := ord.MarshalSlice[int](sl, m, bs)
-  sl, n, err := ord.UnmarshalSlice[int](u, bs)
+  // MarshalSlice accepts:
+  // - slice
+  // - slice length marshaller (if nil the default value is used)
+  // - slice element marshaller
+  // - bs
+  n := ord.MarshalSlice[int](sl, nil, m, bs)
+  // UnmarshalSlice accepts:
+  // - slice length unmarshaller (if nil the default value is used)
+  // - slice element unmarshaller
+  // - bs
+  sl, n, err := ord.UnmarshalSlice[int](nil, u, bs)
   // ...
 }
 ```
@@ -215,7 +235,15 @@ func main() {
     }
   )
   // ...
-  sl, n, err := ord.UnmarshalValidSlice[int](maxLength, u, vl, sk, bs)
+  // UnmarshalValidSlice accepts:
+  // - slice length unmarshaller (if nil the default value is used)
+  // - slice length validator
+  // - slice element unmarshaller
+  // - slice element validator
+  // - slice element skipper (if != nil and one of the validators returns an 
+  //   error, it will be used to skip the rest of the slice)
+  // - bs
+  sl, n, err := ord.UnmarshalValidSlice[int](nil, maxLength, u, vl, sk, bs)
   // ...
 }
 ```
@@ -286,7 +314,7 @@ type Foo struct {
 func MarshalFoo(v Foo, bs []byte) (n int) {
   n = varint.MarshalInt(v.a, bs)
   n += ord.MarshalBool(v.b, bs[n:])
-  return n + ord.MarshalString(v.c, bs[n:])
+  return n + ord.MarshalString(v.c, nil, bs[n:])
 }
 
 // UnmarshalFoo implements the mus.Unmarshaller interface.
@@ -301,7 +329,7 @@ func UnmarshalFoo(bs []byte) (v Foo, n int, err error) {
   if err != nil {
     return
   }
-  v.c, n1, err = ord.UnmarshalString(bs[n:])
+  v.c, n1, err = ord.UnmarshalString(nil, bs[n:])
   n += n1
   return
 }
@@ -310,7 +338,7 @@ func UnmarshalFoo(bs []byte) (v Foo, n int, err error) {
 func SizeFoo(v Foo) (size int) {
   size += varint.SizeInt(v.a)
   size += ord.SizeBool(v.b)
-  return size + ord.SizeString(v.c)
+  return size + ord.SizeString(v.c, nil)
 }
 
 // SkipFoo implements the mus.Skipper interface.
@@ -325,7 +353,7 @@ func SkipFoo(bs []byte) (n int, err error) {
   if err != nil {
     return
   }
-  n1, err = ord.SkipString(bs[n:])
+  n1, err = ord.SkipString(nil, bs[n:])
   n += n1
   return
 }
@@ -369,7 +397,7 @@ var (
       return
     }
     var n1 int
-    n1, err = ord.SkipString(bs[n:])
+    n1, err = ord.SkipString(nil, bs[n:])
     n += n1
     return
   }
@@ -392,7 +420,7 @@ func UnmarshalValidFoo(vl com.Validator[int], sk mus.Skipper, bs []byte) (
   if err != nil {
     return
   }
-  v.c, n1, err = ord.UnmarshalString(bs[n:])
+  v.c, n1, err = ord.UnmarshalString(nil, bs[n:])
   n += n1
   return
 }

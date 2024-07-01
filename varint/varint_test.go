@@ -159,55 +159,63 @@ func TestVarint(t *testing.T) {
 
 	t.Run("signed", func(t *testing.T) {
 
-		t.Run("All MarshalInt64, UnmarshalInt64, SizeInt64, SkipInt64 functions must work correctly",
-			func(t *testing.T) {
-				var (
-					m  = mus.MarshallerFn[int64](MarshalInt64)
-					u  = mus.UnmarshallerFn[int64](UnmarshalInt64)
-					s  = mus.SizerFn[int64](SizeInt64)
-					sk = mus.SkipperFn(SkipInt64)
-				)
-				testdata.Test[int64](com_testdata.Int64TestCases, m, u, s, t)
-				testdata.TestSkip[int64](com_testdata.Int64TestCases, m, sk, s, t)
-			})
+		t.Run("int64", func(t *testing.T) {
 
-		t.Run("UnmarshalInt64 should return ErrTooSmallByteSlice if there is no space in bs",
-			func(t *testing.T) {
-				var (
-					wantV     int64 = 0
-					wantN           = 0
-					wantErr         = mus.ErrTooSmallByteSlice
-					bs              = []byte{}
-					v, n, err       = UnmarshalInt64(bs)
-				)
-				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
-			})
+			t.Run("All MarshalInt64, UnmarshalInt64, SizeInt64, SkipInt64 functions must work correctly",
+				func(t *testing.T) {
+					var (
+						m  = mus.MarshallerFn[int64](MarshalInt64)
+						u  = mus.UnmarshallerFn[int64](UnmarshalInt64)
+						s  = mus.SizerFn[int64](SizeInt64)
+						sk = mus.SkipperFn(SkipInt64)
+					)
+					testdata.Test[int64](com_testdata.Int64TestCases, m, u, s, t)
+					testdata.TestSkip[int64](com_testdata.Int64TestCases, m, sk, s, t)
+				})
 
-		t.Run("All MarshalInt32, UnmarshalInt32, SizeInt32, SkipInt32 functions must work correctly",
-			func(t *testing.T) {
-				var (
-					m  = mus.MarshallerFn[int32](MarshalInt32)
-					u  = mus.UnmarshallerFn[int32](UnmarshalInt32)
-					s  = mus.SizerFn[int32](SizeInt32)
-					sk = mus.SkipperFn(SkipInt32)
-				)
-				testdata.Test[int32](com_testdata.Int32TestCases, m, u, s, t)
-				testdata.TestSkip[int32](com_testdata.Int32TestCases, m, sk, s, t)
-			})
+			t.Run("UnmarshalInt64 should return ErrTooSmallByteSlice if there is no space in bs",
+				func(t *testing.T) {
+					var (
+						wantV     int64 = 0
+						wantN           = 0
+						wantErr         = mus.ErrTooSmallByteSlice
+						bs              = []byte{}
+						v, n, err       = UnmarshalInt64(bs)
+					)
+					com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+				})
 
-		t.Run("UnmarshalInt32 should return ErrTooSmallByteSlice if there is no space in bs",
-			func(t *testing.T) {
-				var (
-					wantV     int32 = 0
-					wantN           = 0
-					wantErr         = mus.ErrTooSmallByteSlice
-					bs              = []byte{}
-					v, n, err       = UnmarshalInt32(bs)
-				)
-				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
-			})
+		})
 
-		t.Run("Int16", func(t *testing.T) {
+		t.Run("int32", func(t *testing.T) {
+
+			t.Run("All MarshalInt32, UnmarshalInt32, SizeInt32, SkipInt32 functions must work correctly",
+				func(t *testing.T) {
+					var (
+						m  = mus.MarshallerFn[int32](MarshalInt32)
+						u  = mus.UnmarshallerFn[int32](UnmarshalInt32)
+						s  = mus.SizerFn[int32](SizeInt32)
+						sk = mus.SkipperFn(SkipInt32)
+					)
+					testdata.Test[int32](com_testdata.Int32TestCases, m, u, s, t)
+					testdata.TestSkip[int32](com_testdata.Int32TestCases, m, sk, s, t)
+				})
+
+			t.Run("UnmarshalInt32 should return ErrTooSmallByteSlice if there is no space in bs",
+				func(t *testing.T) {
+					var (
+						wantV     int32 = 0
+						wantN           = 0
+						wantErr         = mus.ErrTooSmallByteSlice
+						bs              = []byte{}
+						v, n, err       = UnmarshalInt32(bs)
+					)
+					com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+				})
+
+		})
+
+		t.Run("int16", func(t *testing.T) {
 
 			t.Run("All MarshalInt16, UnmarshalInt16, SizeInt16, SkipInt16 functions must work correctly",
 				func(t *testing.T) {
@@ -235,67 +243,215 @@ func TestVarint(t *testing.T) {
 
 		})
 
-		t.Run("All MarshalInt8, UnmarshalInt8, SizeInt8, SkipInt8 functions must work correctly",
-			func(t *testing.T) {
-				var (
-					m  = mus.MarshallerFn[int8](MarshalInt8)
-					u  = mus.UnmarshallerFn[int8](UnmarshalInt8)
-					s  = mus.SizerFn[int8](SizeInt8)
-					sk = mus.SkipperFn(SkipInt8)
-				)
-				testdata.Test[int8](com_testdata.Int8TestCases, m, u, s, t)
-				testdata.TestSkip[int8](com_testdata.Int8TestCases, m, sk, s, t)
-			})
+		t.Run("int8", func(t *testing.T) {
 
-		t.Run("UnmarshalInt8 should return ErrTooSmallByteSlice if there is no space in bs",
-			func(t *testing.T) {
-				var (
-					wantV     int8 = 0
-					wantN          = 0
-					wantErr        = mus.ErrTooSmallByteSlice
-					bs             = []byte{}
-					v, n, err      = UnmarshalInt8(bs)
-				)
-				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
-			})
+			t.Run("All MarshalInt8, UnmarshalInt8, SizeInt8, SkipInt8 functions must work correctly",
+				func(t *testing.T) {
+					var (
+						m  = mus.MarshallerFn[int8](MarshalInt8)
+						u  = mus.UnmarshallerFn[int8](UnmarshalInt8)
+						s  = mus.SizerFn[int8](SizeInt8)
+						sk = mus.SkipperFn(SkipInt8)
+					)
+					testdata.Test[int8](com_testdata.Int8TestCases, m, u, s, t)
+					testdata.TestSkip[int8](com_testdata.Int8TestCases, m, sk, s, t)
+				})
 
-		t.Run("All MarshalInt, UnmarshalInt, SizeInt, SkipInt functions must work correctly",
-			func(t *testing.T) {
-				var (
-					m  = mus.MarshallerFn[int](MarshalInt)
-					u  = mus.UnmarshallerFn[int](UnmarshalInt)
-					s  = mus.SizerFn[int](SizeInt)
-					sk = mus.SkipperFn(SkipInt)
-				)
-				testdata.Test[int](com_testdata.IntTestCases, m, u, s, t)
-				testdata.TestSkip[int](com_testdata.IntTestCases, m, sk, s, t)
-			})
+			t.Run("UnmarshalInt8 should return ErrTooSmallByteSlice if there is no space in bs",
+				func(t *testing.T) {
+					var (
+						wantV     int8 = 0
+						wantN          = 0
+						wantErr        = mus.ErrTooSmallByteSlice
+						bs             = []byte{}
+						v, n, err      = UnmarshalInt8(bs)
+					)
+					com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+				})
 
-		t.Run("UnmarshalInt should return ErrTooSmallByteSlice if there is no space in bs",
+		})
+
+		t.Run("int", func(t *testing.T) {
+
+			t.Run("All MarshalInt, UnmarshalInt, SizeInt, SkipInt functions must work correctly",
+				func(t *testing.T) {
+					var (
+						m  = mus.MarshallerFn[int](MarshalInt)
+						u  = mus.UnmarshallerFn[int](UnmarshalInt)
+						s  = mus.SizerFn[int](SizeInt)
+						sk = mus.SkipperFn(SkipInt)
+					)
+					testdata.Test[int](com_testdata.IntTestCases, m, u, s, t)
+					testdata.TestSkip[int](com_testdata.IntTestCases, m, sk, s, t)
+				})
+
+			t.Run("UnmarshalInt should return ErrTooSmallByteSlice if there is no space in bs",
+				func(t *testing.T) {
+					var (
+						wantV     int = 0
+						wantN         = 0
+						wantErr       = mus.ErrTooSmallByteSlice
+						bs            = []byte{}
+						v, n, err     = UnmarshalInt(bs)
+					)
+					com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+				})
+
+		})
+
+		t.Run("Positive int64", func(t *testing.T) {
+
+			t.Run("All MarshalPositiveInt64, UnmarshalPositiveInt64, SizePositiveInt64, SkipPositiveInt64 functions must work correctly",
+				func(t *testing.T) {
+					var (
+						m  mus.MarshallerFn[int64]   = MarshalPositiveInt64
+						u  mus.UnmarshallerFn[int64] = UnmarshalPositiveInt64
+						s  mus.SizerFn[int64]        = SizePositiveInt64
+						sk mus.SkipperFn             = SkipPositiveInt64
+					)
+					testdata.Test[int64](com_testdata.Int64TestCases, m, u, s, t)
+					testdata.TestSkip[int64](com_testdata.Int64TestCases, m, sk, s, t)
+				})
+
+			t.Run("UnmarshalPositiveInt64 should return ErrTooSmallByteSlice if there is no space in bs",
+				func(t *testing.T) {
+					var (
+						wantV     int64 = 0
+						wantN           = 0
+						wantErr         = mus.ErrTooSmallByteSlice
+						bs              = []byte{}
+						v, n, err       = UnmarshalPositiveInt64(bs)
+					)
+					com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+				})
+
+		})
+
+		t.Run("Positive int32", func(t *testing.T) {
+
+			t.Run("All MarshalPositiveInt32, UnmarshalPositiveInt32, SizePositiveInt32, SkipPositiveInt32 functions must work correctly",
+				func(t *testing.T) {
+					var (
+						m  mus.MarshallerFn[int32]   = MarshalPositiveInt32
+						u  mus.UnmarshallerFn[int32] = UnmarshalPositiveInt32
+						s  mus.SizerFn[int32]        = SizePositiveInt32
+						sk mus.SkipperFn             = SkipPositiveInt32
+					)
+					testdata.Test[int32](com_testdata.Int32TestCases, m, u, s, t)
+					testdata.TestSkip[int32](com_testdata.Int32TestCases, m, sk, s, t)
+				})
+
+			t.Run("UnmarshalPositiveInt32 should return ErrTooSmallByteSlice if there is no space in bs",
+				func(t *testing.T) {
+					var (
+						wantV     int32 = 0
+						wantN           = 0
+						wantErr         = mus.ErrTooSmallByteSlice
+						bs              = []byte{}
+						v, n, err       = UnmarshalPositiveInt32(bs)
+					)
+					com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+				})
+
+		})
+
+		t.Run("Positive int16", func(t *testing.T) {
+
+			t.Run("All MarshalPositiveInt16, UnmarshalPositiveInt16, SizePositiveInt16, SkipPositiveInt16 functions must work correctly",
+				func(t *testing.T) {
+					var (
+						m  mus.MarshallerFn[int16]   = MarshalPositiveInt16
+						u  mus.UnmarshallerFn[int16] = UnmarshalPositiveInt16
+						s  mus.SizerFn[int16]        = SizePositiveInt16
+						sk mus.SkipperFn             = SkipPositiveInt16
+					)
+					testdata.Test[int16](com_testdata.Int16TestCases, m, u, s, t)
+					testdata.TestSkip[int16](com_testdata.Int16TestCases, m, sk, s, t)
+				})
+
+			t.Run("UnmarshalPositiveInt16 should return ErrTooSmallByteSlice if there is no space in bs",
+				func(t *testing.T) {
+					var (
+						wantV     int16 = 0
+						wantN           = 0
+						wantErr         = mus.ErrTooSmallByteSlice
+						bs              = []byte{}
+						v, n, err       = UnmarshalPositiveInt16(bs)
+					)
+					com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+				})
+
+		})
+
+		t.Run("Positive int8", func(t *testing.T) {
+
+			t.Run("All MarshalPositiveInt8, UnmarshalPositiveInt8, SizePositiveInt8, SkipPositiveInt8 functions must work correctly",
+				func(t *testing.T) {
+					var (
+						m  mus.MarshallerFn[int8]   = MarshalPositiveInt8
+						u  mus.UnmarshallerFn[int8] = UnmarshalPositiveInt8
+						s  mus.SizerFn[int8]        = SizePositiveInt8
+						sk mus.SkipperFn            = SkipPositiveInt8
+					)
+					testdata.Test[int8](com_testdata.Int8TestCases, m, u, s, t)
+					testdata.TestSkip[int8](com_testdata.Int8TestCases, m, sk, s, t)
+				})
+
+			t.Run("UnmarshalPositiveInt8 should return ErrTooSmallByteSlice if there is no space in bs",
+				func(t *testing.T) {
+					var (
+						wantV     int8 = 0
+						wantN          = 0
+						wantErr        = mus.ErrTooSmallByteSlice
+						bs             = []byte{}
+						v, n, err      = UnmarshalPositiveInt8(bs)
+					)
+					com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+				})
+
+		})
+
+		t.Run("Positive int", func(t *testing.T) {
+
+			t.Run("All MarshalPositiveInt, UnmarshalPositiveInt, SizePositiveInt, SkipPositiveInt functions must work correctly",
+				func(t *testing.T) {
+					var (
+						m  mus.MarshallerFn[int]   = MarshalPositiveInt
+						u  mus.UnmarshallerFn[int] = UnmarshalPositiveInt
+						s  mus.SizerFn[int]        = SizePositiveInt
+						sk mus.SkipperFn           = SkipPositiveInt
+					)
+					testdata.Test[int](com_testdata.IntTestCases, m, u, s, t)
+					testdata.TestSkip[int](com_testdata.IntTestCases, m, sk, s, t)
+				})
+
+			t.Run("UnmarshaPositivelInt should return ErrTooSmallByteSlice if there is no space in bs",
+				func(t *testing.T) {
+					var (
+						wantV     int = 0
+						wantN         = 0
+						wantErr       = mus.ErrTooSmallByteSlice
+						bs            = []byte{}
+						v, n, err     = UnmarshalPositiveInt(bs)
+					)
+					com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+				})
+
+		})
+
+		t.Run("All MarshalByte, UnmarshalByte, SizeByte, SkipByte functions must work correctly",
 			func(t *testing.T) {
 				var (
-					wantV     int = 0
-					wantN         = 0
-					wantErr       = mus.ErrTooSmallByteSlice
-					bs            = []byte{}
-					v, n, err     = UnmarshalInt(bs)
+					m  = mus.MarshallerFn[byte](MarshalByte)
+					u  = mus.UnmarshallerFn[byte](UnmarshalByte)
+					s  = mus.SizerFn[byte](SizeByte)
+					sk = mus.SkipperFn(SkipByte)
 				)
-				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+				testdata.Test[byte](com_testdata.ByteTestCases, m, u, s, t)
+				testdata.TestSkip[byte](com_testdata.ByteTestCases, m, sk, s, t)
 			})
 
 	})
-
-	t.Run("All MarshalByte, UnmarshalByte, SizeByte, SkipByte functions must work correctly",
-		func(t *testing.T) {
-			var (
-				m  = mus.MarshallerFn[byte](MarshalByte)
-				u  = mus.UnmarshallerFn[byte](UnmarshalByte)
-				s  = mus.SizerFn[byte](SizeByte)
-				sk = mus.SkipperFn(SkipByte)
-			)
-			testdata.Test[byte](com_testdata.ByteTestCases, m, u, s, t)
-			testdata.TestSkip[byte](com_testdata.ByteTestCases, m, sk, s, t)
-		})
 
 	t.Run("float", func(t *testing.T) {
 

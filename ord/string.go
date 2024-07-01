@@ -8,10 +8,17 @@ import (
 
 // MarshalString fills bs with the MUS encoding of a string value.
 //
+// The lenM argument specifies the Marshaller for the string length, if nil,
+// varint.MarshalPositiveInt() is used.
+//
 // Returns the number of used bytes. It will panic if receives too small bs.
-func MarshalString(v string, bs []byte) (n int) {
+func MarshalString(v string, lenM mus.Marshaller[int], bs []byte) (n int) {
 	length := len(v)
-	n = varint.MarshalInt(length, bs)
+	if lenM == nil {
+		n = varint.MarshalPositiveInt(length, bs)
+	} else {
+		n = lenM.MarshalMUS(length, bs)
+	}
 	if len(bs) < n+length {
 		panic(mus.ErrTooSmallByteSlice)
 	}
@@ -20,14 +27,20 @@ func MarshalString(v string, bs []byte) (n int) {
 
 // UnmarshalString parses a MUS-encoded string value from bs.
 //
+// The lenU argument specifies the Unmarshaller for the string length, if nil,
+// varint.UnmarshalPositiveInt() is used.
+//
 // In addition to the string value and the number of used bytes, it can also
 // return mus.ErrTooSmallByteSlice, com.ErrOverflow or com.ErrNegativeLength.
-func UnmarshalString(bs []byte) (v string, n int, err error) {
-	return UnmarshalValidString(nil, false, bs)
+func UnmarshalString(lenU mus.Unmarshaller[int], bs []byte) (v string,
+	n int, err error) {
+	return UnmarshalValidString(lenU, nil, false, bs)
 }
 
 // UnmarshalValidString parses a MUS-encoded valid string value from bs.
 //
+// The lenU argument specifies the Unmarshaller for the string length, if nil,
+// varint.UnmarshalPositiveInt() is used.
 // The lenVl argument specifies the string length Validator. If it returns
 // an error and skip == true UnmarshalValidString skips the remaining bytes of
 // the string.
@@ -35,9 +48,14 @@ func UnmarshalString(bs []byte) (v string, n int, err error) {
 // In addition to the string value and the number of used bytes, it can also
 // return mus.ErrTooSmallByteSlice, com.ErrOverflow, com.ErrNegativeLength or
 // Validator error.
-func UnmarshalValidString(lenVl com.Validator[int], skip bool, bs []byte) (
-	v string, n int, err error) {
-	length, n, err := varint.UnmarshalInt(bs)
+func UnmarshalValidString(lenU mus.Unmarshaller[int],
+	lenVl com.Validator[int], skip bool, bs []byte) (v string, n int, err error) {
+	var length int
+	if lenU == nil {
+		length, n, err = varint.UnmarshalPositiveInt(bs)
+	} else {
+		length, n, err = lenU.UnmarshalMUS(bs)
+	}
 	if err != nil {
 		return
 	}
@@ -65,17 +83,32 @@ func UnmarshalValidString(lenVl com.Validator[int], skip bool, bs []byte) (
 }
 
 // SizeString returns the size of a MUS-encoded string value.
-func SizeString(v string) (n int) {
+//
+// The lenS argument specifies the Sizer for the string length, if nil,
+// varint.SizePositiveInt() is used.
+func SizeString(v string, lenS mus.Sizer[int]) (n int) {
 	length := len(v)
-	return varint.SizeInt(length) + length
+	if lenS == nil {
+		return varint.SizePositiveInt(length) + length
+	} else {
+		return lenS.SizeMUS(length) + length
+	}
 }
 
 // SkipString skips a MUS-encoded string value.
 //
+// The lenU argument specifies the Unmarshaller for the string length, if nil,
+// varint.UnmarshalPositiveInt() is used.
+//
 // In addition to the number of skipped bytes, it can also return
 // mus.ErrTooSmallByteSlice, com.ErrOverflow or mus.ErrNegativeLength.
-func SkipString(bs []byte) (n int, err error) {
-	length, n, err := varint.UnmarshalInt(bs)
+func SkipString(lenU mus.Unmarshaller[int], bs []byte) (n int, err error) {
+	var length int
+	if lenU == nil {
+		length, n, err = varint.UnmarshalPositiveInt(bs)
+	} else {
+		length, n, err = lenU.UnmarshalMUS(bs)
+	}
 	if err != nil {
 		return
 	}
