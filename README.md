@@ -1,5 +1,9 @@
-# MUS Format Serializer
-mus-go is a [MUS format](https://ymz-ncnk.medium.com/mus-serialization-format-21d7be309e8d) extremely fast serializer with validation support for Golang. 
+# mus-go Serializer
+mus-go is a fully compatible [MUS format](https://ymz-ncnk.medium.com/mus-serialization-format-21d7be309e8d) Golang serializer. It is extremely fast 
+and has validation support.
+
+Thanks to its minimalist design and a wide range of serialization primitives, it 
+can be used to implement other binary serialization formats ([here](https://github.com/mus-format/mus-examples-go/blob/main/protobuf/main.go) is an example where mus-go is used to implement Protobuf encoding).
 
 ## Brief mus-go Description
 - Has a [streaming version](https://github.com/mus-format/mus-stream-go).
@@ -23,7 +27,7 @@ mus-go is a [MUS format](https://ymz-ncnk.medium.com/mus-serialization-format-21
 - Supports zero allocation deserialization.
 
 # Contents
-- [MUS Format Serializer](#mus-format-serializer)
+- [mus-go Serializer](#mus-go-serializer)
   - [Brief mus-go Description](#brief-mus-go-description)
 - [Contents](#contents)
 - [cmd-stream-go library](#cmd-stream-go-library)
@@ -427,7 +431,7 @@ func validate(field int, vl com.Validator[int], sk mus.Skipper, bs []byte) (
   err = vl.Validate(field)
   if err != nil && sk != nil { // If Skipper != nil, applies it, otherwise
     // returns a validation error immediately.
-    if n, skErr = sk.SkipMUS(bs); skErr != nil {
+    if n, skErr = sk.Skip(bs); skErr != nil {
       err = skErr
     }
   }
@@ -475,18 +479,18 @@ var (
 // With help of the type switch and regular switch we can implement 
 // Marshal/Unmarshal/Size functions for the Instruction interface.
 
-func MarshalInstructionMUS(instr Instruction, bs []byte) (n int) {
+func MarshalInstruction(instr Instruction, bs []byte) (n int) {
   switch in := instr.(type) {
   case Copy:
-    return CopyDTS.MarshalMUS(in, bs)
+    return CopyDTS.Marshal(in, bs)
   case Insert:
-    return InsertDTS.MarshalMUS(in, bs)
+    return InsertDTS.Marshal(in, bs)
   default:
     panic(ErrUnexpectedInstructionType)
   }
 }
 
-func UnmarshalInstructionMUS(bs []byte) (instr Instruction, n int, err error) {
+func UnmarshalInstruction(bs []byte) (instr Instruction, n int, err error) {
   dtm, n, err := dts.UnmarshalDTM(bs)
   if err != nil {
     return
@@ -502,12 +506,12 @@ func UnmarshalInstructionMUS(bs []byte) (instr Instruction, n int, err error) {
   }
 }
 
-func SizeInstructionMUS(instr Instruction) (size int) {
+func SizeInstruction(instr Instruction) (size int) {
   switch in := instr.(type) {
   case Copy:
-    return CopyDTS.SizeMUS(in)
+    return CopyDTS.Size(in)
   case Insert:
-    return InsertDTS.SizeMUS(in)
+    return InsertDTS.Size(in)
   default:
     panic(ErrUnexpectedInstructionType)
   }

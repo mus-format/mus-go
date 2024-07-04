@@ -6,7 +6,7 @@ import (
 	"github.com/mus-format/mus-go/varint"
 )
 
-// MarshalMap fills bs with the MUS encoding of a map value.
+// MarshalMap fills bs with the encoding of a map  value.
 //
 // The lenM argument specifies the Marshaller for the map length, if nil,
 // varint.MarshalPositiveInt() is used.
@@ -22,16 +22,16 @@ func MarshalMap[T comparable, V any](v map[T]V, lenM mus.Marshaller[int],
 	if lenM == nil {
 		n = varint.MarshalPositiveInt(len(v), bs)
 	} else {
-		n = lenM.MarshalMUS(len(v), bs)
+		n = lenM.Marshal(len(v), bs)
 	}
 	for k, v := range v {
-		n += m1.MarshalMUS(k, bs[n:])
-		n += m2.MarshalMUS(v, bs[n:])
+		n += m1.Marshal(k, bs[n:])
+		n += m2.Marshal(v, bs[n:])
 	}
 	return
 }
 
-// UnmarshalMap parses a MUS-encoded map value from bs.
+// UnmarshalMap parses a map value from bs.
 //
 // The lenU argument specifies the Unmarshaller for the map length, if nil,
 // varint.UnmarshalPositiveInt() is used.
@@ -49,7 +49,7 @@ func UnmarshalMap[T comparable, V any](lenU mus.Unmarshaller[int],
 	return UnmarshalValidMap(lenU, nil, u1, u2, nil, nil, nil, nil, bs)
 }
 
-// UnmarshalValidMap parses a MUS-encoded valid map value from bs.
+// UnmarshalValidMap parses a map value from bs.
 //
 // The lenU argument specifies the Unmarshaller for the map length, if nil,
 // varint.UnmarshalPositiveInt() is used.
@@ -76,7 +76,7 @@ func UnmarshalValidMap[T comparable, V any](lenU mus.Unmarshaller[int],
 	if lenU == nil {
 		length, n, err = varint.UnmarshalPositiveInt(bs)
 	} else {
-		length, n, err = lenU.UnmarshalMUS(bs)
+		length, n, err = lenU.Unmarshal(bs)
 	}
 	if err != nil {
 		return
@@ -99,7 +99,7 @@ func UnmarshalValidMap[T comparable, V any](lenU mus.Unmarshaller[int],
 	}
 	v = make(map[T]V)
 	for i = 0; i < length; i++ {
-		k, n1, err = u1.UnmarshalMUS(bs[n:])
+		k, n1, err = u1.Unmarshal(bs[n:])
 		n += n1
 		if err != nil {
 			return
@@ -107,7 +107,7 @@ func UnmarshalValidMap[T comparable, V any](lenU mus.Unmarshaller[int],
 		if vl1 != nil {
 			if err = vl1.Validate(k); err != nil {
 				if sk2 != nil {
-					n1, err1 = sk2.SkipMUS(bs[n:])
+					n1, err1 = sk2.Skip(bs[n:])
 					n += n1
 					if err1 != nil {
 						err = err1
@@ -118,7 +118,7 @@ func UnmarshalValidMap[T comparable, V any](lenU mus.Unmarshaller[int],
 				goto SkipRemainingBytes
 			}
 		}
-		p, n1, err = u2.UnmarshalMUS(bs[n:])
+		p, n1, err = u2.Unmarshal(bs[n:])
 		n += n1
 		if err != nil {
 			return
@@ -144,7 +144,7 @@ SkipRemainingBytes:
 	return
 }
 
-// SizeMap returns the size of a MUS-encoded map value.
+// SizeMap returns the size of an encoded map value.
 //
 // The lenS argument specifies the Sizer for the map length, if nil,
 // varint.SizePositiveInt() is used.
@@ -156,16 +156,16 @@ func SizeMap[T comparable, V any](v map[T]V, lenS mus.Sizer[int],
 	if lenS == nil {
 		size = varint.SizePositiveInt(len(v))
 	} else {
-		size = lenS.SizeMUS(len(v))
+		size = lenS.Size(len(v))
 	}
 	for k, v := range v {
-		size += s1.SizeMUS(k)
-		size += s2.SizeMUS(v)
+		size += s1.Size(k)
+		size += s2.Size(v)
 	}
 	return
 }
 
-// SkipMap skips a MUS-encoded map value.
+// SkipMap skips an encoded map value.
 //
 // The lenU argument specifies the Unmarshaller for the map length, if nil,
 // varint.UnmarshalPositiveInt() is used.
@@ -180,7 +180,7 @@ func SkipMap(lenU mus.Unmarshaller[int], sk1, sk2 mus.Skipper, bs []byte) (
 	if lenU == nil {
 		length, n, err = varint.UnmarshalPositiveInt(bs)
 	} else {
-		length, n, err = lenU.UnmarshalMUS(bs)
+		length, n, err = lenU.Unmarshal(bs)
 	}
 	if err != nil {
 		return
@@ -198,12 +198,12 @@ func skipRemainingMap(from int, length int, sk1, sk2 mus.Skipper, bs []byte) (
 	n int, err error) {
 	var n1 int
 	for i := from; i < length; i++ {
-		n1, err = sk1.SkipMUS(bs[n:])
+		n1, err = sk1.Skip(bs[n:])
 		n += n1
 		if err != nil {
 			return
 		}
-		n1, err = sk2.SkipMUS(bs[n:])
+		n1, err = sk2.Skip(bs[n:])
 		n += n1
 		if err != nil {
 			return

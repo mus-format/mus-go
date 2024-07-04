@@ -8,7 +8,7 @@ import (
 	"github.com/mus-format/mus-go/varint"
 )
 
-// MarshalPtr fills bs with the MUS encoding of a pointer.
+// MarshalPtr fills bs with the encoding of a pointer.
 //
 // The m argument specifies the Marshaller for the pointer base type.
 //
@@ -25,12 +25,12 @@ func MarshalPtr[T any](v *T, m mus.Marshaller[T], mp *com.PtrMap,
 	id, newOne := maptr(unsafe.Pointer(v), mp)
 	n += varint.MarshalInt(id, bs[n:])
 	if newOne {
-		n += m.MarshalMUS(*v, bs[n:])
+		n += m.Marshal(*v, bs[n:])
 	}
 	return
 }
 
-// UnmarshalPtr parses a MUS-encoded pointer from bs.
+// UnmarshalPtr parses an encoded pointer from bs.
 //
 // The u argument specifies the Unmarshaller for the base pointer type.
 //
@@ -71,7 +71,7 @@ func UnmarshalPtr[T any](u mus.Unmarshaller[T], mp com.ReversePtrMap,
 	return
 }
 
-// SizePtr returns the size of a MUS-encoded pointer.
+// SizePtr returns the size of an encoded pointer.
 //
 // The s argument specifies the Sizer for the pointer base type.
 func SizePtr[T any](v *T, s mus.Sizer[T], mp *com.PtrMap) (size int) {
@@ -80,7 +80,7 @@ func SizePtr[T any](v *T, s mus.Sizer[T], mp *com.PtrMap) (size int) {
 		id, newOne := maptr(unsafe.Pointer(v), mp)
 		size += varint.SizeInt(id)
 		if newOne {
-			return size + s.SizeMUS(*v)
+			return size + s.Size(*v)
 		} else {
 			return
 		}
@@ -88,7 +88,7 @@ func SizePtr[T any](v *T, s mus.Sizer[T], mp *com.PtrMap) (size int) {
 	return
 }
 
-// SkipPtr skips a MUS-encoded pointer.
+// SkipPtr skips an encoded pointer.
 //
 // The sk argument specifies the Skipper for the pointer base type.
 //
@@ -115,7 +115,7 @@ func SkipPtr(sk mus.Skipper, mp com.ReversePtrMap, bs []byte) (n int, err error)
 		}
 		_, pst := mp.Get(id)
 		if !pst {
-			n1, err = sk.SkipMUS(bs[n:])
+			n1, err = sk.Skip(bs[n:])
 			n += n1
 			if err != nil {
 				return
@@ -137,7 +137,7 @@ func unmarshalData[T any](id int, u mus.Unmarshaller[T],
 		n1 int
 	)
 	mp.Put(id, unsafe.Pointer(&k))
-	k, n1, err = u.UnmarshalMUS(bs)
+	k, n1, err = u.Unmarshal(bs)
 	n += n1
 	if err != nil {
 		return

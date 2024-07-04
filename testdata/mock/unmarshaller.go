@@ -12,20 +12,20 @@ type Unmarshaller[T any] struct {
 	*mok.Mock
 }
 
-func (u Unmarshaller[T]) RegisterUnmarshalMUS(
+func (u Unmarshaller[T]) RegisterUnmarshal(
 	fn func(bs []byte) (t T, n int, err error)) Unmarshaller[T] {
-	u.Register("UnmarshalMUS", fn)
+	u.Register("Unmarshal", fn)
 	return u
 }
 
-func (u Unmarshaller[T]) RegisterNUnmarshalMUS(n int,
+func (u Unmarshaller[T]) RegisterNUnmarshal(n int,
 	fn func(bs []byte) (t T, n int, err error)) Unmarshaller[T] {
-	u.RegisterN("UnmarshalMUS", n, fn)
+	u.RegisterN("Unmarshal", n, fn)
 	return u
 }
 
-func (u Unmarshaller[T]) UnmarshalMUS(bs []byte) (t T, n int, err error) {
-	result, err := u.Call("UnmarshalMUS", bs)
+func (u Unmarshaller[T]) Unmarshal(bs []byte) (t T, n int, err error) {
+	result, err := u.Call("Unmarshal", bs)
 	if err != nil {
 		panic(err)
 	}

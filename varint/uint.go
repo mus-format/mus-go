@@ -6,42 +6,42 @@ import (
 	"golang.org/x/exp/constraints"
 )
 
-// MarshalUint64 fills bs with the MUS encoding (Varint) of a uint64 value.
+// MarshalUint64 fills bs with the encoding (Varint) of a uint64 value.
 //
 // Returns the number of used bytes. It will panic if receives too small bs.
 func MarshalUint64(v uint64, bs []byte) (n int) {
 	return marshalUint(v, bs)
 }
 
-// MarshalUint32 fills bs with the MUS encoding (Varint) of a uint32 value.
+// MarshalUint32 fills bs with the encoding (Varint) of a uint32 value.
 //
 // Returns the number of used bytes. It will panic if receives too small bs.
 func MarshalUint32(v uint32, bs []byte) (n int) {
 	return marshalUint(v, bs)
 }
 
-// MarshalUint16 fills bs with the MUS encoding (Varint) of a uint16 value.
+// MarshalUint16 fills bs with the encoding (Varint) of a uint16 value.
 //
 // Returns the number of used bytes. It will panic if receives too small bs.
 func MarshalUint16(v uint16, bs []byte) (n int) {
 	return marshalUint(v, bs)
 }
 
-// MarshalUint8 fills bs with the MUS encoding (Varint) of a uint8 value.
+// MarshalUint8 fills bs with the encoding (Varint) of a uint8 value.
 //
 // Returns the number of used bytes. It will panic if receives too small bs.
 func MarshalUint8(v uint8, bs []byte) (n int) {
 	return marshalUint(v, bs)
 }
 
-// MarshalUint fills bs with the MUS encoding (Varint) of a uint value.
+// MarshalUint fills bs with the encoding (Varint) of a uint value.
 //
 // Returns the number of used bytes. It will panic if receives too small bs.
 func MarshalUint(v uint, bs []byte) (n int) {
 	return marshalUint(v, bs)
 }
 
-// UnmarshalUint64 parses a MUS-encoded (Varint) uint64 value from bs.
+// UnmarshalUint64 parses an encoded (Varint) uint64 value from bs.
 //
 // In addition to the uint64 value and the number of used bytes, it can also
 // return mus.ErrTooSmallByteSlice or com.ErrOverflow.
@@ -51,7 +51,7 @@ func UnmarshalUint64(bs []byte) (v uint64, n int, err error) {
 		bs)
 }
 
-// UnmarshalUint32 parses a MUS-encoded (Varint) uint32 value from bs.
+// UnmarshalUint32 parses an encoded (Varint) uint32 value from bs.
 //
 // In addition to the uint32 value and the number of used bytes, it can also
 // return mus.ErrTooSmallByteSlice or com.ErrOverflow.
@@ -61,7 +61,7 @@ func UnmarshalUint32(bs []byte) (v uint32, n int, err error) {
 		bs)
 }
 
-// UnmarshalUint16 parses a MUS-encoded (Varint) uint16 value from bs.
+// UnmarshalUint16 parses an encoded (Varint) uint16 value from bs.
 //
 // In addition to the uint16 value and the number of used bytes, it can also
 // return mus.ErrTooSmallByteSlice or com.ErrOverflow.
@@ -71,7 +71,7 @@ func UnmarshalUint16(bs []byte) (v uint16, n int, err error) {
 		bs)
 }
 
-// UnmarshalUint8 parses a MUS-encoded (Varint) uint8 value from bs.
+// UnmarshalUint8 parses an encoded (Varint) uint8 value from bs.
 //
 // In addition to the uint8 value and the number of used bytes, it can also
 // return mus.ErrTooSmallByteSlice or com.ErrOverflow.
@@ -81,7 +81,7 @@ func UnmarshalUint8(bs []byte) (v uint8, n int, err error) {
 		bs)
 }
 
-// UnmarshalUint parses a MUS-encoded (Varint) uint value from bs.
+// UnmarshalUint parses an encoded (Varint) uint value from bs.
 //
 // In addition to the uint value and the number of used bytes, it can also
 // return mus.ErrTooSmallByteSlice or com.ErrOverflow.
@@ -91,32 +91,32 @@ func UnmarshalUint(bs []byte) (v uint, n int, err error) {
 		bs)
 }
 
-// SizeUint64 returns the size of a MUS-encoded uint64 value.
+// SizeUint64 returns the size of an encoded uint64 value.
 func SizeUint64(v uint64) (size int) {
 	return sizeUint(v)
 }
 
-// SizeUint32 returns the size of a MUS-encoded uint32 value.
+// SizeUint32 returns the size of an encoded uint32 value.
 func SizeUint32(v uint32) (size int) {
 	return sizeUint(v)
 }
 
-// SizeUint16 returns the size of a MUS-encoded uint16 value.
+// SizeUint16 returns the size of an encoded uint16 value.
 func SizeUint16(v uint16) (size int) {
 	return sizeUint(v)
 }
 
-// SizeUint8 returns the size of a MUS-encoded uint8 value.
+// SizeUint8 returns the size of an encoded uint8 value.
 func SizeUint8(v uint8) (size int) {
 	return sizeUint(v)
 }
 
-// SizeUint returns the size of a MUS-encoded uint value.
+// SizeUint returns the size of an encoded uint value.
 func SizeUint(v uint) (size int) {
 	return sizeUint(v)
 }
 
-// SkipUint64 skips a MUS-encoded uint64.
+// SkipUint64 skips an encoded uint64.
 //
 // In addition to the number of skipped bytes, it can also return
 // mus.ErrTooSmallByteSlice or com.ErrOverflow.
@@ -124,7 +124,7 @@ func SkipUint64(bs []byte) (n int, err error) {
 	return skipUint(com.Uint64MaxVarintLen, com.Uint64MaxLastByte, bs)
 }
 
-// SkipUint32 skips a MUS-encoded uint32.
+// SkipUint32 skips an encoded uint32.
 //
 // In addition to the number of skipped bytes, it can also return
 // mus.ErrTooSmallByteSlice or com.ErrOverflow.
@@ -132,7 +132,7 @@ func SkipUint32(bs []byte) (n int, err error) {
 	return skipUint(com.Uint32MaxVarintLen, com.Uint32MaxLastByte, bs)
 }
 
-// SkipUint16 skips a MUS-encoded uint16.
+// SkipUint16 skips an encoded uint16.
 //
 // In addition to the number of skipped bytes, it can also return
 // mus.ErrTooSmallByteSlice or com.ErrOverflow.
@@ -140,7 +140,7 @@ func SkipUint16(bs []byte) (n int, err error) {
 	return skipUint(com.Uint16MaxVarintLen, com.Uint16MaxLastByte, bs)
 }
 
-// SkipUint8 skips a MUS-encoded uint8.
+// SkipUint8 skips an encoded uint8.
 //
 // In addition to the number of skipped bytes, it can also return
 // mus.ErrTooSmallByteSlice or com.ErrOverflow.
@@ -148,7 +148,7 @@ func SkipUint8(bs []byte) (n int, err error) {
 	return skipUint(com.Uint8MaxVarintLen, com.Uint8MaxLastByte, bs)
 }
 
-// SkipUint skips a MUS-encoded uint.
+// SkipUint skips an encoded uint.
 //
 // In addition to the number of skipped bytes, it can also return
 // mus.ErrTooSmallByteSlice or com.ErrOverflow.

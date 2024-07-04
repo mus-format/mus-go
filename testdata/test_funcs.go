@@ -13,16 +13,16 @@ func Test[T any](cases []T, m mus.Marshaller[T], u mus.Unmarshaller[T],
 ) {
 	for i := 0; i < len(cases); i++ {
 		var (
-			size = s.SizeMUS(cases[i])
+			size = s.Size(cases[i])
 			bs   = make([]byte, size)
 			n    int
 			v    T
 		)
-		n = m.MarshalMUS(cases[i], bs)
+		n = m.Marshal(cases[i], bs)
 		if n != size {
 			t.Errorf("case '%v', unexpected n, want '%v' actual '%v'", i, size, n)
 		}
-		v, n, err := u.UnmarshalMUS(bs)
+		v, n, err := u.Unmarshal(bs)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -40,9 +40,9 @@ func TestSkip[T any](cases []T, m mus.Marshaller[T], sk mus.Skipper,
 	t *testing.T,
 ) {
 	for i := 0; i < len(cases); i++ {
-		bs := make([]byte, s.SizeMUS(cases[i]))
-		m.MarshalMUS(cases[i], bs)
-		n, err := sk.SkipMUS(bs)
+		bs := make([]byte, s.Size(cases[i]))
+		m.Marshal(cases[i], bs)
+		n, err := sk.Skip(bs)
 		if err != nil {
 			t.Fatal(err)
 		}

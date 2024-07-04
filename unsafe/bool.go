@@ -8,7 +8,7 @@ import (
 	"github.com/mus-format/mus-go/ord"
 )
 
-// MarshalBool fills bs with the MUS encoding of a bool value.
+// MarshalBool fills bs with the encoding of a bool value.
 //
 // Returns the number of used bytes. It will panic if receives too small bs.
 func MarshalBool(v bool, bs []byte) (n int) {
@@ -16,7 +16,7 @@ func MarshalBool(v bool, bs []byte) (n int) {
 	return 1
 }
 
-// UnmarshalBool parses a MUS-encoded bool value from bs.
+// UnmarshalBool parses an encoded bool value from bs.
 //
 // In addition to the bool, returns the number of used bytes and one of the
 // mus.ErrTooSmallByteSlice or com.ErrWrongFormat errors.
@@ -31,12 +31,12 @@ func UnmarshalBool(bs []byte) (v bool, n int, err error) {
 	return *(*bool)(unsafe_mod.Pointer(&bs[0])), 1, nil
 }
 
-// SizeBool returns the size of a MUS-encoded bool value.
+// SizeBool returns the size of an encoded bool value.
 func SizeBool(v bool) (n int) {
 	return ord.SizeBool(v)
 }
 
-// SkipBool skips a MUS-encoded bool value.
+// SkipBool skips an encoded bool value.
 //
 // Returns the number of skiped bytes and one of the mus.ErrTooSmallByteSlice or
 // com.ErrWrongFormat errors.

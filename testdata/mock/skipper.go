@@ -10,20 +10,20 @@ type Skipper struct {
 	*mok.Mock
 }
 
-func (u Skipper) RegisterSkipMUS(
+func (u Skipper) RegisterSkip(
 	fn func(bs []byte) (n int, err error)) Skipper {
-	u.Register("SkipMUS", fn)
+	u.Register("Skip", fn)
 	return u
 }
 
-func (u Skipper) RegisterNSkipMUS(n int,
+func (u Skipper) RegisterNSkip(n int,
 	fn func(bs []byte) (n int, err error)) Skipper {
-	u.RegisterN("SkipMUS", n, fn)
+	u.RegisterN("Skip", n, fn)
 	return u
 }
 
-func (u Skipper) SkipMUS(bs []byte) (n int, err error) {
-	result, err := u.Call("SkipMUS", bs)
+func (u Skipper) Skip(bs []byte) (n int, err error) {
+	result, err := u.Call("Skip", bs)
 	if err != nil {
 		panic(err)
 	}

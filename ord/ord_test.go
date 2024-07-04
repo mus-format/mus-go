@@ -268,7 +268,7 @@ func TestOrd(t *testing.T) {
 					str1Raw = append([]byte{6}, []byte(str1)...)
 					ptr     = &str1
 					m1      = func() mock.Marshaller[string] {
-						return mock.NewMarshaller[string]().RegisterNMarshalMUS(2,
+						return mock.NewMarshaller[string]().RegisterNMarshal(2,
 							func(v string, bs []byte) (n int) {
 								switch v {
 								case str1:
@@ -281,7 +281,7 @@ func TestOrd(t *testing.T) {
 						)
 					}()
 					u1 = func() mock.Unmarshaller[string] {
-						return mock.NewUnmarshaller[string]().RegisterNUnmarshalMUS(1,
+						return mock.NewUnmarshaller[string]().RegisterNUnmarshal(1,
 							func(bs []byte) (v string, n int, err error) {
 								if bytes.Equal(bs[:len(str1Raw)], str1Raw) {
 									return str1, len(str1Raw), nil
@@ -293,7 +293,7 @@ func TestOrd(t *testing.T) {
 						)
 					}()
 					s1 = func() mock.Sizer[string] {
-						return mock.NewSizer[string]().RegisterNSizeMUS(2,
+						return mock.NewSizer[string]().RegisterNSize(2,
 							func(v string) (size int) {
 								switch v {
 								case str1:
@@ -306,7 +306,7 @@ func TestOrd(t *testing.T) {
 						)
 					}()
 					sk1 = func() mock.Skipper {
-						return mock.NewSkipper().RegisterNSkipMUS(1,
+						return mock.NewSkipper().RegisterNSkip(1,
 							func(bs []byte) (n int, err error) {
 								if bytes.Equal(bs[:len(str1Raw)], str1Raw) {
 									return len(str1Raw), nil
@@ -370,7 +370,7 @@ func TestOrd(t *testing.T) {
 					wantV   *string = nil
 					wantN           = 5
 					wantErr         = errors.New("Unmarshaller error")
-					u               = mock.NewUnmarshaller[string]().RegisterUnmarshalMUS(
+					u               = mock.NewUnmarshaller[string]().RegisterUnmarshal(
 						func(bs []byte) (v string, n int, err error) {
 							return "", 4, wantErr
 						},
@@ -405,7 +405,7 @@ func TestOrd(t *testing.T) {
 				var (
 					wantN   = 3
 					wantErr = errors.New("error")
-					s       = mock.NewSkipper().RegisterSkipMUS(
+					s       = mock.NewSkipper().RegisterSkip(
 						func(bs []byte) (n int, err error) {
 							return 2, wantErr
 						},
@@ -551,7 +551,7 @@ func TestOrd(t *testing.T) {
 					wantV   []uint = make([]uint, 1)
 					wantN          = 3
 					wantErr        = errors.New("Unmarshaller error")
-					u              = mock.NewUnmarshaller[uint]().RegisterUnmarshalMUS(
+					u              = mock.NewUnmarshaller[uint]().RegisterUnmarshal(
 						func(bs []byte) (v uint, n int, err error) {
 							return 0, 2, wantErr
 						},
@@ -577,7 +577,7 @@ func TestOrd(t *testing.T) {
 							return wantErr
 						},
 					)
-					sk = mock.NewSkipper().RegisterNSkipMUS(4,
+					sk = mock.NewSkipper().RegisterNSkip(4,
 						func(bs []byte) (n int, err error) { return 1, nil },
 					)
 					mocks     = []*mok.Mock{sk.Mock}
@@ -601,7 +601,7 @@ func TestOrd(t *testing.T) {
 							return wantErr
 						},
 					)
-					sk = mock.NewSkipper().RegisterSkipMUS(
+					sk = mock.NewSkipper().RegisterSkip(
 						func(bs []byte) (n int, err error) { return 3, wantErr },
 					)
 					mocks     = []*mok.Mock{sk.Mock}
@@ -652,16 +652,16 @@ func TestOrd(t *testing.T) {
 							return wantErr
 						},
 					)
-					u = mock.NewUnmarshaller[uint]().RegisterUnmarshalMUS(
+					u = mock.NewUnmarshaller[uint]().RegisterUnmarshal(
 						func(bs []byte) (v uint, n int, err error) {
 							return 10, 1, nil
 						},
-					).RegisterUnmarshalMUS(
+					).RegisterUnmarshal(
 						func(bs []byte) (v uint, n int, err error) {
 							return 2, 1, nil
 						},
 					)
-					sk = mock.NewSkipper().RegisterSkipMUS(
+					sk = mock.NewSkipper().RegisterSkip(
 						func(bs []byte) (n int, err error) {
 							if !reflect.DeepEqual(bs, []byte{3}) {
 								t.Errorf("unexpected bs, want '%v' actual '%v'", []byte{3}, bs)
@@ -690,12 +690,12 @@ func TestOrd(t *testing.T) {
 							return errors.New("validator error")
 						},
 					)
-					u = mock.NewUnmarshaller[uint]().RegisterUnmarshalMUS(
+					u = mock.NewUnmarshaller[uint]().RegisterUnmarshal(
 						func(bs []byte) (v uint, n int, err error) {
 							return 10, 1, nil
 						},
 					)
-					sk = mock.NewSkipper().RegisterSkipMUS(
+					sk = mock.NewSkipper().RegisterSkip(
 						func(bs []byte) (n int, err error) {
 							if !reflect.DeepEqual(bs, []byte{2, 3}) {
 								t.Errorf("unexpected bs, want '%v' actual '%v'", []byte{2, 3},
@@ -817,7 +817,7 @@ func TestOrd(t *testing.T) {
 					wantN   = 3
 					wantErr = errors.New("Unmarshaller error")
 					bs      = []byte{2, 100}
-					u1      = mock.NewUnmarshaller[uint]().RegisterUnmarshalMUS(
+					u1      = mock.NewUnmarshaller[uint]().RegisterUnmarshal(
 						func(bs []byte) (v uint, n int, err error) {
 							if !reflect.DeepEqual(bs, []byte{100}) {
 								t.Errorf("unexpected bs, want '%v' actual '%v'", []byte{100},
@@ -839,12 +839,12 @@ func TestOrd(t *testing.T) {
 					wantN   = 4
 					wantErr = errors.New("Unmarshaller error")
 					bs      = []byte{2, 1, 200, 200}
-					u1      = mock.NewUnmarshaller[uint]().RegisterUnmarshalMUS(
+					u1      = mock.NewUnmarshaller[uint]().RegisterUnmarshal(
 						func(bs []byte) (v uint, n int, err error) {
 							return 1, 1, nil
 						},
 					)
-					u2 = mock.NewUnmarshaller[uint]().RegisterUnmarshalMUS(
+					u2 = mock.NewUnmarshaller[uint]().RegisterUnmarshal(
 						func(bs []byte) (v uint, n int, err error) {
 							if !reflect.DeepEqual(bs, []byte{200, 200}) {
 								t.Errorf("unexpected bs, want '%v' actual '%v'", []byte{200, 200},
@@ -874,7 +874,7 @@ func TestOrd(t *testing.T) {
 							return wantErr
 						},
 					)
-					sk1 = mock.NewSkipper().RegisterSkipMUS(
+					sk1 = mock.NewSkipper().RegisterSkip(
 						func(bs []byte) (n int, err error) {
 							if !reflect.DeepEqual(bs, []byte{199, 1, 3, 4}) {
 								t.Errorf("unexpected bs, want '%v' actual '%v'",
@@ -883,7 +883,7 @@ func TestOrd(t *testing.T) {
 							}
 							return 1, nil
 						},
-					).RegisterSkipMUS(
+					).RegisterSkip(
 						func(bs []byte) (n int, err error) {
 							if !reflect.DeepEqual(bs, []byte{3, 4}) {
 								t.Errorf("unexpected bs, want '%v' actual '%v'", []byte{3, 4},
@@ -892,7 +892,7 @@ func TestOrd(t *testing.T) {
 							return 1, nil
 						},
 					)
-					sk2 = mock.NewSkipper().RegisterSkipMUS(
+					sk2 = mock.NewSkipper().RegisterSkip(
 						func(bs []byte) (n int, err error) {
 							if !reflect.DeepEqual(bs, []byte{1, 3, 4}) {
 								t.Errorf("unexpected bs, want '%v' actual '%v'", []byte{1, 3, 4},
@@ -900,7 +900,7 @@ func TestOrd(t *testing.T) {
 							}
 							return 1, nil
 						},
-					).RegisterSkipMUS(
+					).RegisterSkip(
 						func(bs []byte) (n int, err error) {
 							if !reflect.DeepEqual(bs, []byte{4}) {
 								t.Errorf("unexpected bs, want '%v' actual '%v'", []byte{4},
@@ -935,7 +935,7 @@ func TestOrd(t *testing.T) {
 							return errors.New("lenVl validator error")
 						},
 					)
-					sk1 = mock.NewSkipper().RegisterSkipMUS(
+					sk1 = mock.NewSkipper().RegisterSkip(
 						func(bs []byte) (n int, err error) {
 							if !reflect.DeepEqual(bs, []byte{199, 1, 3, 4}) {
 								t.Errorf("unexpected bs, want '%v' actual '%v'",
@@ -969,7 +969,7 @@ func TestOrd(t *testing.T) {
 							return errors.New("lenVl validator error")
 						},
 					)
-					sk1 = mock.NewSkipper().RegisterSkipMUS(
+					sk1 = mock.NewSkipper().RegisterSkip(
 						func(bs []byte) (n int, err error) {
 							if !reflect.DeepEqual(bs, []byte{199, 1, 3, 4}) {
 								t.Errorf("unexpected bs, want '%v' actual '%v'",
@@ -979,7 +979,7 @@ func TestOrd(t *testing.T) {
 							return 1, nil
 						},
 					)
-					sk2 = mock.NewSkipper().RegisterSkipMUS(
+					sk2 = mock.NewSkipper().RegisterSkip(
 						func(bs []byte) (n int, err error) {
 							if !reflect.DeepEqual(bs, []byte{1, 3, 4}) {
 								t.Errorf("unexpected bs, want '%v' actual '%v'",
@@ -1054,7 +1054,7 @@ func TestOrd(t *testing.T) {
 					wantN   = 5
 					wantErr = errors.New("key Validator error")
 					bs      = []byte{4, 10, 1, 3, 4}
-					u1      = mock.NewUnmarshaller[uint]().RegisterUnmarshalMUS(
+					u1      = mock.NewUnmarshaller[uint]().RegisterUnmarshal(
 						func(bs []byte) (v uint, n int, err error) {
 							return 10, 1, nil
 						},
@@ -1067,7 +1067,7 @@ func TestOrd(t *testing.T) {
 							return wantErr
 						},
 					)
-					sk1 = mock.NewSkipper().RegisterSkipMUS(
+					sk1 = mock.NewSkipper().RegisterSkip(
 						func(bs []byte) (n int, err error) {
 							if !reflect.DeepEqual(bs, []byte{3, 4}) {
 								t.Errorf("unexpected bs, want '%v' actual '%v'", []byte{3, 4},
@@ -1076,7 +1076,7 @@ func TestOrd(t *testing.T) {
 							return 1, nil
 						},
 					)
-					sk2 = mock.NewSkipper().RegisterSkipMUS(
+					sk2 = mock.NewSkipper().RegisterSkip(
 						func(bs []byte) (n int, err error) {
 							if !reflect.DeepEqual(bs, []byte{1, 3, 4}) {
 								t.Errorf("unexpected bs, want '%v' actual '%v'", []byte{1, 3, 4},
@@ -1084,7 +1084,7 @@ func TestOrd(t *testing.T) {
 							}
 							return 1, nil
 						},
-					).RegisterSkipMUS(
+					).RegisterSkip(
 						func(bs []byte) (n int, err error) {
 							if !reflect.DeepEqual(bs, []byte{4}) {
 								t.Errorf("unexpected bs, want '%v' actual '%v'", []byte{4},
@@ -1108,7 +1108,7 @@ func TestOrd(t *testing.T) {
 					wantN   = 4
 					wantErr = errors.New("value Skipper error")
 					bs      = []byte{4, 10, 100, 1, 3, 4}
-					u1      = mock.NewUnmarshaller[uint]().RegisterUnmarshalMUS(
+					u1      = mock.NewUnmarshaller[uint]().RegisterUnmarshal(
 						func(bs []byte) (v uint, n int, err error) {
 							return 10, 1, nil
 						},
@@ -1118,7 +1118,7 @@ func TestOrd(t *testing.T) {
 							return errors.New("key Validator error")
 						},
 					)
-					sk2 = mock.NewSkipper().RegisterSkipMUS(
+					sk2 = mock.NewSkipper().RegisterSkip(
 						func(bs []byte) (n int, err error) {
 							if !reflect.DeepEqual(bs, []byte{100, 1, 3, 4}) {
 								t.Errorf("unexpected bs, want '%v' actual '%v'",
@@ -1144,7 +1144,7 @@ func TestOrd(t *testing.T) {
 					wantN   = 2
 					wantErr = errors.New("key Validator error")
 					bs      = []byte{4, 10, 100, 1, 3, 4}
-					u1      = mock.NewUnmarshaller[uint]().RegisterUnmarshalMUS(
+					u1      = mock.NewUnmarshaller[uint]().RegisterUnmarshal(
 						func(bs []byte) (v uint, n int, err error) {
 							return 10, 1, nil
 						},
@@ -1170,7 +1170,7 @@ func TestOrd(t *testing.T) {
 					wantN   = 5
 					wantErr = errors.New("key Validator error")
 					bs      = []byte{4, 10, 1, 200, 1, 4}
-					u1      = mock.NewUnmarshaller[uint]().RegisterUnmarshalMUS(
+					u1      = mock.NewUnmarshaller[uint]().RegisterUnmarshal(
 						func(bs []byte) (v uint, n int, err error) {
 							return 10, 1, nil
 						},
@@ -1180,7 +1180,7 @@ func TestOrd(t *testing.T) {
 							return errors.New("key Validator error")
 						},
 					)
-					sk1 = mock.NewSkipper().RegisterSkipMUS(
+					sk1 = mock.NewSkipper().RegisterSkip(
 						func(bs []byte) (n int, err error) {
 							if !reflect.DeepEqual(bs, []byte{200, 1, 4}) {
 								t.Errorf("unexpected bs, want '%v' actual '%v'",
@@ -1190,7 +1190,7 @@ func TestOrd(t *testing.T) {
 							return 2, wantErr
 						},
 					)
-					sk2 = mock.NewSkipper().RegisterSkipMUS(
+					sk2 = mock.NewSkipper().RegisterSkip(
 						func(bs []byte) (n int, err error) {
 							if !reflect.DeepEqual(bs, []byte{1, 200, 1, 4}) {
 								t.Errorf("unexpected bs, want '%v' actual '%v'",
@@ -1216,12 +1216,12 @@ func TestOrd(t *testing.T) {
 					wantN   = 5
 					wantErr = errors.New("value Validator error")
 					bs      = []byte{4, 10, 11, 3, 4}
-					u1      = mock.NewUnmarshaller[uint]().RegisterUnmarshalMUS(
+					u1      = mock.NewUnmarshaller[uint]().RegisterUnmarshal(
 						func(bs []byte) (v uint, n int, err error) {
 							return 10, 1, nil
 						},
 					)
-					u2 = mock.NewUnmarshaller[uint]().RegisterUnmarshalMUS(
+					u2 = mock.NewUnmarshaller[uint]().RegisterUnmarshal(
 						func(bs []byte) (v uint, n int, err error) {
 							return 11, 1, nil
 						},
@@ -1234,7 +1234,7 @@ func TestOrd(t *testing.T) {
 							return wantErr
 						},
 					)
-					sk1 = mock.NewSkipper().RegisterSkipMUS(
+					sk1 = mock.NewSkipper().RegisterSkip(
 						func(bs []byte) (n int, err error) {
 							if !reflect.DeepEqual(bs, []byte{3, 4}) {
 								t.Errorf("unexpected bs, want '%v' actual '%v'", []byte{3, 4}, bs)
@@ -1242,7 +1242,7 @@ func TestOrd(t *testing.T) {
 							return 1, nil
 						},
 					)
-					sk2 = mock.NewSkipper().RegisterSkipMUS(
+					sk2 = mock.NewSkipper().RegisterSkip(
 						func(bs []byte) (n int, err error) {
 							if !reflect.DeepEqual(bs, []byte{4}) {
 								t.Errorf("unexpected bs, want '%v' actual '%v'", []byte{4}, bs)
@@ -1265,12 +1265,12 @@ func TestOrd(t *testing.T) {
 					wantN   = 4
 					wantErr = errors.New("skip key error")
 					bs      = []byte{4, 10, 11, 201, 4, 4}
-					u1      = mock.NewUnmarshaller[uint]().RegisterUnmarshalMUS(
+					u1      = mock.NewUnmarshaller[uint]().RegisterUnmarshal(
 						func(bs []byte) (v uint, n int, err error) {
 							return 10, 1, nil
 						},
 					)
-					u2 = mock.NewUnmarshaller[uint]().RegisterUnmarshalMUS(
+					u2 = mock.NewUnmarshaller[uint]().RegisterUnmarshal(
 						func(bs []byte) (v uint, n int, err error) {
 							return 11, 1, nil
 						},
@@ -1280,7 +1280,7 @@ func TestOrd(t *testing.T) {
 							return errors.New("value Validator error")
 						},
 					)
-					sk1 = mock.NewSkipper().RegisterSkipMUS(
+					sk1 = mock.NewSkipper().RegisterSkip(
 						func(bs []byte) (n int, err error) { return 1, wantErr },
 					)
 					sk2       = mock.NewSkipper()
@@ -1301,12 +1301,12 @@ func TestOrd(t *testing.T) {
 					wantN   = 5
 					wantErr = errors.New("skip key error")
 
-					u1 = mock.NewUnmarshaller[uint]().RegisterUnmarshalMUS(
+					u1 = mock.NewUnmarshaller[uint]().RegisterUnmarshal(
 						func(bs []byte) (v uint, n int, err error) {
 							return 10, 1, nil
 						},
 					)
-					u2 = mock.NewUnmarshaller[uint]().RegisterUnmarshalMUS(
+					u2 = mock.NewUnmarshaller[uint]().RegisterUnmarshal(
 						func(bs []byte) (v uint, n int, err error) {
 							return 11, 1, nil
 						},
@@ -1321,10 +1321,10 @@ func TestOrd(t *testing.T) {
 							return errors.New("value Validator error")
 						},
 					)
-					sk1 = mock.NewSkipper().RegisterSkipMUS(
+					sk1 = mock.NewSkipper().RegisterSkip(
 						func(bs []byte) (n int, err error) { return 1, nil },
 					)
-					sk2 = mock.NewSkipper().RegisterSkipMUS(
+					sk2 = mock.NewSkipper().RegisterSkip(
 						func(bs []byte) (n int, err error) { return 1, wantErr },
 					)
 					bs    = []byte{4, 10, 11, 3, 200, 1}
@@ -1378,7 +1378,7 @@ func testAllSliceFunctions(
 		str2Raw = append([]byte{6}, []byte(str2)...)
 		sl      = []string{str1, str2}
 
-		m1 mus.Marshaller[string] = mock.NewMarshaller[string]().RegisterNMarshalMUS(4,
+		m1 mus.Marshaller[string] = mock.NewMarshaller[string]().RegisterNMarshal(4,
 			func(v string, bs []byte) (n int) {
 				switch v {
 				case str1:
@@ -1392,7 +1392,7 @@ func testAllSliceFunctions(
 				}
 			},
 		)
-		u1 mus.Unmarshaller[string] = mock.NewUnmarshaller[string]().RegisterNUnmarshalMUS(2,
+		u1 mus.Unmarshaller[string] = mock.NewUnmarshaller[string]().RegisterNUnmarshal(2,
 			func(bs []byte) (v string, n int, err error) {
 				if bytes.Equal(bs[:len(str1Raw)], str1Raw) {
 					return str1, len(str1Raw), nil
@@ -1405,7 +1405,7 @@ func testAllSliceFunctions(
 				}
 			},
 		)
-		s1 mus.Sizer[string] = mock.NewSizer[string]().RegisterNSizeMUS(4,
+		s1 mus.Sizer[string] = mock.NewSizer[string]().RegisterNSize(4,
 			func(v string) (size int) {
 				switch v {
 				case str1:
@@ -1419,7 +1419,7 @@ func testAllSliceFunctions(
 				}
 			},
 		)
-		sk1 mus.Skipper = mock.NewSkipper().RegisterNSkipMUS(2,
+		sk1 mus.Skipper = mock.NewSkipper().RegisterNSkip(2,
 			func(bs []byte) (n int, err error) {
 				if bytes.Equal(bs[:len(str1Raw)], str1Raw) {
 					return len(str1Raw), nil
@@ -1476,7 +1476,7 @@ func testAllMapFunctions(
 		int2Raw      = []byte{8}
 		mp           = map[string]uint{str1: int1, str2: int2}
 		m1           = func() mock.Marshaller[string] {
-			return mock.NewMarshaller[string]().RegisterNMarshalMUS(4,
+			return mock.NewMarshaller[string]().RegisterNMarshal(4,
 				func(v string, bs []byte) (n int) {
 					switch v {
 					case str1:
@@ -1492,7 +1492,7 @@ func testAllMapFunctions(
 			)
 		}()
 		m2 = func() mock.Marshaller[uint] {
-			return mock.NewMarshaller[uint]().RegisterNMarshalMUS(4,
+			return mock.NewMarshaller[uint]().RegisterNMarshal(4,
 				func(v uint, bs []byte) (n int) {
 					switch v {
 					case int1:
@@ -1508,7 +1508,7 @@ func testAllMapFunctions(
 			)
 		}()
 		u1 = func() mock.Unmarshaller[string] {
-			return mock.NewUnmarshaller[string]().RegisterNUnmarshalMUS(2,
+			return mock.NewUnmarshaller[string]().RegisterNUnmarshal(2,
 				func(bs []byte) (v string, n int, err error) {
 					if bytes.Equal(bs[:len(str1Raw)], str1Raw) {
 						return str1, len(str1Raw), nil
@@ -1523,7 +1523,7 @@ func testAllMapFunctions(
 			)
 		}()
 		u2 = func() mock.Unmarshaller[uint] {
-			return mock.NewUnmarshaller[uint]().RegisterNUnmarshalMUS(2,
+			return mock.NewUnmarshaller[uint]().RegisterNUnmarshal(2,
 				func(bs []byte) (v uint, n int, err error) {
 					if bytes.Equal(bs[:len(int1Raw)], int1Raw) {
 						return int1, len(int1Raw), nil
@@ -1538,7 +1538,7 @@ func testAllMapFunctions(
 			)
 		}()
 		s1 = func() mock.Sizer[string] {
-			return mock.NewSizer[string]().RegisterNSizeMUS(4,
+			return mock.NewSizer[string]().RegisterNSize(4,
 				func(v string) (size int) {
 					switch v {
 					case str1:
@@ -1554,7 +1554,7 @@ func testAllMapFunctions(
 			)
 		}()
 		s2 = func() mock.Sizer[uint] {
-			return mock.NewSizer[uint]().RegisterNSizeMUS(4,
+			return mock.NewSizer[uint]().RegisterNSize(4,
 				func(v uint) (size int) {
 					switch v {
 					case int1:
@@ -1570,7 +1570,7 @@ func testAllMapFunctions(
 			)
 		}()
 		sk1 = func() mock.Skipper {
-			return mock.NewSkipper().RegisterNSkipMUS(2,
+			return mock.NewSkipper().RegisterNSkip(2,
 				func(bs []byte) (n int, err error) {
 					if bytes.Equal(bs[:len(str1Raw)], str1Raw) {
 						return len(str1Raw), nil
@@ -1585,7 +1585,7 @@ func testAllMapFunctions(
 			)
 		}()
 		sk2 = func() mock.Skipper {
-			return mock.NewSkipper().RegisterNSkipMUS(2,
+			return mock.NewSkipper().RegisterNSkip(2,
 				func(bs []byte) (n int, err error) {
 					if bytes.Equal(bs[:len(int1Raw)], int1Raw) {
 						return len(int1Raw), nil

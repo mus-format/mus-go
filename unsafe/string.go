@@ -9,7 +9,7 @@ import (
 	"github.com/mus-format/mus-go/varint"
 )
 
-// MarshalString fills bs with the MUS encoding of a string value.
+// MarshalString fills bs with the encoding of a string value.
 //
 // The lenM argument specifies the Marshaller for the string length.
 //
@@ -19,7 +19,7 @@ func MarshalString(v string, lenM mus.Marshaller[int], bs []byte) (n int) {
 	if lenM == nil {
 		n = varint.MarshalPositiveInt(length, bs)
 	} else {
-		n = lenM.MarshalMUS(length, bs)
+		n = lenM.Marshal(length, bs)
 	}
 	if len(bs) < n+length {
 		panic(mus.ErrTooSmallByteSlice)
@@ -27,7 +27,7 @@ func MarshalString(v string, lenM mus.Marshaller[int], bs []byte) (n int) {
 	return n + copy(bs[n:], unsafe_mod.Slice(unsafe_mod.StringData(v), length))
 }
 
-// UnmarshalString parses a MUS-encoded string value from bs.
+// UnmarshalString parses an encoded string value from bs.
 //
 // The lenU argument specifies the Unmarshaller for the string length.
 //
@@ -39,7 +39,7 @@ func UnmarshalString(lenU mus.Unmarshaller[int], bs []byte) (v string, n int,
 	return UnmarshalValidString(lenU, nil, false, bs)
 }
 
-// UnmarshalValidString parses a MUS-encoded valid string value from bs.
+// UnmarshalValidString parses an encoded valid string value from bs.
 //
 // The lenU argument specifies the Unmarshaller for the string length.
 // The lenVl argument specifies the string length Validator. If it returns
@@ -55,7 +55,7 @@ func UnmarshalValidString(lenU mus.Unmarshaller[int], lenVl com.Validator[int],
 	if lenU == nil {
 		length, n, err = varint.UnmarshalPositiveInt(bs)
 	} else {
-		length, n, err = lenU.UnmarshalMUS(bs)
+		length, n, err = lenU.Unmarshal(bs)
 	}
 	if err != nil {
 		return
@@ -83,14 +83,14 @@ func UnmarshalValidString(lenU mus.Unmarshaller[int], lenVl com.Validator[int],
 	return unsafe_mod.String(&bs[n], length), l, nil
 }
 
-// SizeString returns the size of a MUS-encoded string value.
+// SizeString returns the size of an encoded string value.
 //
 // The lenS argument specifies the Sizer for the string length.
 func SizeString(v string, lenS mus.Sizer[int]) (n int) {
 	return ord.SizeString(v, lenS)
 }
 
-// SkipString skips a MUS-encoded string.
+// SkipString skips an encoded string.
 //
 // The lenU argument specifies the Unmarshaller for the string length.
 //

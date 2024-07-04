@@ -6,21 +6,21 @@ import (
 	"github.com/mus-format/mus-go/raw"
 )
 
-// MarshalFloat64 fills bs with the MUS encoding (Raw) of a float64 value.
+// MarshalFloat64 fills bs with the encoding (Raw) of a float64 value.
 //
 // Returns the number of used bytes. It will panic if receives too small bs.
 func MarshalFloat64(v float64, bs []byte) (n int) {
 	return marshalInteger64(math.Float64bits(v), bs)
 }
 
-// MarshalFloat32 fills bs with the MUS encoding (Raw) of a float32 value.
+// MarshalFloat32 fills bs with the encoding (Raw) of a float32 value.
 //
 // Returns the number of used bytes. It will panic if receives too small bs.
 func MarshalFloat32(v float32, bs []byte) (n int) {
 	return marshalInteger32(math.Float32bits(v), bs)
 }
 
-// UnmarshalFloat64 parses a MUS-encoded (Raw) float64 value from bs.
+// UnmarshalFloat64 parses an encoded (Raw) float64 value from bs.
 //
 // In addition to the float64 value and the number of used bytes, it can also
 // return mus.ErrTooSmallByteSlice.
@@ -32,7 +32,7 @@ func UnmarshalFloat64(bs []byte) (v float64, n int, err error) {
 	return math.Float64frombits(uv), n, nil
 }
 
-// UnmarshalFloat32 parses a MUS-encoded (Raw) float32 value from bs.
+// UnmarshalFloat32 parses an encoded (Raw) float32 value from bs.
 //
 // In addition to the float32 value and the number of used bytes, it can also
 // return mus.ErrTooSmallByteSlice.
@@ -44,17 +44,17 @@ func UnmarshalFloat32(bs []byte) (v float32, n int, err error) {
 	return math.Float32frombits(uv), n, nil
 }
 
-// SizeFloat64 returns the size of a MUS-encoded (Raw) float64 value.
+// SizeFloat64 returns the size of an encoded (Raw) float64 value.
 func SizeFloat64(v float64) (n int) {
 	return raw.SizeFloat64(v)
 }
 
-// SizeFloat32 returns the size of a MUS-encoded (Raw) float32 value.
+// SizeFloat32 returns the size of an encoded (Raw) float32 value.
 func SizeFloat32(v float32) (n int) {
 	return raw.SizeFloat32(v)
 }
 
-// SkipFloat64 skips a MUS-encoded (Raw) float64 value.
+// SkipFloat64 skips an encoded (Raw) float64 value.
 //
 // In addition to the number of skipped bytes, it can also return
 // mus.ErrTooSmallByteSlice.
@@ -62,7 +62,7 @@ func SkipFloat64(bs []byte) (n int, err error) {
 	return raw.SkipFloat64(bs)
 }
 
-// SkipFloat32 skips a MUS-encoded (Raw) float32 value.
+// SkipFloat32 skips an encoded (Raw) float32 value.
 //
 // In addition to the number of skipped bytes, it can also return
 // mus.ErrTooSmallByteSlice.
