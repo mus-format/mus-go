@@ -1,8 +1,9 @@
 # mus-go Serializer
-mus-go is a fully compatible with the [MUS format](https://ymz-ncnk.medium.com/mus-serialization-format-21d7be309e8d) Golang serializer. It is extremely fast and has validation support.
+mus-go is a fully compatible with the [MUS format](https://ymz-ncnk.medium.com/mus-serialization-format-21d7be309e8d) Golang serializer. It is extremely fast 
+and has validation support.
 
-Thanks to its minimalist design and a wide range of serialization primitives, it 
-can be used to implement other binary serialization formats ([here](https://github.com/mus-format/mus-examples-go/blob/main/protobuf/main.go) is an example where mus-go is used to implement Protobuf encoding).
+Also thanks to its minimalist design and a wide range of serialization primitives, 
+it can be used to implement other binary serialization formats ([here](https://github.com/mus-format/mus-examples-go/blob/main/protobuf/main.go) is an example where mus-go is used to implement Protobuf encoding).
 
 ## Brief mus-go Description
 - Has a [streaming version](https://github.com/mus-format/mus-stream-go).
