@@ -9,9 +9,9 @@ can be used to implement other binary serialization formats ([here](https://gith
 - Can run on both 32 and 64-bit systems.
 - Variable-length data types (like `string`, `slice`, or `map`) are encoded as: 
   `length + data`. You can choose binary representation for both of these parts. 
-  By default, the length is encoded using Varint (actually, positive Varint). 
-  In this case the maximum length is limited by the maximum value of the `int` 
-  type on your system. This is ok for use on different architectures, 
+  By default, the length is encoded using Varint (actually, Varint without 
+  ZigZag). In this case the maximum length is limited by the maximum value of 
+  the `int` type on your system. This is ok for use on different architectures, 
   because, if, for example, we try to unmarshal too long string on a 32-bit 
   system, we will get `ErrOverflow`.
 - Supports data versioning.
