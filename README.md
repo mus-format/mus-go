@@ -48,6 +48,7 @@ All of the uses described below produce the correct MUS encoding.
 - [Structs Support](#structs-support)
   - [Valid Struct](#valid-struct)
 - [Arrays Support](#arrays-support)
+- [Generic MarshalMUS Function](#generic-marshalmus-function)
 - [Data Type Metadata (DTM) Support](#data-type-metadata-dtm-support)
 - [Data Versioning Support](#data-versioning-support)
 - [Marshal/Unmarshal interfaces (or oneof feature)](#marshalunmarshal-interfaces-or-oneof-feature)
@@ -446,6 +447,47 @@ Unfortunately, Golang does not support generic parameterization of array sizes.
 Therefore, to serialize an array, we must make a slice of it. Or, for better 
 performance, we can implement the necessary `Marshal`, `Unmarshal`, ... 
 functions ourselves, as done in the [ord/slice.go](ord/slice.go) file.
+
+# Generic MarshalMUS Function
+To define generic `MarshalMUS` function:
+```go
+package main 
+
+// Define Marshaller interface
+type MarshallerMUS[T any] interface {
+	MarshalMUS(bs []byte) (n int)
+	SizeMUS() (size int)
+}
+
+// and the function itself.
+func MarshalMUS[T MarshallerMUS[T]](t T) (bs []byte) {
+	bs = make([]byte, t.SizeMUS())
+	t.MarshalMUS(bs)
+	return
+}
+
+// Define a structure that implements the MarshallerMUS interface.
+type Foo struct {...}
+
+func (f Foo) MarshalMUS(bs []byte) (n int) {
+	return MarshalFooMUS(f, bs)
+}
+
+func (f Foo) SizeMUS() (size int) {
+	return SizeFooMUS(f)
+}
+
+func MarshalFooMUS(f Foo, bs []byte) (n int) {...}
+func UnmarshalFooMUS(bs []byte) (f Foo, n int, err error)
+func SizeFooMUS(f Foo) (size int) {...}
+func SkipFooMUS(bs []byte) (n int, err error) {...}
+
+func main() {
+  // Now the generic MarshalMUS function can be used like this.
+	bs := MarshalMUS(Foo{...})
+  // ...
+}
+```
 
 # Data Type Metadata (DTM) Support
 [mus-dts-go](https://github.com/mus-format/mus-dts-go) provides DTM support.
