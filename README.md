@@ -455,26 +455,26 @@ package main
 
 // Define Marshaller interface
 type MarshallerMUS[T any] interface {
-	MarshalMUS(bs []byte) (n int)
-	SizeMUS() (size int)
+  MarshalMUS(bs []byte) (n int)
+  SizeMUS() (size int)
 }
 
 // and the function itself.
 func MarshalMUS[T MarshallerMUS[T]](t T) (bs []byte) {
-	bs = make([]byte, t.SizeMUS())
-	t.MarshalMUS(bs)
-	return
+  bs = make([]byte, t.SizeMUS())
+  t.MarshalMUS(bs)
+  return
 }
 
 // Define a structure that implements the MarshallerMUS interface.
 type Foo struct {...}
 
 func (f Foo) MarshalMUS(bs []byte) (n int) {
-	return MarshalFooMUS(f, bs)
+  return MarshalFooMUS(f, bs)
 }
 
 func (f Foo) SizeMUS() (size int) {
-	return SizeFooMUS(f)
+  return SizeFooMUS(f)
 }
 
 func MarshalFooMUS(f Foo, bs []byte) (n int) {...}
@@ -484,7 +484,7 @@ func SkipFooMUS(bs []byte) (n int, err error) {...}
 
 func main() {
   // Now the generic MarshalMUS function can be used like this.
-	bs := MarshalMUS(Foo{...})
+  bs := MarshalMUS(Foo{...})
   // ...
 }
 ```
