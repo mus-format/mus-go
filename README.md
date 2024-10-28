@@ -33,6 +33,7 @@ All of the uses described below produce the correct MUS encoding.
   - [Brief mus-go Description](#brief-mus-go-description)
 - [Contents](#contents)
 - [cmd-stream-go library](#cmd-stream-go-library)
+- [musgen-go](#musgen-go)
 - [Tests](#tests)
 - [Benchmarks](#benchmarks)
 - [How To Use](#how-to-use)
@@ -59,6 +60,9 @@ All of the uses described below produce the correct MUS encoding.
 [cmd-stream-go](https://github.com/cmd-stream/cmd-stream-go) - high-performance 
 RCX (Remote Command eXecution) library for Golang, which also supports the MUS 
 format.
+
+# musgen-go
+[musgen-go](https://github.com/mus-format/musgen-go) - mus-go code generator.
 
 # Tests
 Test coverage is 100%.
