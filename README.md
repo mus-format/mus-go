@@ -1,8 +1,8 @@
 # mus-go Serializer
-mus-go is fully compatible with the [MUS serialization format](https://ymz-ncnk.medium.com/mus-serialization-format-21d7be309e8d). It is extremely fast and has validation 
-support. Also thanks to the minimalist design and a wide range of serialization 
-primitives, it can be used to implement other binary serialization formats 
-([here](https://github.com/mus-format/mus-examples-go/blob/main/protobuf/main.go) 
+mus-go is fully compatible with the [MUS serialization format](https://ymz-ncnk.medium.com/mus-serialization-format-21d7be309e8d). It is extremely fast and has a [code 
+generator](https://github.com/mus-format/musgen-go). Also thanks to the minimalist 
+design and a wide range of serialization primitives, it can be used to implement 
+other binary serialization formats ([here](https://github.com/mus-format/mus-examples-go/blob/main/protobuf/main.go) 
 is an example where mus-go is used to implement Protobuf encoding).
 
 All of the uses described below produce the correct MUS encoding.
