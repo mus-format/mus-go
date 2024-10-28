@@ -32,7 +32,7 @@ All of the uses described below produce the correct MUS encoding.
 - [mus-go Serializer](#mus-go-serializer)
   - [Brief mus-go Description](#brief-mus-go-description)
 - [Contents](#contents)
-- [cmd-stream-go library](#cmd-stream-go-library)
+- [cmd-stream-go](#cmd-stream-go)
 - [musgen-go](#musgen-go)
 - [Tests](#tests)
 - [Benchmarks](#benchmarks)
@@ -56,10 +56,9 @@ All of the uses described below produce the correct MUS encoding.
 - [Out of Order Deserialization](#out-of-order-deserialization)
 - [Zero Allocation Deserialization](#zero-allocation-deserialization)
 
-# cmd-stream-go library
+# cmd-stream-go
 [cmd-stream-go](https://github.com/cmd-stream/cmd-stream-go) - high-performance 
-RCX (Remote Command eXecution) library for Golang, which also supports the MUS 
-format.
+client-server communication library for Golang that also supports the MUS format.
 
 # musgen-go
 [musgen-go](https://github.com/mus-format/musgen-go) - mus-go code generator.
