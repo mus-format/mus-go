@@ -57,11 +57,12 @@ All of the uses described below produce the correct MUS encoding.
 - [Zero Allocation Deserialization](#zero-allocation-deserialization)
 
 # cmd-stream-go
-[cmd-stream-go](https://github.com/cmd-stream/cmd-stream-go) - high-performance 
-client-server communication library for Golang that also supports the MUS format.
+[cmd-stream-go](https://github.com/cmd-stream/cmd-stream-go) - high-performance
+client-server library for Golang that implements a distributed Command pattern 
+and supports the MUS format.
 
 # musgen-go
-[musgen-go](https://github.com/mus-format/musgen-go) - mus-go code generator.
+[musgen-go](https://github.com/mus-format/musgen-go) - code generator for mus-go.
 
 # Tests
 Test coverage is 100%.
