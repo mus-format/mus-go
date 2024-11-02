@@ -58,8 +58,8 @@ All of the uses described below produce the correct MUS encoding.
 
 # cmd-stream-go
 [cmd-stream-go](https://github.com/cmd-stream/cmd-stream-go) - high-performance
-client-server library for Golang that implements a distributed Command pattern 
-and supports the MUS format.
+client-server library for Golang that implements a Command pattern and supports 
+the MUS format.
 
 # musgen-go
 [musgen-go](https://github.com/mus-format/musgen-go) - code generator for mus-go.
