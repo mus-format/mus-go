@@ -143,24 +143,20 @@ import (
 func main() {
   var (
     ErrTooLongString                         = errors.New("too long string")
-    maxLength        com.ValidatorFn[int] = func(length int) (err error) {
+    lenU mus.Unmarshaller // Length unmarshaller, if nil the default value is used.
+    lenVl        com.ValidatorFn[int] = func(length int) (err error) {  // Length validator.
       // Checks the length of the string.
       if length > 10 {
         err = ErrTooLongString
       }
       return
     }
+    skip = true // Skip flag, if true and the encoded string str does not meet
+    // the requirements of the validator, then all bytes belonging to this 
+    // string will be skipped, that is, n will be equal to SizeString(str).
   )
   // ...
-  // UnmarshalValidString accepts:
-  // - length unmarshaller (if nil the default value is used)
-  // - length validator
-  // - skip flag
-  // - bs
-  str, n, err := ord.UnmarshalValidString(nil, maxLength, true, bs)
-  // If skip flag == true and the encoded string str does not meet the 
-  // requirements of the validator, then all bytes belonging to this string will
-  // be skipped, that is, n will be equal to SizeString(str).
+  str, n, err := ord.UnmarshalValidString(lenU, lenVl, skip, bs)
   // ...
 }
 ```
@@ -178,6 +174,8 @@ import (
 func main() {
   var (
     sl = []int{1, 2, 3, 4, 5}
+    lenM mus.Marshaller // Length marshaller, if nil the default value is used.
+    lenU mus.Unmarshaller // Length unmarshaller, if nil the default value is used.
     m  = mus.MarshallerFn[int](varint.MarshalInt) // Implementation of the 
     // mus.Marshaller interface for slice elements.
     u = mus.UnmarshallerFn[int](varint.UnmarshalInt) // Implementation of the
@@ -187,17 +185,8 @@ func main() {
     size = ord.SizeSlice[int](sl, s)
     bs   = make([]byte, size)
   )
-  // MarshalSlice accepts:
-  // - slice
-  // - slice length marshaller (if nil the default value is used)
-  // - slice element marshaller
-  // - bs
-  n := ord.MarshalSlice[int](sl, nil, m, bs)
-  // UnmarshalSlice accepts:
-  // - slice length unmarshaller (if nil the default value is used)
-  // - slice element unmarshaller
-  // - bs
-  sl, n, err := ord.UnmarshalSlice[int](nil, u, bs)
+  ord.MarshalSlice[int](sl, lenM, m, bs)
+  sl, n, err := ord.UnmarshalSlice[int](lenU, u, bs)
   // ...
 }
 ```
@@ -222,35 +211,31 @@ func main() {
   var (
     ErrTooLongSlice    = errors.New("too long slice")
     ErrTooBigSliceElem = errors.New("too big slice elem")
-    u                  = mus.UnmarshallerFn[int](varint.UnmarshalInt)
-    sk                 = mus.SkipperFn(varint.SkipInt) // Implementation of the
-    // mus.Skipper interface for the slice elements, may be nil, in which case 
-    // a validation error will be returned immediately.
-    maxLength com.ValidatorFn[int] = func(length int) (err error) {
+
+    lenU mus.Unmarshaller // Length unmarshaller, if nil the default value is used.
+    lenVl com.ValidatorFn[int] = func(length int) (err error) { // Length validator.
       // Checks the length of the slice.
       if length > 5 {
         err = ErrTooLongSlice
       }
       return
     }
-    vl com.ValidatorFn[int] = func(e int) (err error) {
+    u                  = mus.UnmarshallerFn[int](varint.UnmarshalInt)
+    vl com.ValidatorFn[int] = func(e int) (err error) { // Elements validator.
       // Checks the slice elements.
       if e > 10 {
         err = ErrTooBigSliceElem
       }
       return
     }
+    sk                 = mus.SkipperFn(varint.SkipInt) // Implementation of the
+    // mus.Skipper interface for the slice elements, may be nil, in which case 
+    // a validation error will be returned immediately. If != nil and one of the
+    // validators returns an error, it will be used to skip the rest of the 
+    // slice.
   )
   // ...
-  // UnmarshalValidSlice accepts:
-  // - slice length unmarshaller (if nil the default value is used)
-  // - slice length validator
-  // - slice element unmarshaller
-  // - slice element validator
-  // - slice element skipper (if != nil and one of the validators returns an 
-  //   error, it will be used to skip the rest of the slice)
-  // - bs
-  sl, n, err := ord.UnmarshalValidSlice[int](nil, maxLength, u, vl, sk, bs)
+  sl, n, err := ord.UnmarshalValidSlice[int](lenU, lenVl, u, vl, sk, bs)
   // ...
 }
 ```
