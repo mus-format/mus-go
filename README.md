@@ -58,7 +58,7 @@ All of the uses described below produce the correct MUS encoding.
 
 # cmd-stream-go
 [cmd-stream-go](https://github.com/cmd-stream/cmd-stream-go) - high-performance
-client-server library for Golang that implements a Command pattern. 
+client-server library for Golang that implements the Command pattern. 
 cmd-stream-go/MUS is about 3 times faster than gRPC/Protobuf.
 
 # musgen-go
