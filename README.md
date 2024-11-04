@@ -5,6 +5,8 @@ design and a wide range of serialization primitives, it can be used to implement
 other binary serialization formats ([here](https://github.com/mus-format/mus-examples-go/blob/main/protobuf/main.go) 
 is an example where mus-go is used to implement Protobuf encoding).
 
+To get started quickly, just go to the [code generator](https://github.com/mus-format/musgen-go) page.
+
 All of the uses described below produce the correct MUS encoding.
 
 ## Brief mus-go Description
