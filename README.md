@@ -68,9 +68,14 @@ cmd-stream-go/MUS is about 3 times faster than gRPC/Protobuf.
 Test coverage is 100%.
 
 # Benchmarks
-- [github.com/ymz-ncnk/go-serialization-benchmarks](https://github.com/ymz-ncnk/go-serialization-benchmarks) - contains the results of running serializers in 
-  different modes.
+- [github.com/ymz-ncnk/go-serialization-benchmarks](https://github.com/ymz-ncnk/go-serialization-benchmarks) - contains the results of running serializers in different modes.
 - [github.com/alecthomas/go_serialization_benchmarks](https://github.com/alecthomas/go_serialization_benchmarks)
+
+Why did I write another [benchmarks](https://github.com/ymz-ncnk/go-serialization-benchmarks)?
+Existing [benchmarks](https://github.com/alecthomas/go_serialization_benchmarks) 
+currently have some issues, just try to run them several times, you will most 
+likely get different results. Having done so, I simply did not know which one to
+choose. That was one of the reasons, and basically I made them for my own use.
 
 # How To Use
 Don't forget to visit [mus-examples-go](https://github.com/mus-format/mus-examples-go).
