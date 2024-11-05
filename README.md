@@ -76,7 +76,8 @@ Test coverage is 100%.
 Why did I write another [benchmarks](https://github.com/ymz-ncnk/go-serialization-benchmarks)?
 Existing [benchmarks](https://github.com/alecthomas/go_serialization_benchmarks) 
 currently have some issues, just try to run them several times, you will most 
-likely get different results. Having done so, I simply did not know which one to
+likely get different results (such that it's impossible to determine which 
+serializer is faster). Having done so, I simply did not know which one to
 choose. That was one of the reasons, and basically I made them for my own use.
 
 # How To Use
