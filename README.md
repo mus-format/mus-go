@@ -64,7 +64,10 @@ client-server library for Golang that implements the Command pattern.
 cmd-stream-go/MUS is about 3 times faster than gRPC/Protobuf.
 
 # musgen-go
-[musgen-go](https://github.com/mus-format/musgen-go) - code generator for mus-go.
+Writing mus-go code manually is quite tedious and error-prone. Match better to 
+use a [code generator](https://github.com/mus-format/musgen-go) that can produce 
+`Marshal/Unmarshal/Size/Skip` functions for you. Also it is very easy to use - 
+just give it a type and call `Generate()`, that's all you need to do.
 
 # Tests
 Test coverage is 100%.
