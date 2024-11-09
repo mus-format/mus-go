@@ -14,19 +14,14 @@ All of the uses described below produce the correct MUS encoding.
 - Can run on both 32 and 64-bit systems.
 - Variable-length data types (like `string`, `slice`, or `map`) are encoded as: 
   `length + data`. You can choose binary representation for both of these parts. 
-  By default, the length is encoded using Varint (actually, Varint without 
-  ZigZag). In this case the maximum length is limited by the maximum value of 
-  the `int` type on your system. This is ok for use on different architectures, 
-  because, if, for example, we try to unmarshal too long string on a 32-bit 
-  system, we will get `ErrOverflow`.
 - Supports data versioning.
-- If invalid data is encountered during deserialization, it returns one
-  of the following errors: `ErrOverflow`, `ErrNegativeLength`, `ErrTooSmallByteSlice`, `ErrWrongFormat`.
+- Deserialization may fail with one of the following errors: `ErrOverflow`, 
+  `ErrNegativeLength`, `ErrTooSmallByteSlice`, `ErrWrongFormat`.
 - Can validate and skip data while unmarshalling.
-- Supports pointers.
 - Can encode data structures such as graphs or linked lists.
-- Supports private fields.
+- Supports pointers.
 - Supports oneof feature.
+- Supports private fields.
 - Supports out-of-order deserialization.
 - Supports zero allocation deserialization.
 
@@ -135,7 +130,17 @@ If in doubt, use Varint.
 
 ## ord (ordinary) Package
 Supports the following data types: `bool`, `string`, `slice`, `map`, and 
-pointers. The principle of serialization of these types is exactly the same as 
+pointers. 
+
+Variable-length data types (like `string`, `slice`, or `map`) are encoded as: 
+`length + data`. You can choose binary representation for both of these parts. 
+By default, the length is encoded using Varint (actually, Varint without 
+ZigZag). In this case the maximum length is limited by the maximum value of 
+the `int` type on your system. This is ok for use on different architectures, 
+because, if, for example, we try to unmarshal too long string on a 32-bit 
+system, we will get `ErrOverflow`.
+
+The serialization principle for types from this package is exactly the same as 
 in the above examples. Let's consider the features.
 
 ### Valid String
@@ -186,9 +191,9 @@ func main() {
   var (
     sl = []int{1, 2, 3, 4, 5}
     lenM mus.Marshaller // Length marshaller, if nil the default value is used.
-    lenU mus.Unmarshaller // Length unmarshaller, if nil the default value is used.
     m  = mus.MarshallerFn[int](varint.MarshalInt) // Implementation of the 
     // mus.Marshaller interface for slice elements.
+    lenU mus.Unmarshaller // Length unmarshaller, if nil the default value is used.
     u = mus.UnmarshallerFn[int](varint.UnmarshalInt) // Implementation of the
     // mus.Unmarshaller interface for slice elements.
     s = mus.SizerFn[int](varint.SizeInt) // Implementation of the mus.Sizer
@@ -384,61 +389,26 @@ import (
 )
 
 // Continuation of the previous section.
-var (
-  ErrTooBigA                         = errors.New("too big a")
-  vl        com.ValidatorFn[int] = func(a int) (err error) {
-    // Checks if the Foo.a field is correct.
-    if a > 10 {
-      err = ErrTooBigA
-    }
-    return
-  }
-  sk mus.SkipperFn = func(bs []byte) (n int, err error) { // Skipper for the
-    // Foo.a field, skips all subsequent Foo fields.
-    n, err = ord.SkipBool(bs)
-    if err != nil {
-      return
-    }
-    var n1 int
-    n1, err = ord.SkipString(nil, bs[n:])
-    n += n1
-    return
-  }
-)
 
-func UnmarshalValidFoo(vl com.Validator[int], sk mus.Skipper, bs []byte) (
-  v Foo, n int, err error) {
-  v.a, n, err = varint.UnmarshalInt(bs)
-  if err != nil {
-    return
-  }
-  var n1 int
-  n1, err = validate(v.a, vl, sk, bs[n:])
-  n += n1
-  if err != nil {
-    return
-  }
-  v.b, n1, err = ord.UnmarshalBool(bs[n:])
-  n += n1
-  if err != nil {
-    return
-  }
-  v.c, n1, err = ord.UnmarshalString(nil, bs[n:])
-  n += n1
-  return
+// Can be used to check Foo.a field.
+var vl com.ValidatorFn[int] = func(n int) (err error) {
+	if n > 10 {
+		return errors.New("bigger than 10")
+	}
+	return
 }
 
-func validate(field int, vl com.Validator[int], sk mus.Skipper, bs []byte) (
-  n int, err error) {
-  var skErr error
-  err = vl.Validate(field)
-  if err != nil && sk != nil { // If Skipper != nil, applies it, otherwise
-    // returns a validation error immediately.
-    if n, skErr = sk.Skip(bs); skErr != nil {
-      err = skErr
-    }
-  }
-  return
+func UnmarshalValidFoo(aVl com.Validator[int], bs []byte) (
+	v Foo, n int, err error) {
+	v.a, n, err = varint.UnmarshalInt(bs)
+	if err != nil {
+		return
+	}
+	if err = aVl.Validate(v.a); err != nil {
+		err = fmt.Errorf("incorrect field 'a': %w", err)
+		return
+	}
+	// ...
 }
 ```
 
