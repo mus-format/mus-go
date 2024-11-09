@@ -5,7 +5,7 @@ design and a wide range of serialization primitives, it can be used to implement
 other binary serialization formats ([here](https://github.com/mus-format/mus-examples-go/blob/main/protobuf/main.go) 
 is an example where mus-go is used to implement Protobuf encoding).
 
-To get started quickly, just go to the [code generator](https://github.com/mus-format/musgen-go) page.
+To get started quickly, go to the [code generator](https://github.com/mus-format/musgen-go) page.
 
 All of the uses described below produce the correct MUS encoding.
 
@@ -302,8 +302,8 @@ linked lists (corresponding examples can be found at
 
 # Structs Support
 In fact, mus-go does not support structural data types, which means that we will
-have to implement the `mus.Marshaller`, `mus.Unmarshaller` and `mus.Sizer` 
-interfaces ourselves. But it's not difficult at all, for example:
+have to implement the `mus.Marshaller`, `mus.Unmarshaller`, `mus.Sizer` and
+`mus.Skipper` interfaces ourselves. But it's not difficult at all, for example:
 ```go
 package main
 
@@ -392,23 +392,23 @@ import (
 
 // Can be used to check Foo.a field.
 var vl com.ValidatorFn[int] = func(n int) (err error) {
-	if n > 10 {
-		return errors.New("bigger than 10")
-	}
-	return
+  if n > 10 {
+    return errors.New("bigger than 10")
+  }
+  return
 }
 
 func UnmarshalValidFoo(aVl com.Validator[int], bs []byte) (
-	v Foo, n int, err error) {
-	v.a, n, err = varint.UnmarshalInt(bs)
-	if err != nil {
-		return
-	}
-	if err = aVl.Validate(v.a); err != nil {
-		err = fmt.Errorf("incorrect field 'a': %w", err)
-		return
-	}
-	// ...
+  v Foo, n int, err error) {
+  v.a, n, err = varint.UnmarshalInt(bs)
+  if err != nil {
+    return
+  }
+  if err = aVl.Validate(v.a); err != nil {
+    err = fmt.Errorf("incorrect field 'a': %w", err)
+    return
+  }
+  // ...
 }
 ```
 
@@ -423,13 +423,12 @@ To define generic `MarshalMUS` function:
 ```go
 package main 
 
-// Define Marshaller interface
+// Define MarshallerMUS interface and the function itself.
 type MarshallerMUS[T any] interface {
   MarshalMUS(bs []byte) (n int)
   SizeMUS() (size int)
 }
 
-// and the function itself.
 func MarshalMUS[T MarshallerMUS[T]](t T) (bs []byte) {
   bs = make([]byte, t.SizeMUS())
   t.MarshalMUS(bs)
