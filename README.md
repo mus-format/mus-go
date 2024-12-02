@@ -424,12 +424,12 @@ To define generic `MarshalMUS` function:
 package main 
 
 // Define MarshallerMUS interface and the function itself.
-type MarshallerMUS[T any] interface {
+type MarshallerMUS interface {
   MarshalMUS(bs []byte) (n int)
   SizeMUS() (size int)
 }
 
-func MarshalMUS[T MarshallerMUS[T]](t T) (bs []byte) {
+func MarshalMUS[T MarshallerMUS](t T) (bs []byte) {
   bs = make([]byte, t.SizeMUS())
   t.MarshalMUS(bs)
   return
