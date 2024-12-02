@@ -506,7 +506,7 @@ func MarshalInstruction(instr Instruction, bs []byte) (n int) {
   if m, ok := instr.(MarshallerMUS); ok {
     return m.MarshalMUS(bs)
   }
-  panic("instr doesn't implement MarshallerMUS interface")
+  panic("instr doesn't implement the MarshallerMUS interface")
 }
 
 func UnmarshalInstruction(bs []byte) (instr Instruction, n int, err error) {
@@ -529,7 +529,7 @@ func SizeInstruction(instr Instruction) (size int) {
   if s, ok := instr.(MarshallerMUS); ok {
     return s.SizeMUS()
   }
-  panic("instr doesn't implement MarshallerMUS interface")
+  panic("instr doesn't implement the MarshallerMUS interface")
 }
 ```
 A full example can be found at [mus-examples-go](https://github.com/mus-format/mus-examples-go/tree/main/oneof).
