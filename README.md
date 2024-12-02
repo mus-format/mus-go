@@ -46,6 +46,7 @@ All of the uses described below produce the correct MUS encoding.
 - [Structs Support](#structs-support)
   - [Valid Struct](#valid-struct)
 - [Arrays Support](#arrays-support)
+- [MarshallerMUS Interface](#marshallermus-interface)
 - [Generic MarshalMUS Function](#generic-marshalmus-function)
 - [Data Type Metadata (DTM) Support](#data-type-metadata-dtm-support)
 - [Data Versioning](#data-versioning)
@@ -418,17 +419,38 @@ Therefore, to serialize an array, we must make a slice of it. Or, for better
 performance, we can implement the necessary `Marshal`, `Unmarshal`, ... 
 functions ourselves, as done in the [ord/slice.go](ord/slice.go) file.
 
-# Generic MarshalMUS Function
-To define generic `MarshalMUS` function:
+# MarshallerMUS Interface
+It is often convenient to define the `MarshallerMUS` interface:
 ```go
-package main 
-
-// Define MarshallerMUS interface and the function itself.
 type MarshallerMUS interface {
   MarshalMUS(bs []byte) (n int)
   SizeMUS() (size int)
 }
 
+// Foo implements the MarshallerMUS interface.
+type Foo struct {...}
+
+func (f Foo) MarshalMUS(bs []byte) (n int) {
+  return MarshalFooMUS(f, bs) // or FooDTS.Marshal(f, bs)
+}
+
+func (f Foo) SizeMUS() (size int) {
+  return SizeFooMUS(f) // or FooDTS.Size(f)
+}
+```
+
+# Generic MarshalMUS Function
+To define generic `MarshalMUS` function:
+```go
+package main 
+
+// Define MarshallerMUS interface ...
+type MarshallerMUS interface {
+  MarshalMUS(bs []byte) (n int)
+  SizeMUS() (size int)
+}
+
+// ... and the function itself.
 func MarshalMUS[T MarshallerMUS](t T) (bs []byte) {
   bs = make([]byte, t.SizeMUS())
   t.MarshalMUS(bs)
@@ -437,19 +459,7 @@ func MarshalMUS[T MarshallerMUS](t T) (bs []byte) {
 
 // Define a structure that implements the MarshallerMUS interface.
 type Foo struct {...}
-
-func (f Foo) MarshalMUS(bs []byte) (n int) {
-  return MarshalFooMUS(f, bs)
-}
-
-func (f Foo) SizeMUS() (size int) {
-  return SizeFooMUS(f)
-}
-
-func MarshalFooMUS(f Foo, bs []byte) (n int) {...}
-func UnmarshalFooMUS(bs []byte) (f Foo, n int, err error)
-func SizeFooMUS(f Foo) (size int) {...}
-func SkipFooMUS(bs []byte) (n int, err error) {...}
+...
 
 func main() {
   // Now the generic MarshalMUS function can be used like this.
