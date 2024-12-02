@@ -18,8 +18,8 @@ All of the uses described below produce the correct MUS encoding.
 - Deserialization may fail with one of the following errors: `ErrOverflow`, 
   `ErrNegativeLength`, `ErrTooSmallByteSlice`, `ErrWrongFormat`.
 - Can validate and skip data while unmarshalling.
-- Can encode data structures such as graphs or linked lists.
 - Supports pointers.
+- Can encode data structures such as graphs or linked lists.
 - Supports oneof feature.
 - Supports private fields.
 - Supports out-of-order deserialization.
@@ -60,16 +60,17 @@ client-server library for Golang that implements the Command pattern.
 cmd-stream-go/MUS is about 3 times faster than gRPC/Protobuf.
 
 # musgen-go
-Writing mus-go code manually is quite tedious and error-prone. Match better to 
-use a [code generator](https://github.com/mus-format/musgen-go) that can produce 
-`Marshal/Unmarshal/Size/Skip` functions for you. Also it is very easy to use - 
-just give it a type and call `Generate()`, that's all you need to do.
+Writing mus-go code manually can be quite tedious and error-prone. It's much 
+better to use a code generator that can produce `Marshal`, `Unmarshal`, `Size`, 
+and `Skip` functions for you. Also it is very easy to use - just give it a type 
+and call `Generate()`.
 
 # Tests
 Test coverage is 100%.
 
 # Benchmarks
-- [github.com/ymz-ncnk/go-serialization-benchmarks](https://github.com/ymz-ncnk/go-serialization-benchmarks) - contains the results of running serializers in different modes.
+- [github.com/ymz-ncnk/go-serialization-benchmarks](https://github.com/ymz-ncnk/go-serialization-benchmarks) - 
+  contains the results of running serializers in different modes.
 - [github.com/alecthomas/go_serialization_benchmarks](https://github.com/alecthomas/go_serialization_benchmarks)
 
 Why did I write another [benchmarks](https://github.com/ymz-ncnk/go-serialization-benchmarks)?
@@ -294,7 +295,8 @@ func main() {
   // ...
 }
 ```
-If we use the `ord` package to serialize this structure, then after unmarshal `twoPtr.ptr1 != twoPtr.ptr2`. But with `pm` package, these fields will be equal.
+If we use the `ord` package to serialize this structure, then after unmarshal 
+`twoPtr.ptr1 != twoPtr.ptr2`. But with `pm` package, these fields will be equal.
 Unlike the `ord` package, `pm` encodes pointers with the Mapping pointer flag,
 described in the [MUS format specification](https://github.com/mus-format/specification#format-features).
 Also with its help, we can encode data structures such as graphs or 
@@ -501,10 +503,10 @@ var (
 // Marshal/Unmarshal/Size functions for the Instruction interface.
 
 func MarshalInstruction(instr Instruction, bs []byte) (n int) {
-	if m, ok := instr.(MarshallerMUS); ok {
-		return m.MarshalMUS(bs)
-	}
-	panic("instr doesn't implement MarshallerMUS interface")
+  if m, ok := instr.(MarshallerMUS); ok {
+    return m.MarshalMUS(bs)
+  }
+  panic("instr doesn't implement MarshallerMUS interface")
 }
 
 func UnmarshalInstruction(bs []byte) (instr Instruction, n int, err error) {
@@ -524,10 +526,10 @@ func UnmarshalInstruction(bs []byte) (instr Instruction, n int, err error) {
 }
 
 func SizeInstruction(instr Instruction) (size int) {
-	if s, ok := instr.(MarshallerMUS); ok {
-		return s.SizeMUS()
-	}
-	panic("instr doesn't implement MarshallerMUS interface")
+  if s, ok := instr.(MarshallerMUS); ok {
+    return s.SizeMUS()
+  }
+  panic("instr doesn't implement MarshallerMUS interface")
 }
 ```
 A full example can be found at [mus-examples-go](https://github.com/mus-format/mus-examples-go/tree/main/oneof).
