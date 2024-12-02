@@ -485,10 +485,10 @@ A simple example:
 // Interface to Marshal/Unmarshal.
 type Instruction interface {...}
 
-// Copy implements the Instruction interface.
+// Copy implements the Instruction and MarshallerMUS interfaces.
 type Copy struct {...}
 
-// Insert implements the Instruction interface.
+// Insert implements the Instruction and MarshallerMUS interfaces.
 type Insert struct {...}
 
 var (
@@ -500,14 +500,10 @@ var (
 // Marshal/Unmarshal/Size functions for the Instruction interface.
 
 func MarshalInstruction(instr Instruction, bs []byte) (n int) {
-  switch in := instr.(type) {
-  case Copy:
-    return CopyDTS.Marshal(in, bs)
-  case Insert:
-    return InsertDTS.Marshal(in, bs)
-  default:
-    panic(ErrUnexpectedInstructionType)
-  }
+	if m, ok := instr.(MarshallerMUS); ok {
+		return m.MarshalMUS(bs)
+	}
+	panic("instr doesn't implement MarshallerMUS interface")
 }
 
 func UnmarshalInstruction(bs []byte) (instr Instruction, n int, err error) {
@@ -527,14 +523,10 @@ func UnmarshalInstruction(bs []byte) (instr Instruction, n int, err error) {
 }
 
 func SizeInstruction(instr Instruction) (size int) {
-  switch in := instr.(type) {
-  case Copy:
-    return CopyDTS.Size(in)
-  case Insert:
-    return InsertDTS.Size(in)
-  default:
-    panic(ErrUnexpectedInstructionType)
-  }
+	if s, ok := instr.(MarshallerMUS); ok {
+		return s.SizeMUS()
+	}
+	panic("instr doesn't implement MarshallerMUS interface")
 }
 ```
 A full example can be found at [mus-examples-go](https://github.com/mus-format/mus-examples-go/tree/main/oneof).
