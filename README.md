@@ -48,7 +48,7 @@ All of the uses described below produce the correct MUS encoding.
 - [Arrays Support](#arrays-support)
 - [Generic MarshalMUS Function](#generic-marshalmus-function)
 - [Data Type Metadata (DTM) Support](#data-type-metadata-dtm-support)
-- [Data Versioning Support](#data-versioning-support)
+- [Data Versioning](#data-versioning)
 - [Marshal/Unmarshal interfaces (or oneof feature)](#marshalunmarshal-interfaces-or-oneof-feature)
 - [Out of Order Deserialization](#out-of-order-deserialization)
 - [Zero Allocation Deserialization](#zero-allocation-deserialization)
@@ -398,13 +398,13 @@ var vl com.ValidatorFn[int] = func(n int) (err error) {
   return
 }
 
-func UnmarshalValidFoo(aVl com.Validator[int], bs []byte) (
+func UnmarshalValidFoo(vl com.Validator[int], bs []byte) (
   v Foo, n int, err error) {
   v.a, n, err = varint.UnmarshalInt(bs)
   if err != nil {
     return
   }
-  if err = aVl.Validate(v.a); err != nil {
+  if err = vl.Validate(v.a); err != nil {
     err = fmt.Errorf("incorrect field 'a': %w", err)
     return
   }
@@ -458,16 +458,13 @@ func main() {
 }
 ```
 
+The full code can be found [here](https://github.com/mus-format/mus-examples-go/tree/main/generic_marshal).
+
 # Data Type Metadata (DTM) Support
 [mus-dts-go](https://github.com/mus-format/mus-dts-go) provides DTM support.
 
-# Data Versioning Support
-[mus-dvs-go](https://github.com/mus-format/mus-dvs-go) provides data versioning 
-support. 
-
-Using mus-dvs-go imposes almost no restrictions - in the new version of the data
-type, we can change the field type, remove a field, and generally do anything we
-want as long as we can migrate from one version to another.
+# Data Versioning
+mus-dts-go can be used to implement data versioning. [Here](https://github.com/mus-format/mus-examples-go/tree/main/versionings) is an example.
 
 # Marshal/Unmarshal interfaces (or oneof feature)
 You should read the [mus-dts-go](https://github.com/mus-format/mus-dts-go)
