@@ -437,6 +437,7 @@ func (f Foo) MarshalMUS(bs []byte) (n int) {
 func (f Foo) SizeMUS() (size int) {
   return SizeFooMUS(f) // or FooDTS.Size(f)
 }
+...
 ```
 
 # Generic MarshalMUS Function
