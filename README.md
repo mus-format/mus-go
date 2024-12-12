@@ -96,8 +96,7 @@ import "github.com/mus-format/mus-go/varint"
 func main() {
   var (
     num  = 1000
-    size = varint.SizeInt(num) // The number of bytes required to serialize a
-    // given num.
+    size = varint.SizeInt(num) // The number of bytes required to serialize num.
     bs = make([]byte, size)
   )
   n := varint.MarshalInt(num, bs)        // Returns the number of used bytes.
@@ -136,18 +135,18 @@ pointers.
 
 Variable-length data types (like `string`, `slice`, or `map`) are encoded as: 
 `length + data`. You can choose binary representation for both of these parts. 
-By default, the length is encoded using Varint (actually, Varint without 
-ZigZag). In this case the maximum length is limited by the maximum value of 
-the `int` type on your system. This is ok for use on different architectures, 
-because, if, for example, we try to unmarshal too long string on a 32-bit 
-system, we will get `ErrOverflow`.
+By default, the length is encoded using Varint without ZigZag (see 
+`...PositiveInt()` functions from the varint package). In this case the 
+maximum length is limited by the maximum value of the `int` type on your system.
+This is ok for different architectures - an attempt to unmarshal, for example, 
+too long string on a 32-bit system, will result in `ErrOverflow`.
 
-The serialization principle for types from this package is exactly the same as 
-in the above examples. Let's consider the features.
+The use of this package is exactly the same as shown in the examples above. 
+Let's look at the features.
 
 ### Valid String
-When deserializing a string, you can set a limit on its length. This is done 
-using the `ord.UnmarshalValidString()` function:
+When deserializing a string, you can validate its length. This is done using the
+`ord.UnmarshalValidString()` function:
 ```go
 package main
 
@@ -161,17 +160,16 @@ import (
 func main() {
   var (
     ErrTooLongString                         = errors.New("too long string")
-    lenU mus.Unmarshaller // Length unmarshaller, if nil the default value is used.
+    lenU mus.Unmarshaller // Length unmarshaller, if nil varint.UnmarshalPositiveInt() is used.
     lenVl        com.ValidatorFn[int] = func(length int) (err error) {  // Length validator.
-      // Checks the length of the string.
       if length > 10 {
         err = ErrTooLongString
       }
       return
     }
-    skip = true // Skip flag, if true and the encoded string str does not meet
-    // the requirements of the validator, then all bytes belonging to this 
-    // string will be skipped, that is, n will be equal to SizeString(str).
+    skip = true // If true and the encoded string does not meet the requirements
+    // of the validator, all bytes belonging to it will be skipped, n will be 
+    // equal to SizeString(str).
   )
   // ...
   str, n, err := ord.UnmarshalValidString(lenU, lenVl, skip, bs)
@@ -192,10 +190,10 @@ import (
 func main() {
   var (
     sl = []int{1, 2, 3, 4, 5}
-    lenM mus.Marshaller // Length marshaller, if nil the default value is used.
+    lenM mus.Marshaller // Length marshaller, if nil varint.MarshalPositiveInt() is used.
     m  = mus.MarshallerFn[int](varint.MarshalInt) // Implementation of the 
     // mus.Marshaller interface for slice elements.
-    lenU mus.Unmarshaller // Length unmarshaller, if nil the default value is used.
+    lenU mus.Unmarshaller // Length unmarshaller, if nil varint.UnmarshalPositiveInt() is used.
     u = mus.UnmarshallerFn[int](varint.UnmarshalInt) // Implementation of the
     // mus.Unmarshaller interface for slice elements.
     s = mus.SizerFn[int](varint.SizeInt) // Implementation of the mus.Sizer
@@ -210,9 +208,9 @@ func main() {
 ```
 
 ### Valid Slice
-When deserializing a slice, using the `ord.UnmarshalValidSlice()` function, we 
-can set length and elements validators as well as `Skipper` that will skip the 
-rest of the data if one of the validators returns an error:
+When deserializing a slice using the `ord.UnmarshalValidSlice()` function, you 
+can set length and elements validators as well as `Skipper`, that will be used
+to skip the rest of the data if one of the validators returns an error:
 ```go
 package main
 
@@ -230,9 +228,8 @@ func main() {
     ErrTooLongSlice    = errors.New("too long slice")
     ErrTooBigSliceElem = errors.New("too big slice elem")
 
-    lenU mus.Unmarshaller // Length unmarshaller, if nil the default value is used.
+    lenU mus.Unmarshaller // Length unmarshaller, if nil varint.UnmarshalPositiveInt() is used.
     lenVl com.ValidatorFn[int] = func(length int) (err error) { // Length validator.
-      // Checks the length of the slice.
       if length > 5 {
         err = ErrTooLongSlice
       }
@@ -240,17 +237,14 @@ func main() {
     }
     u                  = mus.UnmarshallerFn[int](varint.UnmarshalInt)
     vl com.ValidatorFn[int] = func(e int) (err error) { // Elements validator.
-      // Checks the slice elements.
       if e > 10 {
         err = ErrTooBigSliceElem
       }
       return
     }
-    sk                 = mus.SkipperFn(varint.SkipInt) // Implementation of the
-    // mus.Skipper interface for the slice elements, may be nil, in which case 
-    // a validation error will be returned immediately. If != nil and one of the
-    // validators returns an error, it will be used to skip the rest of the 
-    // slice.
+    sk                 = mus.SkipperFn(varint.SkipInt) // If nil, a validation 
+    // error will be returned immediately. If != nil and one of the validators 
+    // returns an error, will be used to skip the rest of the slice.
   )
   // ...
   sl, n, err := ord.UnmarshalValidSlice[int](lenU, lenVl, u, vl, sk, bs)
@@ -262,14 +256,12 @@ func main() {
 All of the above about the slice type also applies to the map type.
 
 ## unsafe Package
-You can get maximum performance with this package, but be careful it uses an 
-unsafe type conversion.
+unsafe package provides maximum performance, but be careful it uses an unsafe 
+type conversion.
 
-To a large extent, this warning applies to the `string` type - if we change a 
-byte slice, the string obtained from it will also change. In this case, we must 
-first process the result, i.e. the string, and only then reuse the byte slice. 
-For other types, there is no such behavior. Please visit this 
-[example](https://github.com/mus-format/mus-examples-go/blob/main/unasafe/main.go), 
+To a large extent, this warning applies to the `string` type - changing the
+byte slice after unmarshal will also change the contents of the string. Please 
+visit this [example](https://github.com/mus-format/mus-examples-go/blob/main/unasafe/main.go), 
 it tries to make things more clear.
 
 Supports the following data types: `bool`, `string`, `byte`, and all `uint`, 
@@ -278,35 +270,20 @@ Supports the following data types: `bool`, `string`, `byte`, and all `uint`,
 ## pm (pointer mapping) Package
 Let's consider the following struct:
 ```go
-package main
-
 type TwoPtr struct {
   ptr1 *string
   ptr2 *string
 }
-
-func main() {
-  str := "the same pointer in two fields"
-  ptr := &str
-  twoPtr := TwoPtr{
-    ptr1: ptr,
-    ptr2: ptr,
-  }
-  // ...
-}
 ```
-If we use the `ord` package to serialize this structure, then after unmarshal 
-`twoPtr.ptr1 != twoPtr.ptr2`. But with `pm` package, these fields will be equal.
-Unlike the `ord` package, `pm` encodes pointers with the Mapping pointer flag,
-described in the [MUS format specification](https://github.com/mus-format/specification#format-features).
-Also with its help, we can encode data structures such as graphs or 
-linked lists (corresponding examples can be found at 
-[mus-examples-go](https://github.com/mus-format/mus-examples-go/tree/main/pm)).
+With the `ord` package after unmarshal `twoPtr.ptr1 != twoPtr.ptr2`, and with 
+the `pm` package, they will be equal. This feature allows to serialize data 
+structures such as graphs or linked lists. Corresponding examples can be found 
+at [mus-examples-go](https://github.com/mus-format/mus-examples-go/tree/main/pm).
 
 # Structs Support
-In fact, mus-go does not support structural data types, which means that we will
+In fact, mus-go does not support structural data types, which means that you will
 have to implement the `mus.Marshaller`, `mus.Unmarshaller`, `mus.Sizer` and
-`mus.Skipper` interfaces ourselves. But it's not difficult at all, for example:
+`mus.Skipper` interfaces yourself. But it's not difficult at all, for example:
 ```go
 package main
 
@@ -371,14 +348,12 @@ func SkipFoo(bs []byte) (n int, err error) {
 ```
 All you have to do is deconstruct the structure into simpler data types and 
 choose the desired encoding for each. Of course, this requires some effort.
-But first of all, this code can be generated, secondly, this approach provides 
+But, firstly, this code can be generated, secondly, this approach provides 
 more flexibility, and thirdly, mus-go remains quite simple, which makes it easy 
 to implement for other programming languages.
 
 ## Valid Struct
-Also, thanks to this approach, we can very quickly find out whether the decoded 
-structure is suitable for us or not. And we don't even need to deserialize it 
-completely! For example:
+Unmarshaling of the invalid structure can fail fast with an error. For example:
 ```go
 package main
 
@@ -386,40 +361,40 @@ import (
   "errors"
 
   com "github.com/mus-format/common-go"
-  "github.com/mus-format/mus-go"
   "github.com/mus-format/mus-go/ord"
   "github.com/mus-format/mus-go/varint"
 )
 
 // Continuation of the previous section.
 
-// Can be used to check Foo.a field.
+func UnmarshalValidFoo(vl com.Validator[int], bs []byte) (v Foo, n int, err error) {
+  v.a, n, err = varint.UnmarshalInt(bs)
+  if err != nil {
+    return
+  }
+  // There is no need to deserialize the entire structure to find out that it is 
+  // invalid.
+  if err = vl.Validate(v.a); err != nil {
+    err = fmt.Errorf("incorrect field 'a': %w", err)
+    return // The rest of the structure remains unmarshaled.
+  }
+  // ...
+}
+
+// vl can be used to check Foo.a field.
 var vl com.ValidatorFn[int] = func(n int) (err error) {
   if n > 10 {
     return errors.New("bigger than 10")
   }
   return
 }
-
-func UnmarshalValidFoo(vl com.Validator[int], bs []byte) (
-  v Foo, n int, err error) {
-  v.a, n, err = varint.UnmarshalInt(bs)
-  if err != nil {
-    return
-  }
-  if err = vl.Validate(v.a); err != nil {
-    err = fmt.Errorf("incorrect field 'a': %w", err)
-    return
-  }
-  // ...
-}
 ```
 
 # Arrays Support
 Unfortunately, Golang does not support generic parameterization of array sizes. 
-Therefore, to serialize an array, we must make a slice of it. Or, for better 
-performance, we can implement the necessary `Marshal`, `Unmarshal`, ... 
-functions ourselves, as done in the [ord/slice.go](ord/slice.go) file.
+Therefore, to serialize an array - make a slice of it and use the `ord` package. 
+Or, for better performance, implement the necessary `Marshal`, `Unmarshal`, ... 
+functions, as done in the [ord/slice.go](ord/slice.go) file.
 
 # MarshallerMUS Interface
 It is often convenient to define the `MarshallerMUS` interface:
@@ -499,9 +474,6 @@ var (
   InsertDTS = ...
 )
 
-// With help of the type switch and regular switch we can implement 
-// Marshal/Unmarshal/Size functions for the Instruction interface.
-
 func MarshalInstruction(instr Instruction, bs []byte) (n int) {
   if m, ok := instr.(MarshallerMUS); ok {
     return m.MarshalMUS(bs)
@@ -548,7 +520,7 @@ import (
 )
 
 func main() {
-  // We encode three numbers in turn - 5, 10, 15.
+  // Encode three numbers in turn - 5, 10, 15.
   bs := make([]byte, varint.SizeInt(5)+varint.SizeInt(10)+varint.SizeInt(15))
   n1 := varint.MarshalInt(5, bs)
   n2 := varint.MarshalInt(10, bs[n1:])
@@ -571,6 +543,4 @@ func main() {
 ```
 
 # Zero Allocation Deserialization
-You can achieve this using `bool`, `byte`, all `uint`, `int`, `float` types and
-unsafe package. Please note that the length of variable-length data types 
-(such as `string`, `slice` or `map`) is encoded using Varint encoding.
+Can be achieved using the unsafe package.
