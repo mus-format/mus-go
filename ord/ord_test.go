@@ -152,7 +152,7 @@ func TestOrd(t *testing.T) {
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
-		t.Run("UnmarshalStringVarint should fail with error if meets invalid length", func(t *testing.T) {
+		t.Run("UnmarshalStringVarint should return ErrTooSmallByteSlice if meets invalid length", func(t *testing.T) {
 			var (
 				wantV     = ""
 				wantN     = 2
