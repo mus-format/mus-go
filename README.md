@@ -1,4 +1,9 @@
 # mus-go Serializer
+
+[![Go Reference](https://pkg.go.dev/badge/github.com/mus-format/mus-go.svg)](https://pkg.go.dev/github.com/mus-format/mus-go)
+[![GoReportCard](https://goreportcard.com/badge/mus-format/mus-go)](https://goreportcard.com/report/github.com/mus-format/mus-go)
+[![codecov](https://codecov.io/gh/mus-format/mus-go/graph/badge.svg?token=WLLZ1MMQDX)](https://codecov.io/gh/mus-format/mus-go)
+
 mus-go is extremely fast and has a [code generator](https://github.com/mus-format/musgen-go). 
 Also thanks to the minimalist design and a wide range of serialization 
 primitives, it can be used to implement other binary serialization formats 
