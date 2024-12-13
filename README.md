@@ -4,9 +4,10 @@
 [![GoReportCard](https://goreportcard.com/badge/mus-format/mus-go)](https://goreportcard.com/report/github.com/mus-format/mus-go)
 [![codecov](https://codecov.io/gh/mus-format/mus-go/graph/badge.svg?token=WLLZ1MMQDX)](https://codecov.io/gh/mus-format/mus-go)
 
-mus-go is a MUS format serializer. However, due to its minimalist design and 
-a wide range of serialization primitives, it can also be used to implement other 
-binary serialization formats ([here](https://github.com/mus-format/mus-examples-go/blob/main/protobuf/main.go) 
+mus-go is a [MUS format](https://medium.com/p/21d7be309e8d) serializer. However,
+due to its minimalist design and a wide range of serialization primitives, it 
+can also be used to implement other binary serialization formats 
+([here](https://github.com/mus-format/mus-examples-go/blob/main/protobuf/main.go)
 is an example where mus-go is utilized to implement Protobuf encoding).
 
 To get started quickly, go to the [code generator](https://github.com/mus-format/musgen-go) page.
