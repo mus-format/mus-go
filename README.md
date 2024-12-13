@@ -259,10 +259,10 @@ All of the above about the slice type also applies to the map type.
 unsafe package provides maximum performance, but be careful it uses an unsafe 
 type conversion.
 
-To a large extent, this warning applies to the `string` type - changing the
-byte slice after unmarshal will also change the contents of the string. Please 
-visit this [example](https://github.com/mus-format/mus-examples-go/blob/main/unasafe/main.go), 
-it tries to make things more clear.
+This warning largely applies to the string type - modifying the byte slice after 
+unmarshalling will also change the string’s contents. Check out this 
+[example](https://github.com/mus-format/mus-examples-go/blob/main/unasafe/main.go),
+it illustrates this more clearly.
 
 Supports the following data types: `bool`, `string`, `byte`, and all `uint`, 
 `int`, `float`.
