@@ -179,7 +179,7 @@ type conversion.
 
 This warning largely applies to the string type - modifying the byte slice after 
 unmarshalling will also change the string’s contents. Here is an 
-[example](https://github.com/mus-format/mus-examples-go/blob/main/unasafe/main.go)  
+[example](https://github.com/mus-format/mus-examples-go/blob/main/unasafe/main.go) 
 that demonstrates this behavior more clearly.
 
 Supports the following data types: `bool`, `string`, `byte`, and all `uint`, 
