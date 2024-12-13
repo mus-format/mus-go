@@ -4,9 +4,9 @@
 [![GoReportCard](https://goreportcard.com/badge/mus-format/mus-go)](https://goreportcard.com/report/github.com/mus-format/mus-go)
 [![codecov](https://codecov.io/gh/mus-format/mus-go/graph/badge.svg?token=WLLZ1MMQDX)](https://codecov.io/gh/mus-format/mus-go)
 
-mus-go is extremely fast and has a [code generator](https://github.com/mus-format/musgen-go). 
-Also thanks to the minimalist design and a wide range of serialization 
-primitives, it can be used to implement other binary serialization formats 
+mus-go is extremely fast and has a code generator. Also thanks to the minimalist
+design and a wide range of serialization primitives, it can be used to implement
+ other binary serialization formats 
 ([here](https://github.com/mus-format/mus-examples-go/blob/main/protobuf/main.go) 
 is an example where mus-go is used to implement Protobuf encoding).
 
@@ -65,9 +65,9 @@ cmd-stream-go/MUS is about 3 times faster than gRPC/Protobuf.
 
 # musgen-go
 Writing mus-go code manually can be quite tedious and error-prone. It's much 
-better to use a code generator that can produce `Marshal`, `Unmarshal`, `Size`, 
-and `Skip` functions for you. Also it is very easy to use - just give it a type 
-and call `Generate()`.
+better to use a [code generator](https://github.com/mus-format/musgen-go) that 
+can produce `Marshal`, `Unmarshal`, `Size`, and `Skip` functions for you. Also 
+it is very easy to use - just give it a type and call `Generate()`.
 
 # Benchmarks
 - [github.com/ymz-ncnk/go-serialization-benchmarks](https://github.com/ymz-ncnk/go-serialization-benchmarks) - 
