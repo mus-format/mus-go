@@ -36,7 +36,6 @@ All of the uses described below produce the correct MUS encoding.
 - [Contents](#contents)
 - [cmd-stream-go](#cmd-stream-go)
 - [musgen-go](#musgen-go)
-- [Tests](#tests)
 - [Benchmarks](#benchmarks)
 - [How To Use](#how-to-use)
   - [varint Package](#varint-package)
@@ -69,9 +68,6 @@ Writing mus-go code manually can be quite tedious and error-prone. It's much
 better to use a code generator that can produce `Marshal`, `Unmarshal`, `Size`, 
 and `Skip` functions for you. Also it is very easy to use - just give it a type 
 and call `Generate()`.
-
-# Tests
-Test coverage is 100%.
 
 # Benchmarks
 - [github.com/ymz-ncnk/go-serialization-benchmarks](https://github.com/ymz-ncnk/go-serialization-benchmarks) - 
