@@ -152,6 +152,17 @@ func TestOrd(t *testing.T) {
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
+		t.Run("UnmarshalStringVarint should fail with error if meets invalid length", func(t *testing.T) {
+			var (
+				wantV     = ""
+				wantN     = 2
+				wantErr   = mus.ErrTooSmallByteSlice
+				bs        = []byte{200, 200}
+				v, n, err = UnmarshalStringVarint(bs)
+			)
+			com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+		})
+
 		t.Run("If skip == true and lenVl validator returns an error, UnmarshalStringValid should return an error",
 			func(t *testing.T) {
 				var (
