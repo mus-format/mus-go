@@ -4,15 +4,15 @@
 [![GoReportCard](https://goreportcard.com/badge/mus-format/mus-go)](https://goreportcard.com/report/github.com/mus-format/mus-go)
 [![codecov](https://codecov.io/gh/mus-format/mus-go/graph/badge.svg?token=WLLZ1MMQDX)](https://codecov.io/gh/mus-format/mus-go)
 
-mus-go is extremely fast and has a code generator. Also thanks to the minimalist
-design and a wide range of serialization primitives, it can be used to implement
- other binary serialization formats 
-([here](https://github.com/mus-format/mus-examples-go/blob/main/protobuf/main.go) 
-is an example where mus-go is used to implement Protobuf encoding).
+mus-go is a MUS format serializer. However, due to its minimalist design and 
+a wide range of serialization primitives, it can also be used to implement other 
+binary serialization formats ([here](https://github.com/mus-format/mus-examples-go/blob/main/protobuf/main.go) 
+is an example where mus-go is utilized to implement Protobuf encoding).
 
 To get started quickly, go to the [code generator](https://github.com/mus-format/musgen-go) page.
 
-All of the uses described below produce the correct MUS encoding.
+## Why mus-go?
+It is lightning fast and space efficient.
 
 ## Brief mus-go Description
 - Has a [streaming version](https://github.com/mus-format/mus-stream-go).
@@ -32,6 +32,7 @@ All of the uses described below produce the correct MUS encoding.
 
 # Contents
 - [mus-go Serializer](#mus-go-serializer)
+  - [Why mus-go?](#why-mus-go)
   - [Brief mus-go Description](#brief-mus-go-description)
 - [Contents](#contents)
 - [cmd-stream-go](#cmd-stream-go)
@@ -61,7 +62,8 @@ All of the uses described below produce the correct MUS encoding.
 # cmd-stream-go
 [cmd-stream-go](https://github.com/cmd-stream/cmd-stream-go) - high-performance
 client-server library for Golang that implements the Command pattern. 
-cmd-stream-go/MUS is about 3 times faster than gRPC/Protobuf.
+cmd-stream-go/MUS is about [3 times faster](https://github.com/ymz-ncnk/go-client-server-communication-benchmarks) 
+than gRPC/Protobuf.
 
 # musgen-go
 Writing mus-go code manually can be quite tedious and error-prone. It's much 
@@ -85,6 +87,7 @@ choose. That was one of the reasons, and basically I made them for my own use.
 Don't forget to visit [mus-examples-go](https://github.com/mus-format/mus-examples-go).
 
 mus-go offers several encoding options, each of which is in a separate package.
+All of the uses described below produce the correct MUS encoding.
 
 ## varint Package
 Serializes all `uint` (`uint64`, `uint32`, `uint16`, `uint8`, `uint`), `int`, 
