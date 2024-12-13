@@ -9,7 +9,7 @@ import (
 	"github.com/mus-format/mus-go/varint"
 )
 
-// MarshalString fills bs with the encoding of a string value.
+// MarshalString fills bs with an encoded string value.
 //
 // The lenM argument specifies the Marshaller for the string length.
 //
@@ -46,9 +46,9 @@ func UnmarshalString(lenU mus.Unmarshaller[int], bs []byte) (v string, n int,
 // an error and skip == true UnmarshalValidString skips the remaining bytes of
 // the string.
 //
-// In addition to the string value, returns the number of used bytes and one of
-// the mus.ErrTooSmallByteSlice, com.ErrOverflow, com.ErrNegativeLength or
-// Validator errors.
+// In addition to the string value and the number of used bytes, it may also
+// return mus.ErrTooSmallByteSlice, com.ErrOverflow, com.ErrNegativeLength or
+// Validator error.
 func UnmarshalValidString(lenU mus.Unmarshaller[int], lenVl com.Validator[int],
 	skip bool, bs []byte) (v string, n int, err error) {
 	var length int
@@ -94,8 +94,8 @@ func SizeString(v string, lenS mus.Sizer[int]) (n int) {
 //
 // The lenU argument specifies the Unmarshaller for the string length.
 //
-// Returns the number of skiped bytes and one of the mus.ErrTooSmallByteSlice,
-// com.ErrOverflow or mus.ErrNegativeLength errors.
+// In addition to the number of skipped bytes, it may also return
+// mus.ErrTooSmallByteSlice, com.ErrOverflow or mus.ErrNegativeLength.
 func SkipString(lenU mus.Unmarshaller[int], bs []byte) (n int, err error) {
 	return ord.SkipString(lenU, bs)
 }

@@ -1,6 +1,6 @@
 package varint
 
-// MarshalPositiveInt64 fills bs with the encoding (Varint) of an int64 value.
+// MarshalPositiveInt64 fills bs with an encoded (Varint) int64 value.
 // It should be used with positive values, like string length (does not use
 // ZigZag).
 //
@@ -9,7 +9,7 @@ func MarshalPositiveInt64(v int64, bs []byte) (n int) {
 	return marshalUint(uint64(v), bs)
 }
 
-// MarshalPositiveInt32 fills bs with the encoding (Varint) of an int32 value.
+// MarshalPositiveInt32 fills bs with an encoded (Varint) int32 value.
 // It should be used with positive values, like string length (does not use
 // ZigZag).
 //
@@ -18,7 +18,7 @@ func MarshalPositiveInt32(v int32, bs []byte) (n int) {
 	return marshalUint(uint32(v), bs)
 }
 
-// MarshalPositiveInt16 fills bs with the encoding (Varint) of an int16 value.
+// MarshalPositiveInt16 fills bs with an encoded (Varint) int16 value.
 // It should be used with positive values, like string length (does not use
 // ZigZag).
 //
@@ -27,7 +27,7 @@ func MarshalPositiveInt16(v int16, bs []byte) (n int) {
 	return marshalUint(uint16(v), bs)
 }
 
-// MarshalPositiveInt8 fills bs with the encoding (Varint) of an int8 value.
+// MarshalPositiveInt8 fills bs with an encoded (Varint) int8 value.
 // It should be used with positive values, like string length (does not use
 // ZigZag).
 //
@@ -36,7 +36,7 @@ func MarshalPositiveInt8(v int8, bs []byte) (n int) {
 	return marshalUint(uint8(v), bs)
 }
 
-// MarshalPositiveInt fills bs with the encoding (Varint) of an int value.
+// MarshalPositiveInt fills bs with an encoded (Varint) int value.
 // It should be used with positive values, like string length (does not use
 // ZigZag).
 //
@@ -49,7 +49,7 @@ func MarshalPositiveInt(v int, bs []byte) (n int) {
 // It should be used with positive values, like string length (does not use
 // ZigZag).
 //
-// In addition to the int64 value and the number of used bytes, it can also
+// In addition to the int64 value and the number of used bytes, it may also
 // return mus.ErrTooSmallByteSlice or com.ErrOverflow.
 func UnmarshalPositiveInt64(bs []byte) (v int64, n int, err error) {
 	uv, n, err := UnmarshalUint64(bs)
@@ -63,7 +63,7 @@ func UnmarshalPositiveInt64(bs []byte) (v int64, n int, err error) {
 // It should be used with positive values, like string length (does not use
 // ZigZag).
 //
-// In addition to the int32 value and the number of used bytes, it can also
+// In addition to the int32 value and the number of used bytes, it may also
 // return mus.ErrTooSmallByteSlice or com.ErrOverflow.
 func UnmarshalPositiveInt32(bs []byte) (v int32, n int, err error) {
 	uv, n, err := UnmarshalUint32(bs)
@@ -77,7 +77,7 @@ func UnmarshalPositiveInt32(bs []byte) (v int32, n int, err error) {
 // It should be used with positive values, like string length (does not use
 // ZigZag).
 //
-// In addition to the int16 value and the number of used bytes, it can also
+// In addition to the int16 value and the number of used bytes, it may also
 // return mus.ErrTooSmallByteSlice or com.ErrOverflow.
 func UnmarshalPositiveInt16(bs []byte) (v int16, n int, err error) {
 	uv, n, err := UnmarshalUint16(bs)
@@ -91,7 +91,7 @@ func UnmarshalPositiveInt16(bs []byte) (v int16, n int, err error) {
 // It should be used with positive values, like string length (does not use
 // ZigZag).
 //
-// In addition to the int8 value and the number of used bytes, it can also
+// In addition to the int8 value and the number of used bytes, it may also
 // return mus.ErrTooSmallByteSlice or com.ErrOverflow.
 func UnmarshalPositiveInt8(bs []byte) (v int8, n int, err error) {
 	uv, n, err := UnmarshalUint8(bs)
@@ -105,7 +105,7 @@ func UnmarshalPositiveInt8(bs []byte) (v int8, n int, err error) {
 // It should be used with positive values, like string length (does not use
 // ZigZag).
 //
-// In addition to the int value and the number of used bytes, it can also
+// In addition to the int value and the number of used bytes, it may also
 // return mus.ErrTooSmallByteSlice or com.ErrOverflow.
 func UnmarshalPositiveInt(bs []byte) (v int, n int, err error) {
 	uv, n, err := UnmarshalUint(bs)
@@ -154,7 +154,7 @@ func SizePositiveInt(v int) (size int) {
 // It should be used with positive values, like string length (does not use
 // ZigZag).
 //
-// In addition to the number of skipped bytes, it can also return
+// In addition to the number of skipped bytes, it may also return
 // mus.ErrTooSmallByteSlice or com.ErrOverflow.
 func SkipPositiveInt64(bs []byte) (n int, err error) {
 	return SkipUint64(bs)
@@ -164,7 +164,7 @@ func SkipPositiveInt64(bs []byte) (n int, err error) {
 // It should be used with positive values, like string length (does not use
 // ZigZag).
 //
-// In addition to the number of skipped bytes, it can also return
+// In addition to the number of skipped bytes, it may also return
 // mus.ErrTooSmallByteSlice or com.ErrOverflow.
 func SkipPositiveInt32(bs []byte) (n int, err error) {
 	return SkipUint32(bs)
@@ -174,7 +174,7 @@ func SkipPositiveInt32(bs []byte) (n int, err error) {
 // It should be used with positive values, like string length (does not use
 // ZigZag).
 //
-// In addition to the number of skipped bytes, it can also return
+// In addition to the number of skipped bytes, it may also return
 // mus.ErrTooSmallByteSlice or com.ErrOverflow.
 func SkipPositiveInt16(bs []byte) (n int, err error) {
 	return SkipUint16(bs)
@@ -184,7 +184,7 @@ func SkipPositiveInt16(bs []byte) (n int, err error) {
 // It should be used with positive values, like string length (does not use
 // ZigZag).
 //
-// In addition to the number of skipped bytes, it can also return
+// In addition to the number of skipped bytes, it may also return
 // mus.ErrTooSmallByteSlice or com.ErrOverflow.
 func SkipPositiveInt8(bs []byte) (n int, err error) {
 	return SkipUint8(bs)
@@ -194,7 +194,7 @@ func SkipPositiveInt8(bs []byte) (n int, err error) {
 // It should be used with positive values, like string length (does not use
 // ZigZag).
 //
-// In addition to the number of skipped bytes, it can also return
+// In addition to the number of skipped bytes, it may also return
 // mus.ErrTooSmallByteSlice or com.ErrOverflow.
 func SkipPositiveInt(bs []byte) (n int, err error) {
 	return SkipUint(bs)

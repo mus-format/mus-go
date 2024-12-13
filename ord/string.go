@@ -100,7 +100,7 @@ func SizeString(v string, lenS mus.Sizer[int]) (n int) {
 // The lenU argument specifies the Unmarshaller for the string length, if nil,
 // varint.UnmarshalPositiveInt() is used.
 //
-// In addition to the number of skipped bytes, it can return
+// In addition to the number of skipped bytes, it may also return
 // mus.ErrTooSmallByteSlice, com.ErrOverflow or mus.ErrNegativeLength.
 func SkipString(lenU mus.Unmarshaller[int], bs []byte) (n int, err error) {
 	var length int

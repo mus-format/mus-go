@@ -18,35 +18,35 @@ var (
 	skipInt      func(bs []byte) (int, error)
 )
 
-// MarshalInt64 fills bs with the encoding (Raw) of a int64 value.
+// MarshalInt64 fills bs with an encoded (Raw) int64 value.
 //
 // Returns the number of used bytes. It will panic if receives too small bs.
 func MarshalInt64(v int64, bs []byte) (n int) {
 	return marshalInteger64(v, bs)
 }
 
-// MarshalInt32 fills bs with the encoding (Raw) of a int32 value.
+// MarshalInt32 fills bs with an encoded (Raw) int32 value.
 //
 // Returns the number of used bytes. It will panic if receives too small bs.
 func MarshalInt32(v int32, bs []byte) (n int) {
 	return marshalInteger32(v, bs)
 }
 
-// MarshalInt16 fills bs with the encoding (Raw) of a int16 value.
+// MarshalInt16 fills bs with an encoded (Raw) int16 value.
 //
 // Returns the number of used bytes. It will panic if receives too small bs.
 func MarshalInt16(v int16, bs []byte) (n int) {
 	return marshalInteger16(v, bs)
 }
 
-// MarshalInt8 fills bs with the encoding (Raw) of a int8 value.
+// MarshalInt8 fills bs with an encoded (Raw) int8 value.
 //
 // Returns the number of used bytes. It will panic if receives too small bs.
 func MarshalInt8(v int8, bs []byte) (n int) {
 	return marshalInteger8(v, bs)
 }
 
-// MarshalInt fills bs with the encoding (Raw) of a int value.
+// MarshalInt fills bs with an encoded (Raw) int value.
 //
 // Returns the number of used bytes. It will panic if receives too small bs.
 func MarshalInt(v int, bs []byte) (n int) {
@@ -55,7 +55,7 @@ func MarshalInt(v int, bs []byte) (n int) {
 
 // UnmarshalInt64 parses an encoded (Raw) int64 value from bs.
 //
-// In addition to the int64 value and the number of used bytes, it can also
+// In addition to the int64 value and the number of used bytes, it may also
 // return mus.ErrTooSmallByteSlice.
 func UnmarshalInt64(bs []byte) (v int64, n int, err error) {
 	return unmarshalInteger64[int64](bs)
@@ -63,7 +63,7 @@ func UnmarshalInt64(bs []byte) (v int64, n int, err error) {
 
 // UnmarshalInt32 parses an encoded (Raw) int32 value from bs.
 //
-// In addition to the int32 value and the number of used bytes, it can also
+// In addition to the int32 value and the number of used bytes, it may also
 // return mus.ErrTooSmallByteSlice.
 func UnmarshalInt32(bs []byte) (v int32, n int, err error) {
 	return unmarshalInteger32[int32](bs)
@@ -71,7 +71,7 @@ func UnmarshalInt32(bs []byte) (v int32, n int, err error) {
 
 // UnmarshalInt16 parses an encoded (Raw) int16 value from bs.
 //
-// In addition to the int16 value and the number of used bytes, it can also
+// In addition to the int16 value and the number of used bytes, it may also
 // return mus.ErrTooSmallByteSlice.
 func UnmarshalInt16(bs []byte) (v int16, n int, err error) {
 	return unmarshalInteger16[int16](bs)
@@ -79,7 +79,7 @@ func UnmarshalInt16(bs []byte) (v int16, n int, err error) {
 
 // UnmarshalInt8 parses an encoded (Raw) int8 value from bs.
 //
-// In addition to the int8 value and the number of used bytes, it can also
+// In addition to the int8 value and the number of used bytes, it may also
 // return mus.ErrTooSmallByteSlice.
 func UnmarshalInt8(bs []byte) (v int8, n int, err error) {
 	return unmarshalInteger8[int8](bs)
@@ -87,7 +87,7 @@ func UnmarshalInt8(bs []byte) (v int8, n int, err error) {
 
 // UnmarshalInt parses an encoded (Raw) int value from bs.
 //
-// In addition to the int value and the number of used bytes, it can also
+// In addition to the int value and the number of used bytes, it may also
 // return mus.ErrTooSmallByteSlice.
 func UnmarshalInt(bs []byte) (v int, n int, err error) {
 	return unmarshalInt(bs)
@@ -120,7 +120,7 @@ func SizeInt(v int) (n int) {
 
 // SkipInt64 skips an encoded (Raw) int64 value.
 //
-// In addition to the number of skipped bytes, it can also return
+// In addition to the number of skipped bytes, it may also return
 // mus.ErrTooSmallByteSlice.
 func SkipInt64(bs []byte) (n int, err error) {
 	return raw.SkipInt64(bs)
@@ -128,7 +128,7 @@ func SkipInt64(bs []byte) (n int, err error) {
 
 // SkipInt32 skips an encoded (Raw) int32 value.
 //
-// In addition to the number of skipped bytes, it can also return
+// In addition to the number of skipped bytes, it may also return
 // mus.ErrTooSmallByteSlice.
 func SkipInt32(bs []byte) (n int, err error) {
 	return raw.SkipInt32(bs)
@@ -136,7 +136,7 @@ func SkipInt32(bs []byte) (n int, err error) {
 
 // SkipInt16 skips an encoded (Raw) int16 value.
 //
-// In addition to the number of skipped bytes, it can also return
+// In addition to the number of skipped bytes, it may also return
 // mus.ErrTooSmallByteSlice.
 func SkipInt16(bs []byte) (n int, err error) {
 	return raw.SkipInt16(bs)
@@ -144,7 +144,7 @@ func SkipInt16(bs []byte) (n int, err error) {
 
 // SkipInt8 skips an encoded (Raw) int8 value.
 //
-// In addition to the number of skipped bytes, it can also return
+// In addition to the number of skipped bytes, it may also return
 // mus.ErrTooSmallByteSlice.
 func SkipInt8(bs []byte) (n int, err error) {
 	return raw.SkipInt8(bs)
@@ -152,7 +152,7 @@ func SkipInt8(bs []byte) (n int, err error) {
 
 // SkipInt skips an encoded (Raw) int value.
 //
-// In addition to the number of skipped bytes, it can also return
+// In addition to the number of skipped bytes, it may also return
 // mus.ErrTooSmallByteSlice.
 func SkipInt(bs []byte) (n int, err error) {
 	return skipInt(bs)

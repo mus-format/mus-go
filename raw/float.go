@@ -6,14 +6,14 @@ import (
 	com "github.com/mus-format/common-go"
 )
 
-// MarshalFloat64 fills bs with the encoding (Raw) of a float64 value.
+// MarshalFloat64 fills bs with an encoded (Raw) float64 value.
 //
 // Returns the number of used bytes. It will panic if receives too small bs.
 func MarshalFloat64(v float64, bs []byte) (n int) {
 	return marshalInteger64(math.Float64bits(v), bs)
 }
 
-// MarshalFloat32 fills bs with the encoding (Raw) of a float32 value.
+// MarshalFloat32 fills bs with an encoded (Raw) float32 value.
 //
 // Returns the number of used bytes. It will panic if receives too small bs.
 func MarshalFloat32(v float32, bs []byte) (n int) {
@@ -22,7 +22,7 @@ func MarshalFloat32(v float32, bs []byte) (n int) {
 
 // UnmarshalFloat64 parses an encoded (Raw) float64 value from bs.
 //
-// In addition to the float64 value and the number of used bytes, it can also
+// In addition to the float64 value and the number of used bytes, it can
 // return mus.ErrTooSmallByteSlice.
 func UnmarshalFloat64(bs []byte) (v float64, n int, err error) {
 	uv, n, err := unmarshalInteger64[uint64](bs)
@@ -34,7 +34,7 @@ func UnmarshalFloat64(bs []byte) (v float64, n int, err error) {
 
 // UnmarshalFloat32 parses an encoded (Raw) float32 value from bs.
 //
-// In addition to the float32 value and the number of used bytes, it can also
+// In addition to the float32 value and the number of used bytes, it can
 // return mus.ErrTooSmallByteSlice.
 func UnmarshalFloat32(bs []byte) (v float32, n int, err error) {
 	uv, n, err := unmarshalInteger32[uint32](bs)
@@ -56,7 +56,7 @@ func SizeFloat32(v float32) (n int) {
 
 // SkipFloat64 skips an encoded (Raw) float64 value.
 //
-// In addition to the number of skipped bytes, it can also return
+// In addition to the number of skipped bytes, it can return
 // mus.ErrTooSmallByteSlice.
 func SkipFloat64(bs []byte) (n int, err error) {
 	return skipInteger64(bs)
@@ -64,7 +64,7 @@ func SkipFloat64(bs []byte) (n int, err error) {
 
 // SkipFloat32 skips an encoded (Raw) float32 value.
 //
-// In addition to the number of skipped bytes, it can also return
+// In addition to the number of skipped bytes, it can return
 // mus.ErrTooSmallByteSlice.
 func SkipFloat32(bs []byte) (n int, err error) {
 	return skipInteger32(bs)

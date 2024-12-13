@@ -62,7 +62,7 @@ func SizePtr[T any](v *T, s mus.Sizer[T]) (size int) {
 //
 // The sk argument specifies the Skipper for the pointer base type.
 //
-// In addition to the number of skipped bytes, it can return
+// In addition to the number of skipped bytes, it may also return
 // mus.ErrTooSmallByteSlice, com.ErrWrongFormat or Skipper error.
 func SkipPtr(sk mus.Skipper, bs []byte) (n int, err error) {
 	if len(bs) < 1 {

@@ -8,7 +8,7 @@ import (
 	"github.com/mus-format/mus-go/varint"
 )
 
-// MarshalPtr fills bs with the encoding of a pointer.
+// MarshalPtr fills bs with an encoded pointer.
 //
 // The m argument specifies the Marshaller for the pointer base type.
 //
@@ -34,7 +34,7 @@ func MarshalPtr[T any](v *T, m mus.Marshaller[T], mp *com.PtrMap,
 //
 // The u argument specifies the Unmarshaller for the base pointer type.
 //
-// In addition to the pointer and the number of used bytes, it can also
+// In addition to the pointer and the number of used bytes, it can
 // return mus.ErrTooSmallByteSlice, com.ErrWrongFormat or Unarshaller error.
 func UnmarshalPtr[T any](u mus.Unmarshaller[T], mp com.ReversePtrMap,
 	bs []byte,
@@ -92,7 +92,7 @@ func SizePtr[T any](v *T, s mus.Sizer[T], mp *com.PtrMap) (size int) {
 //
 // The sk argument specifies the Skipper for the pointer base type.
 //
-// In addition to the number of skipped bytes, it can also return
+// In addition to the number of skipped bytes, it can return
 // mus.ErrTooSmallByteSlice, com.ErrWrongFormat or Skipper error.
 func SkipPtr(sk mus.Skipper, mp com.ReversePtrMap, bs []byte) (n int, err error) {
 	if len(bs) < 1 {
