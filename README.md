@@ -41,20 +41,20 @@ All of the uses described below produce the correct MUS encoding.
   - [varint Package](#varint-package)
   - [raw Package](#raw-package)
   - [ord (ordinary) Package](#ord-ordinary-package)
-    - [Valid String](#valid-string)
-    - [Slice](#slice)
-    - [Valid Slice](#valid-slice)
-    - [Map](#map)
   - [unsafe Package](#unsafe-package)
   - [pm (pointer mapping) Package](#pm-pointer-mapping-package)
 - [Structs Support](#structs-support)
-  - [Valid Struct](#valid-struct)
 - [Arrays Support](#arrays-support)
 - [MarshallerMUS Interface](#marshallermus-interface)
 - [Generic MarshalMUS Function](#generic-marshalmus-function)
 - [Data Type Metadata (DTM) Support](#data-type-metadata-dtm-support)
 - [Data Versioning](#data-versioning)
 - [Marshal/Unmarshal interfaces (or oneof feature)](#marshalunmarshal-interfaces-or-oneof-feature)
+- [Validation](#validation)
+  - [String](#string)
+  - [Slice](#slice)
+  - [Map](#map)
+  - [Struct](#struct)
 - [Out of Order Deserialization](#out-of-order-deserialization)
 - [Zero Allocation Deserialization](#zero-allocation-deserialization)
 
@@ -142,43 +142,7 @@ maximum length is limited by the maximum value of the `int` type on your system.
 This is ok for different architectures - an attempt to unmarshal, for example, 
 too long string on a 32-bit system, will result in `ErrOverflow`.
 
-The use of this package is exactly the same as shown in the examples above. 
-Let's look at the features.
-
-### Valid String
-When deserializing a string, you can validate its length. This is done using the
-`ord.UnmarshalValidString()` function:
-```go
-package main
-
-import (
-  "errors"
-
-  com "github.com/mus-format/common-go"
-  "github.com/mus-format/mus-go/ord"
-)
-
-func main() {
-  var (
-    ErrTooLongString                         = errors.New("too long string")
-    lenU mus.Unmarshaller // Length unmarshaller, if nil varint.UnmarshalPositiveInt() is used.
-    lenVl        com.ValidatorFn[int] = func(length int) (err error) {  // Length validator.
-      if length > 10 {
-        err = ErrTooLongString
-      }
-      return
-    }
-    skip = true // If true and the encoded string does not meet the requirements
-    // of the validator, all bytes belonging to it will be skipped, n will be 
-    // equal to SizeString(str).
-  )
-  // ...
-  str, n, err := ord.UnmarshalValidString(lenU, lenVl, skip, bs)
-  // ...
-}
-```
-
-### Slice
+Let's look at the serialization of the slice type:
 ```go
 package main
 
@@ -207,63 +171,16 @@ func main() {
   // ...
 }
 ```
-
-### Valid Slice
-When deserializing a slice using the `ord.UnmarshalValidSlice()` function, you 
-can set length and elements validators as well as `Skipper`, that will be used
-to skip the rest of the data if one of the validators returns an error:
-```go
-package main
-
-import (
-  "errors"
-
-  com "github.com/mus-format/common-go"
-  "github.com/mus-format/mus-go"
-  "github.com/mus-format/mus-go/ord"
-  "github.com/mus-format/mus-go/varint"
-)
-
-func main() {
-  var (
-    ErrTooLongSlice    = errors.New("too long slice")
-    ErrTooBigSliceElem = errors.New("too big slice elem")
-
-    lenU mus.Unmarshaller // Length unmarshaller, if nil varint.UnmarshalPositiveInt() is used.
-    lenVl com.ValidatorFn[int] = func(length int) (err error) { // Length validator.
-      if length > 5 {
-        err = ErrTooLongSlice
-      }
-      return
-    }
-    u                  = mus.UnmarshallerFn[int](varint.UnmarshalInt)
-    vl com.ValidatorFn[int] = func(e int) (err error) { // Elements validator.
-      if e > 10 {
-        err = ErrTooBigSliceElem
-      }
-      return
-    }
-    sk                 = mus.SkipperFn(varint.SkipInt) // If nil, a validation 
-    // error will be returned immediately. If != nil and one of the validators 
-    // returns an error, will be used to skip the rest of the slice.
-  )
-  // ...
-  sl, n, err := ord.UnmarshalValidSlice[int](lenU, lenVl, u, vl, sk, bs)
-  // ...
-}
-```
-
-### Map
-All of the above about the slice type also applies to the map type.
+Maps are serialized in the same way.
 
 ## unsafe Package
 unsafe package provides maximum performance, but be careful it uses an unsafe 
 type conversion.
 
 This warning largely applies to the string type - modifying the byte slice after 
-unmarshalling will also change the string’s contents. Check out this 
-[example](https://github.com/mus-format/mus-examples-go/blob/main/unasafe/main.go),
-it illustrates this more clearly.
+unmarshalling will also change the string’s contents. Here is an 
+[example](https://github.com/mus-format/mus-examples-go/blob/main/unasafe/main.go)  
+that demonstrates this behavior more clearly.
 
 Supports the following data types: `bool`, `string`, `byte`, and all `uint`, 
 `int`, `float`.
@@ -352,44 +269,6 @@ choose the desired encoding for each. Of course, this requires some effort.
 But, firstly, this code can be generated, secondly, this approach provides 
 more flexibility, and thirdly, mus-go remains quite simple, which makes it easy 
 to implement for other programming languages.
-
-## Valid Struct
-Unmarshaling of the invalid structure can fail fast with an error. For example:
-```go
-package main
-
-import (
-  "errors"
-
-  com "github.com/mus-format/common-go"
-  "github.com/mus-format/mus-go/ord"
-  "github.com/mus-format/mus-go/varint"
-)
-
-// Continuation of the previous section.
-
-func UnmarshalValidFoo(vl com.Validator[int], bs []byte) (v Foo, n int, err error) {
-  v.a, n, err = varint.UnmarshalInt(bs)
-  if err != nil {
-    return
-  }
-  // There is no need to deserialize the entire structure to find out that it is 
-  // invalid.
-  if err = vl.Validate(v.a); err != nil {
-    err = fmt.Errorf("incorrect field 'a': %w", err)
-    return // The rest of the structure remains unmarshaled.
-  }
-  // ...
-}
-
-// vl can be used to check Foo.a field.
-var vl com.ValidatorFn[int] = func(n int) (err error) {
-  if n > 10 {
-    return errors.New("bigger than 10")
-  }
-  return
-}
-```
 
 # Arrays Support
 Unfortunately, Golang does not support generic parameterization of array sizes. 
@@ -508,6 +387,127 @@ func SizeInstruction(instr Instruction) (size int) {
 A full example can be found at [mus-examples-go](https://github.com/mus-format/mus-examples-go/tree/main/oneof).
 Take a note, nothing will stop us to Marshal/Unmarshal, for example, a slice of 
 interfaces.
+
+# Validation
+Validation is performed during deserialization.
+
+## String
+With the `ord.UnmarshalValidString()` function, you can validate the length of
+a string.
+```go
+package main
+
+import (
+  "errors"
+
+  com "github.com/mus-format/common-go"
+  "github.com/mus-format/mus-go/ord"
+)
+
+func main() {
+  var (
+    ErrTooLongString                         = errors.New("too long string")
+    lenU mus.Unmarshaller // Length unmarshaller, if nil varint.UnmarshalPositiveInt() is used.
+    lenVl        com.ValidatorFn[int] = func(length int) (err error) {  // Length validator.
+      if length > 10 {
+        err = ErrTooLongString
+      }
+      return
+    }
+    skip = true // If true and the encoded string does not meet the requirements
+    // of the validator, all bytes belonging to it will be skipped, n will be 
+    // equal to SizeString(str).
+  )
+  // ...
+  str, n, err := ord.UnmarshalValidString(lenU, lenVl, skip, bs)
+  // ...
+}
+```
+
+## Slice
+With the `ord.UnmarshalValidSlice()` function, you can validate the length and
+elements of a slice. Also it provides an option to skip the rest of the data
+if one of the validators returns an error.
+```go
+package main
+
+import (
+  "errors"
+
+  com "github.com/mus-format/common-go"
+  "github.com/mus-format/mus-go"
+  "github.com/mus-format/mus-go/ord"
+  "github.com/mus-format/mus-go/varint"
+)
+
+func main() {
+  var (
+    ErrTooLongSlice    = errors.New("too long slice")
+    ErrTooBigSliceElem = errors.New("too big slice elem")
+
+    lenU mus.Unmarshaller // Length unmarshaller, if nil varint.UnmarshalPositiveInt() is used.
+    lenVl com.ValidatorFn[int] = func(length int) (err error) { // Length validator.
+      if length > 5 {
+        err = ErrTooLongSlice
+      }
+      return
+    }
+    u                  = mus.UnmarshallerFn[int](varint.UnmarshalInt)
+    vl com.ValidatorFn[int] = func(e int) (err error) { // Elements validator.
+      if e > 10 {
+        err = ErrTooBigSliceElem
+      }
+      return
+    }
+    sk                 = mus.SkipperFn(varint.SkipInt) // If nil, a validation 
+    // error will be returned immediately. If != nil and one of the validators 
+    // returns an error, will be used to skip the rest of the slice.
+  )
+  // ...
+  sl, n, err := ord.UnmarshalValidSlice[int](lenU, lenVl, u, vl, sk, bs)
+  // ...
+}
+```
+
+## Map
+Validation works in the same way as for the slice type.
+
+## Struct
+Unmarshalling an invalid structure can stop at the first invalid field with a 
+validation error.
+```go
+package main
+
+import (
+  "errors"
+
+  com "github.com/mus-format/common-go"
+  "github.com/mus-format/mus-go/ord"
+  "github.com/mus-format/mus-go/varint"
+)
+
+func UnmarshalValidFoo(vl com.Validator[int], bs []byte) (v Foo, n int, err error) {
+  v.a, n, err = varint.UnmarshalInt(bs)
+  if err != nil {
+    return
+  }
+  // There is no need to deserialize the entire structure to find out that it is 
+  // invalid.
+  if err = vl.Validate(v.a); err != nil {
+    err = fmt.Errorf("incorrect field 'a': %w", err)
+    return // The rest of the structure remains unmarshaled.
+  }
+  // ...
+}
+
+// vl can be used to check Foo.a field.
+var vl com.ValidatorFn[int] = func(n int) (err error) {
+  if n > 10 {
+    return errors.New("bigger than 10")
+  }
+  return
+}
+```
 
 # Out of Order Deserialization
 A simple example:
