@@ -88,7 +88,6 @@ choose. That was one of the reasons, and basically I made them for my own use.
 Don't forget to visit [mus-examples-go](https://github.com/mus-format/mus-examples-go).
 
 mus-go offers several encoding options, each of which is in a separate package.
-All of the uses described below produce the correct MUS encoding.
 
 ## varint Package
 Serializes all `uint` (`uint64`, `uint32`, `uint16`, `uint8`, `uint`), `int`, 
