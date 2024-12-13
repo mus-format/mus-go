@@ -6,7 +6,7 @@ import (
 	"github.com/mus-format/mus-go/varint"
 )
 
-// MarshalString fills bs with the encoding of a string value.
+// MarshalString fills bs with an encoded string value.
 //
 // The lenM argument specifies the Marshaller for the string length, if nil,
 // varint.MarshalPositiveInt() is used.
@@ -30,7 +30,7 @@ func MarshalString(v string, lenM mus.Marshaller[int], bs []byte) (n int) {
 // The lenU argument specifies the Unmarshaller for the string length, if nil,
 // varint.UnmarshalPositiveInt() is used.
 //
-// In addition to the string value and the number of used bytes, it can also
+// In addition to the string value and the number of used bytes, it can
 // return mus.ErrTooSmallByteSlice, com.ErrOverflow or com.ErrNegativeLength.
 func UnmarshalString(lenU mus.Unmarshaller[int], bs []byte) (v string,
 	n int, err error) {
@@ -42,10 +42,10 @@ func UnmarshalString(lenU mus.Unmarshaller[int], bs []byte) (v string,
 // The lenU argument specifies the Unmarshaller for the string length, if nil,
 // varint.UnmarshalPositiveInt() is used.
 // The lenVl argument specifies the string length Validator. If it returns
-// an error and skip == true UnmarshalValidString skips the remaining bytes of
+// an error and skip == true, UnmarshalValidString skips the remaining bytes of
 // the string.
 //
-// In addition to the string value and the number of used bytes, it can also
+// In addition to the string value and the number of used bytes, it can
 // return mus.ErrTooSmallByteSlice, com.ErrOverflow, com.ErrNegativeLength or
 // Validator error.
 func UnmarshalValidString(lenU mus.Unmarshaller[int],
@@ -100,7 +100,7 @@ func SizeString(v string, lenS mus.Sizer[int]) (n int) {
 // The lenU argument specifies the Unmarshaller for the string length, if nil,
 // varint.UnmarshalPositiveInt() is used.
 //
-// In addition to the number of skipped bytes, it can also return
+// In addition to the number of skipped bytes, it can return
 // mus.ErrTooSmallByteSlice, com.ErrOverflow or mus.ErrNegativeLength.
 func SkipString(lenU mus.Unmarshaller[int], bs []byte) (n int, err error) {
 	var length int

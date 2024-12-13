@@ -6,14 +6,13 @@ import (
 	"github.com/mus-format/mus-go/varint"
 )
 
-// MarshalMap fills bs with the encoding of a map  value.
+// MarshalMap fills bs with the encoded map value.
 //
-// The lenM argument specifies the Marshaller for the map length, if nil,
+// The lenM argument specifies the Marshaller for the length of the map, if nil,
 // varint.MarshalPositiveInt() is used.
-// Arguments m1, m2 specify Marshallers for the keys and map values,
-// respectively.
+// Arguments m1, m2 specify Marshallers for the keys and values respectively.
 //
-// Returns the number of used bytes. It will panic if receives too small bs.
+// Returns the number of used bytes. It will panic if bs is too small.
 func MarshalMap[T comparable, V any](v map[T]V, lenM mus.Marshaller[int],
 	m1 mus.Marshaller[T],
 	m2 mus.Marshaller[V],
@@ -31,15 +30,14 @@ func MarshalMap[T comparable, V any](v map[T]V, lenM mus.Marshaller[int],
 	return
 }
 
-// UnmarshalMap parses a map value from bs.
+// UnmarshalMap parses an encoded map value from bs.
 //
-// The lenU argument specifies the Unmarshaller for the map length, if nil,
-// varint.UnmarshalPositiveInt() is used.
-// Arguments u1, u2 specify Unmarshallers for the keys and map values,
-// respectively.
+// The lenU argument specifies the Unmarshaller for the length of the map, if
+// nil, varint.UnmarshalPositiveInt() is used.
+// Arguments u1, u2 specify Unmarshallers for the keys and values respectively.
 //
-// In addition to the map value and the number of used bytes, it can also
-// return mus.ErrTooSmallByteSlice, com.ErrOverflow, com.ErrNegativeLength or
+// In addition to the map value and the number of used bytes, it can return
+// mus.ErrTooSmallByteSlice, com.ErrOverflow, com.ErrNegativeLength or
 // Unmarshaller error.
 func UnmarshalMap[T comparable, V any](lenU mus.Unmarshaller[int],
 	u1 mus.Unmarshaller[T],
@@ -49,18 +47,18 @@ func UnmarshalMap[T comparable, V any](lenU mus.Unmarshaller[int],
 	return UnmarshalValidMap(lenU, nil, u1, u2, nil, nil, nil, nil, bs)
 }
 
-// UnmarshalValidMap parses a map value from bs.
+// UnmarshalValidMap parses an encoded map value from bs.
 //
-// The lenU argument specifies the Unmarshaller for the map length, if nil,
-// varint.UnmarshalPositiveInt() is used.
+// The lenU argument specifies the Unmarshaller for the length of the map, if
+// nil, varint.UnmarshalPositiveInt() is used.
 // The lenVl argument specifies the map length Validator, arguments
 // u1, u2, vl1, vl2, sk1, sk2 - Unmarshallers, Validators and Skippers for the
-// keys and map values, respectively.
-// If one of the Validators returns an error, UnmarshalValidMap uses the
-// Skippers to skip the remaining bytes of the map. If one of the Skippers is
-// nil, it immediately returns a validation error.
+// keys and values respectively.
+// If one of the Validators returns an error, the Skippers is used to skip the
+// remaining bytes of the map. If one of the Skippers is nil, it immediately
+// returns a validation error.
 //
-// In addition to the map value and the number of used bytes, it can also
+// In addition to the map value and the number of used bytes, it can
 // return mus.ErrTooSmallByteSlice, com.ErrOverflow, com.ErrNegativeLength,
 // Unmarshaller, Validator or Skipper error.
 func UnmarshalValidMap[T comparable, V any](lenU mus.Unmarshaller[int],
@@ -146,9 +144,9 @@ SkipRemainingBytes:
 
 // SizeMap returns the size of an encoded map value.
 //
-// The lenS argument specifies the Sizer for the map length, if nil,
+// The lenS argument specifies the Sizer for the length of the map, if nil,
 // varint.SizePositiveInt() is used.
-// Arguments s1, s2 specify Sizers for the keys and map values.
+// Arguments s1, s2 specify Sizers for the keys and values.
 func SizeMap[T comparable, V any](v map[T]V, lenS mus.Sizer[int],
 	s1 mus.Sizer[T],
 	s2 mus.Sizer[V],
@@ -167,12 +165,11 @@ func SizeMap[T comparable, V any](v map[T]V, lenS mus.Sizer[int],
 
 // SkipMap skips an encoded map value.
 //
-// The lenU argument specifies the Unmarshaller for the map length, if nil,
-// varint.UnmarshalPositiveInt() is used.
-// Arguments sk1, sk2 specify Skippers for the keys and map  values,
-// respectively.
+// The lenU argument specifies the Unmarshaller for the length of the map, if
+// nil, varint.UnmarshalPositiveInt() is used.
+// Arguments sk1, sk2 specify Skippers for the keys and values respectively.
 //
-// In addition to the number of skipped bytes, it can also return
+// In addition to the number of skipped bytes, it can return
 // mus.ErrTooSmallByteSlice, com.ErrNegativeLength or Skipper error.
 func SkipMap(lenU mus.Unmarshaller[int], sk1, sk2 mus.Skipper, bs []byte) (
 	n int, err error) {
