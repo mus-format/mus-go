@@ -2,7 +2,7 @@
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/mus-format/mus-go.svg)](https://pkg.go.dev/github.com/mus-format/mus-go)
 [![GoReportCard](https://goreportcard.com/badge/mus-format/mus-go)](https://goreportcard.com/report/github.com/mus-format/mus-go)
-[![codecov](https://codecov.io/gh/mus-format/mus-go/graph/badge.svg?token=WLLZ1MMQDX)](https://codecov.io/gh/mus-format/mus-go)
+[![codecov](https://codecov.io/github/mus-format/mus-go/graph/badge.svg?token=WLLZ1MMQDX)](https://codecov.io/github/mus-format/mus-go)
 
 mus-go is a [MUS format](https://medium.com/p/21d7be309e8d) serializer. However,
 due to its minimalist design and a wide range of serialization primitives, it 
