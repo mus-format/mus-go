@@ -13,7 +13,7 @@ is an example where mus-go is utilized to implement Protobuf encoding).
 To get started quickly, go to the [code generator](https://github.com/mus-format/musgen-go) page.
 
 ## Why mus-go?
-It is lightning fast and space efficient.
+It is lightning fast, space efficient and well tested.
 
 ## Brief mus-go Description
 - Has a [streaming version](https://github.com/mus-format/mus-stream-go).
@@ -104,8 +104,8 @@ func main() {
     bs = make([]byte, size)
   )
   n := varint.MarshalInt(num, bs)        // Returns the number of used bytes.
-  num, n, err := varint.UnmarshalInt(bs) // In addition to the num, it returns
-  // the number of used bytes and an error.
+  num, n, err := varint.UnmarshalInt(bs) // In addition to the int value and the
+  // number of used bytes, it may also return an error.
   // ...
 }
 ```
@@ -145,7 +145,7 @@ maximum length is limited by the maximum value of the `int` type on your system.
 This is ok for different architectures - an attempt to unmarshal, for example, 
 too long string on a 32-bit system, will result in `ErrOverflow`.
 
-Let's look at the serialization of the slice type:
+Let's examine how the slice type is serialized:
 ```go
 package main
 
@@ -169,7 +169,7 @@ func main() {
     size = ord.SizeSlice[int](sl, s)
     bs   = make([]byte, size)
   )
-  ord.MarshalSlice[int](sl, lenM, m, bs)
+  n := ord.MarshalSlice[int](sl, lenM, m, bs)
   sl, n, err := ord.UnmarshalSlice[int](lenU, u, bs)
   // ...
 }
@@ -418,7 +418,7 @@ func main() {
       return
     }
     skip = true // If true and the encoded string does not meet the requirements
-    // of the validator, all bytes belonging to it will be skipped, n will be 
+    // of the validator, all bytes belonging to it will be skipped - n will be 
     // equal to SizeString(str).
   )
   // ...
@@ -490,12 +490,13 @@ import (
 )
 
 func UnmarshalValidFoo(vl com.Validator[int], bs []byte) (v Foo, n int, err error) {
+  // Unmarshal the first field.
   v.a, n, err = varint.UnmarshalInt(bs)
   if err != nil {
     return
   }
-  // There is no need to deserialize the entire structure to find out that it is 
-  // invalid.
+  // Validate the first field. There is no need to deserialize the entire 
+  // structure to find out that it is invalid.
   if err = vl.Validate(v.a); err != nil {
     err = fmt.Errorf("incorrect field 'a': %w", err)
     return // The rest of the structure remains unmarshaled.
