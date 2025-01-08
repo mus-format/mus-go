@@ -31,7 +31,7 @@ func MarshalByteSlice(v []byte, lenM mus.Marshaller[int], bs []byte) (n int) {
 // nil, varint.UnmarshalPositiveInt() is used.
 //
 // In addition to the slice value and the number of used bytes, it may also
-// return mus.ErrTooSmallByteSlice, com.ErrOverflow, com.ErrNegativeLength.
+// return mus.ErrTooSmallByteSlice, com.ErrOverflow or com.ErrNegativeLength.
 func UnmarshalByteSlice(lenU mus.Unmarshaller[int], bs []byte) (v []byte,
 	n int, err error) {
 	return UnmarshalValidByteSlice(lenU, nil, false, bs)
@@ -42,7 +42,8 @@ func UnmarshalByteSlice(lenU mus.Unmarshaller[int], bs []byte) (v []byte,
 // The lenU argument specifies the Unmarshaller for the length of the slice, if
 // nil, varint.UnmarshalPositiveInt() is used.
 // The lenVl argument specifies the slice length Validator. If it returns
-// an error and skip == true, UnmarshalValidByteSlice skips the remaining bytes.
+// an error and skip == true, UnmarshalValidByteSlice skips the remaining bytes
+// of the slice.
 //
 // In addition to the slice value and the number of used bytes, it may also
 // return mus.ErrTooSmallByteSlice, com.ErrOverflow or com.ErrNegativeLength.

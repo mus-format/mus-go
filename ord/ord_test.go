@@ -623,7 +623,7 @@ func TestOrd(t *testing.T) {
 				com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
 			})
 
-		t.Run("SkipByteSliceVarint should return ErrNegativeLength if there is no space in bs",
+		t.Run("SkipByteSliceVarint should return ErrNegativeLength if meets a negative length",
 			func(t *testing.T) {
 				var (
 					wantN   = 1
