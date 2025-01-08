@@ -555,6 +555,213 @@ func TestUnsafe(t *testing.T) {
 
 	})
 
+	t.Run("byte_slice", func(t *testing.T) {
+
+		t.Run("All MarshalByteSlice, UnmarshalByteSlice, SizeByteSlice, SkipByteSlice functions with default lenM, lenU, lenS and empty slice must work correctly",
+			func(t *testing.T) {
+				var (
+					sl = []byte{}
+					m  = mus.MarshallerFn[[]byte](func(v []byte, bs []byte) (n int) {
+						return MarshalByteSlice(v, nil, bs)
+					})
+					u = mus.UnmarshallerFn[[]byte](func(bs []byte) (v []byte, n int, err error) {
+						return UnmarshalByteSlice(nil, bs)
+					})
+					s = mus.SizerFn[[]byte](func(v []byte) (size int) {
+						return SizeByteSlice(v, nil)
+					})
+					sk = mus.SkipperFn(func(bs []byte) (n int, err error) {
+						return SkipByteSlice(nil, bs)
+					})
+				)
+				testdata.Test[[]byte]([][]byte{sl}, m, u, s, t)
+				testdata.TestSkip[[]byte]([][]byte{sl}, m, sk, s, t)
+			})
+
+		t.Run("All MarshalByteSlice, UnmarshalByteSlice, SizeByteSlice, SkipByteSlice functions with default lenM, lenU, lenS and not empty slice must work correctly",
+			func(t *testing.T) {
+				var (
+					sl = []byte{0, 1, 1, 255, 100, 0, 1, 10}
+					m  = mus.MarshallerFn[[]byte](func(v []byte, bs []byte) (n int) {
+						return MarshalByteSlice(v, nil, bs)
+					})
+					u = mus.UnmarshallerFn[[]byte](func(bs []byte) (v []byte, n int, err error) {
+						return UnmarshalByteSlice(nil, bs)
+					})
+					s = mus.SizerFn[[]byte](func(v []byte) (size int) {
+						return SizeByteSlice(v, nil)
+					})
+					sk = mus.SkipperFn(func(bs []byte) (n int, err error) {
+						return SkipByteSlice(nil, bs)
+					})
+				)
+				testdata.Test[[]byte]([][]byte{sl}, m, u, s, t)
+				testdata.TestSkip[[]byte]([][]byte{sl}, m, sk, s, t)
+			})
+
+		t.Run("All MarshalByteSliceVarint, UnmarshalByteSliceVarint, SizeByteSliceVarint, SkipByteSliceVarint functions must work correctly with empty slice",
+			func(t *testing.T) {
+				var (
+					sl = []byte{}
+					m  = func() mus.MarshallerFn[[]byte] {
+						return func(v []byte, bs []byte) (n int) {
+							return MarshalByteSliceVarint(v, bs)
+						}
+					}()
+					u = func() mus.UnmarshallerFn[[]byte] {
+						return func(bs []byte) (v []byte, n int, err error) {
+							return UnmarshalByteSliceVarint(bs)
+						}
+					}()
+					s = func() mus.SizerFn[[]byte] {
+						return func(v []byte) (size int) {
+							return SizeByteSliceVarint(v)
+						}
+					}()
+					sk = func() mus.SkipperFn {
+						return func(bs []byte) (n int, err error) {
+							return SkipByteSliceVarint(bs)
+						}
+					}()
+				)
+				testdata.Test[[]byte]([][]byte{sl}, m, u, s, t)
+				testdata.TestSkip[[]byte]([][]byte{sl}, m, sk, s, t)
+			})
+
+		t.Run("All MarshalByteSliceVarint, UnmarshalByteSliceVarint, SizeByteSliceVarint, SkipByteSliceVarint functions must work correctly with not empty slice",
+			func(t *testing.T) {
+				var (
+					sl = []byte{0, 1, 1, 255, 100, 0, 1, 10}
+					m  = func() mus.MarshallerFn[[]byte] {
+						return func(v []byte, bs []byte) (n int) {
+							return MarshalByteSliceVarint(v, bs)
+						}
+					}()
+					u = func() mus.UnmarshallerFn[[]byte] {
+						return func(bs []byte) (v []byte, n int, err error) {
+							return UnmarshalByteSliceVarint(bs)
+						}
+					}()
+					s = func() mus.SizerFn[[]byte] {
+						return func(v []byte) (size int) {
+							return SizeByteSliceVarint(v)
+						}
+					}()
+					sk = func() mus.SkipperFn {
+						return func(bs []byte) (n int, err error) {
+							return SkipByteSliceVarint(bs)
+						}
+					}()
+				)
+				testdata.Test[[]byte]([][]byte{sl}, m, u, s, t)
+				testdata.TestSkip[[]byte]([][]byte{sl}, m, sk, s, t)
+			})
+
+		t.Run("MarshalByteSlice should panic with ErrTooSmallByteSlice if there is no space in bs",
+			func(t *testing.T) {
+				wantErr := mus.ErrTooSmallByteSlice
+				defer func() {
+					if r := recover(); r != nil {
+						err := r.(error)
+						if err != wantErr {
+							t.Errorf("unexpected error, want '%v' actual '%v'", wantErr, err)
+						}
+					}
+				}()
+				MarshalByteSlice([]byte{1, 2, 3, 4}, nil, make([]byte, 2))
+			})
+
+		t.Run("UnmarshalByteSliceVarint should return ErrTooSmallByteSlice if there is no space in bs",
+			func(t *testing.T) {
+				var (
+					wantV     []byte = nil
+					wantN            = 0
+					wantErr          = mus.ErrTooSmallByteSlice
+					v, n, err        = UnmarshalByteSliceVarint([]byte{})
+				)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			})
+
+		t.Run("UnmarshalByteSliceVarint should return ErrTooSmallByteSlice if bs is too small",
+			func(t *testing.T) {
+				var (
+					wantV     []byte = nil
+					wantN            = 1
+					wantErr          = mus.ErrTooSmallByteSlice
+					v, n, err        = UnmarshalByteSliceVarint([]byte{4, 1})
+				)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			})
+
+		t.Run("UnmarshalByteSliceVarint should return ErrNegativeLength if meets a negative length",
+			func(t *testing.T) {
+				var (
+					wantV     []byte = nil
+					wantN            = 1
+					wantErr          = com.ErrNegativeLength
+					v, n, err        = UnmarshalByteSliceVarint([]byte{1})
+				)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			})
+
+		t.Run("If lenVl validator returns an error, UnmarshalValidByteSliceVarint should return it",
+			func(t *testing.T) {
+				var (
+					wantV     []byte = nil
+					wantN            = 1
+					wantErr          = errors.New("too large slice")
+					bs               = []byte{4, 4, 1, 1}
+					maxLength        = com_mock.NewValidator[int]().RegisterValidate(
+						func(v int) (err error) {
+							return wantErr
+						},
+					)
+					v, n, err = UnmarshalValidByteSliceVarint(maxLength, false, bs)
+				)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil,
+					t)
+			})
+
+		t.Run("If skip == true and lenVl validator returns an error, UnmarshalValidByteSliceVarint should return it and skip the rest of the slice",
+			func(t *testing.T) {
+				var (
+					wantV     []byte = nil
+					wantN            = 3
+					wantErr          = errors.New("too large slice")
+					bs               = []byte{4, 4, 1}
+					maxLength        = com_mock.NewValidator[int]().RegisterValidate(
+						func(v int) (err error) {
+							return wantErr
+						},
+					)
+					v, n, err = UnmarshalValidByteSliceVarint(maxLength, true, bs)
+				)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil,
+					t)
+			})
+
+		t.Run("SkipByteSliceVarint should return ErrTooSmallByteSlice if there is no space in bs",
+			func(t *testing.T) {
+				var (
+					wantN   = 0
+					wantErr = mus.ErrTooSmallByteSlice
+					n, err  = SkipByteSliceVarint([]byte{})
+				)
+				com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
+			})
+
+		t.Run("SkipByteSliceVarint should return ErrNegativeLength if meets a negative length",
+			func(t *testing.T) {
+				var (
+					wantN   = 1
+					wantErr = com.ErrNegativeLength
+					n, err  = SkipByteSliceVarint([]byte{1})
+				)
+				com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
+			})
+
+	})
+
 }
 
 // StringVarint
@@ -580,4 +787,31 @@ func SizeStringVarint(v string) (n int) {
 
 func SkipStringVarint(bs []byte) (n int, err error) {
 	return SkipString(mus.UnmarshallerFn[int](varint.UnmarshalInt), bs)
+}
+
+// ByteSliceVarint
+
+func MarshalByteSliceVarint(v []byte, bs []byte) (n int) {
+	return MarshalByteSlice(v, mus.MarshallerFn[int](varint.MarshalInt), bs)
+}
+
+func UnmarshalByteSliceVarint(bs []byte) (v []byte,
+	n int, err error) {
+	return UnmarshalValidByteSliceVarint(nil, false, bs)
+}
+
+func UnmarshalValidByteSliceVarint(lenVl com.Validator[int], skip bool,
+	bs []byte,
+) (v []byte, n int, err error) {
+	return UnmarshalValidByteSlice(mus.UnmarshallerFn[int](varint.UnmarshalInt),
+		lenVl, skip, bs)
+}
+
+func SizeByteSliceVarint(v []byte) (size int) {
+	return SizeByteSlice(v, mus.SizerFn[int](varint.SizeInt))
+}
+
+func SkipByteSliceVarint(bs []byte) (n int,
+	err error) {
+	return SkipByteSlice(mus.UnmarshallerFn[int](varint.UnmarshalInt), bs)
 }
