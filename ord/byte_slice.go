@@ -6,7 +6,7 @@ import (
 	"github.com/mus-format/mus-go/varint"
 )
 
-// MarshalSlice fills bs with an encoded slice value.
+// MarshalByteSlice fills bs with an encoded slice value.
 //
 // The lenM argument specifies the Marshaller for the length of the slice, if
 // nil, varint.MarshalPositiveInt() is used.
@@ -37,7 +37,7 @@ func UnmarshalByteSlice(lenU mus.Unmarshaller[int], bs []byte) (v []byte,
 	return UnmarshalValidByteSlice(lenU, nil, false, bs)
 }
 
-// UnmarshalValidSlice parses an encoded valid slice value from bs.
+// UnmarshalValidByteSlice parses an encoded valid slice value from bs.
 //
 // The lenU argument specifies the Unmarshaller for the length of the slice, if
 // nil, varint.UnmarshalPositiveInt() is used.
