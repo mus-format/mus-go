@@ -247,26 +247,18 @@ func TestOrd(t *testing.T) {
 		t.Run("All MarshalPtr, UnmarshalPtr, SizePtr, SkipPtr functions must work correctly for nil ptr",
 			func(t *testing.T) {
 				var (
-					m = func() mus.MarshallerFn[*string] {
-						return func(v *string, bs []byte) (n int) {
-							return MarshalPtr(v, nil, bs)
-						}
-					}()
-					u = func() mus.UnmarshallerFn[*string] {
-						return func(bs []byte) (t *string, n int, err error) {
-							return UnmarshalPtr[string](nil, bs)
-						}
-					}()
-					s = func() mus.SizerFn[*string] {
-						return func(v *string) (size int) {
-							return SizePtr(v, nil)
-						}
-					}()
-					sk = func() mus.SkipperFn {
-						return func(bs []byte) (n int, err error) {
-							return SkipPtr(nil, bs)
-						}
-					}()
+					m mus.MarshallerFn[*string] = func(v *string, bs []byte) (n int) {
+						return MarshalPtr(v, nil, bs)
+					}
+					u mus.UnmarshallerFn[*string] = func(bs []byte) (t *string, n int, err error) {
+						return UnmarshalPtr[string](nil, bs)
+					}
+					s mus.SizerFn[*string] = func(v *string) (size int) {
+						return SizePtr(v, nil)
+					}
+					sk mus.SkipperFn = func(bs []byte) (n int, err error) {
+						return SkipPtr(nil, bs)
+					}
 				)
 				testdata.Test[*string]([]*string{nil}, m, u, s, t)
 				testdata.TestSkip[*string]([]*string{nil}, m, sk, s, t)
@@ -275,79 +267,63 @@ func TestOrd(t *testing.T) {
 		t.Run("All MarshalPtr, UnmarshalPtr, SizePtr, SkipPtr functions must work correctly not nil ptr",
 			func(t *testing.T) {
 				var (
-					str1    = "one"
-					str1Raw = append([]byte{6}, []byte(str1)...)
-					ptr     = &str1
-					m1      = func() mock.Marshaller[string] {
-						return mock.NewMarshaller[string]().RegisterNMarshal(2,
-							func(v string, bs []byte) (n int) {
-								switch v {
-								case str1:
-									return copy(bs, str1Raw)
-								default:
-									t.Fatalf("unexepcted string, want '%v' actual '%v'", str1, v)
-									return
-								}
-							},
-						)
-					}()
-					u1 = func() mock.Unmarshaller[string] {
-						return mock.NewUnmarshaller[string]().RegisterNUnmarshal(1,
-							func(bs []byte) (v string, n int, err error) {
-								if bytes.Equal(bs[:len(str1Raw)], str1Raw) {
-									return str1, len(str1Raw), nil
-								} else {
-									t.Fatalf("unexepcted bs, want '%v' actual '%v'", str1Raw, bs)
-									return
-								}
-							},
-						)
-					}()
-					s1 = func() mock.Sizer[string] {
-						return mock.NewSizer[string]().RegisterNSize(2,
-							func(v string) (size int) {
-								switch v {
-								case str1:
-									return len(str1Raw)
-								default:
-									t.Fatalf("unexepcted string, want '%v' actual '%v'", str1, v)
-									return
-								}
-							},
-						)
-					}()
-					sk1 = func() mock.Skipper {
-						return mock.NewSkipper().RegisterNSkip(1,
-							func(bs []byte) (n int, err error) {
-								if bytes.Equal(bs[:len(str1Raw)], str1Raw) {
-									return len(str1Raw), nil
-								} else {
-									t.Fatalf("unexepcted bs, want '%v' actual '%v'", str1Raw, bs)
-									return
-								}
-							},
-						)
-					}()
-					m = func() mus.MarshallerFn[*string] {
-						return func(v *string, bs []byte) (n int) {
-							return MarshalPtr(v, mus.Marshaller[string](m1), bs)
-						}
-					}()
-					u = func() mus.UnmarshallerFn[*string] {
-						return func(bs []byte) (t *string, n int, err error) {
-							return UnmarshalPtr(mus.Unmarshaller[string](u1), bs)
-						}
-					}()
-					s = func() mus.SizerFn[*string] {
-						return func(v *string) (size int) {
-							return SizePtr(v, mus.Sizer[string](s1))
-						}
-					}()
-					sk = func() mus.SkipperFn {
-						return func(bs []byte) (n int, err error) {
-							return SkipPtr(mus.Skipper(sk1), bs)
-						}
-					}()
+					str1                            = "one"
+					str1Raw                         = append([]byte{6}, []byte(str1)...)
+					ptr                             = &str1
+					m1      mock.Marshaller[string] = mock.NewMarshaller[string]().RegisterNMarshal(2,
+						func(v string, bs []byte) (n int) {
+							switch v {
+							case str1:
+								return copy(bs, str1Raw)
+							default:
+								t.Fatalf("unexepcted string, want '%v' actual '%v'", str1, v)
+								return
+							}
+						},
+					)
+					u1 mock.Unmarshaller[string] = mock.NewUnmarshaller[string]().RegisterNUnmarshal(1,
+						func(bs []byte) (v string, n int, err error) {
+							if bytes.Equal(bs[:len(str1Raw)], str1Raw) {
+								return str1, len(str1Raw), nil
+							} else {
+								t.Fatalf("unexepcted bs, want '%v' actual '%v'", str1Raw, bs)
+								return
+							}
+						},
+					)
+					s1 mock.Sizer[string] = mock.NewSizer[string]().RegisterNSize(2,
+						func(v string) (size int) {
+							switch v {
+							case str1:
+								return len(str1Raw)
+							default:
+								t.Fatalf("unexepcted string, want '%v' actual '%v'", str1, v)
+								return
+							}
+						},
+					)
+					sk1 mock.Skipper = mock.NewSkipper().RegisterNSkip(1,
+						func(bs []byte) (n int, err error) {
+							if bytes.Equal(bs[:len(str1Raw)], str1Raw) {
+								return len(str1Raw), nil
+							} else {
+								t.Fatalf("unexepcted bs, want '%v' actual '%v'", str1Raw, bs)
+								return
+							}
+						},
+					)
+					m mus.MarshallerFn[*string] = func(v *string, bs []byte) (n int) {
+						return MarshalPtr(v, mus.Marshaller[string](m1), bs)
+					}
+					u mus.UnmarshallerFn[*string] = func(bs []byte) (t *string, n int, err error) {
+						return UnmarshalPtr(mus.Unmarshaller[string](u1), bs)
+					}
+					s mus.SizerFn[*string] = func(v *string) (size int) {
+						return SizePtr(v, mus.Sizer[string](s1))
+					}
+					sk mus.SkipperFn = func(bs []byte) (n int, err error) {
+						return SkipPtr(mus.Skipper(sk1), bs)
+					}
 				)
 				testdata.Test[*string]([]*string{ptr}, m, u, s, t)
 				testdata.TestSkip[*string]([]*string{ptr}, m, sk, s, t)
@@ -433,19 +409,19 @@ func TestOrd(t *testing.T) {
 		t.Run("All MarshalByteSlice, UnmarshalByteSlice, SizeByteSlice, SkipByteSlice functions with default lenM, lenU, lenS and empty slice must work correctly",
 			func(t *testing.T) {
 				var (
-					sl = []byte{}
-					m  = mus.MarshallerFn[[]byte](func(v []byte, bs []byte) (n int) {
+					sl                          = []byte{}
+					m  mus.MarshallerFn[[]byte] = func(v []byte, bs []byte) (n int) {
 						return MarshalByteSlice(v, nil, bs)
-					})
-					u = mus.UnmarshallerFn[[]byte](func(bs []byte) (v []byte, n int, err error) {
+					}
+					u mus.UnmarshallerFn[[]byte] = func(bs []byte) (v []byte, n int, err error) {
 						return UnmarshalByteSlice(nil, bs)
-					})
-					s = mus.SizerFn[[]byte](func(v []byte) (size int) {
+					}
+					s mus.SizerFn[[]byte] = func(v []byte) (size int) {
 						return SizeByteSlice(v, nil)
-					})
-					sk = mus.SkipperFn(func(bs []byte) (n int, err error) {
+					}
+					sk mus.SkipperFn = func(bs []byte) (n int, err error) {
 						return SkipByteSlice(nil, bs)
-					})
+					}
 				)
 				testdata.Test[[]byte]([][]byte{sl}, m, u, s, t)
 				testdata.TestSkip[[]byte]([][]byte{sl}, m, sk, s, t)
@@ -454,19 +430,19 @@ func TestOrd(t *testing.T) {
 		t.Run("All MarshalByteSlice, UnmarshalByteSlice, SizeByteSlice, SkipByteSlice functions with default lenM, lenU, lenS and not empty slice must work correctly",
 			func(t *testing.T) {
 				var (
-					sl = []byte{0, 1, 1, 255, 100, 0, 1, 10}
-					m  = mus.MarshallerFn[[]byte](func(v []byte, bs []byte) (n int) {
+					sl                          = []byte{0, 1, 1, 255, 100, 0, 1, 10}
+					m  mus.MarshallerFn[[]byte] = func(v []byte, bs []byte) (n int) {
 						return MarshalByteSlice(v, nil, bs)
-					})
-					u = mus.UnmarshallerFn[[]byte](func(bs []byte) (v []byte, n int, err error) {
+					}
+					u mus.UnmarshallerFn[[]byte] = func(bs []byte) (v []byte, n int, err error) {
 						return UnmarshalByteSlice(nil, bs)
-					})
-					s = mus.SizerFn[[]byte](func(v []byte) (size int) {
+					}
+					s mus.SizerFn[[]byte] = func(v []byte) (size int) {
 						return SizeByteSlice(v, nil)
-					})
-					sk = mus.SkipperFn(func(bs []byte) (n int, err error) {
+					}
+					sk mus.SkipperFn = func(bs []byte) (n int, err error) {
 						return SkipByteSlice(nil, bs)
-					})
+					}
 				)
 				testdata.Test[[]byte]([][]byte{sl}, m, u, s, t)
 				testdata.TestSkip[[]byte]([][]byte{sl}, m, sk, s, t)
@@ -475,27 +451,19 @@ func TestOrd(t *testing.T) {
 		t.Run("All MarshalByteSliceVarint, UnmarshalByteSliceVarint, SizeByteSliceVarint, SkipByteSliceVarint functions must work correctly with empty slice",
 			func(t *testing.T) {
 				var (
-					sl = []byte{}
-					m  = func() mus.MarshallerFn[[]byte] {
-						return func(v []byte, bs []byte) (n int) {
-							return MarshalByteSliceVarint(v, bs)
-						}
-					}()
-					u = func() mus.UnmarshallerFn[[]byte] {
-						return func(bs []byte) (v []byte, n int, err error) {
-							return UnmarshalByteSliceVarint(bs)
-						}
-					}()
-					s = func() mus.SizerFn[[]byte] {
-						return func(v []byte) (size int) {
-							return SizeByteSliceVarint(v)
-						}
-					}()
-					sk = func() mus.SkipperFn {
-						return func(bs []byte) (n int, err error) {
-							return SkipByteSliceVarint(bs)
-						}
-					}()
+					sl                          = []byte{}
+					m  mus.MarshallerFn[[]byte] = func(v []byte, bs []byte) (n int) {
+						return MarshalByteSliceVarint(v, bs)
+					}
+					u mus.UnmarshallerFn[[]byte] = func(bs []byte) (v []byte, n int, err error) {
+						return UnmarshalByteSliceVarint(bs)
+					}
+					s mus.SizerFn[[]byte] = func(v []byte) (size int) {
+						return SizeByteSliceVarint(v)
+					}
+					sk mus.SkipperFn = func(bs []byte) (n int, err error) {
+						return SkipByteSliceVarint(bs)
+					}
 				)
 				testdata.Test[[]byte]([][]byte{sl}, m, u, s, t)
 				testdata.TestSkip[[]byte]([][]byte{sl}, m, sk, s, t)
@@ -504,27 +472,19 @@ func TestOrd(t *testing.T) {
 		t.Run("All MarshalByteSliceVarint, UnmarshalByteSliceVarint, SizeByteSliceVarint, SkipByteSliceVarint functions must work correctly with not empty slice",
 			func(t *testing.T) {
 				var (
-					sl = []byte{0, 1, 1, 255, 100, 0, 1, 10}
-					m  = func() mus.MarshallerFn[[]byte] {
-						return func(v []byte, bs []byte) (n int) {
-							return MarshalByteSliceVarint(v, bs)
-						}
-					}()
-					u = func() mus.UnmarshallerFn[[]byte] {
-						return func(bs []byte) (v []byte, n int, err error) {
-							return UnmarshalByteSliceVarint(bs)
-						}
-					}()
-					s = func() mus.SizerFn[[]byte] {
-						return func(v []byte) (size int) {
-							return SizeByteSliceVarint(v)
-						}
-					}()
-					sk = func() mus.SkipperFn {
-						return func(bs []byte) (n int, err error) {
-							return SkipByteSliceVarint(bs)
-						}
-					}()
+					sl                          = []byte{0, 1, 1, 255, 100, 0, 1, 10}
+					m  mus.MarshallerFn[[]byte] = func(v []byte, bs []byte) (n int) {
+						return MarshalByteSliceVarint(v, bs)
+					}
+					u mus.UnmarshallerFn[[]byte] = func(bs []byte) (v []byte, n int, err error) {
+						return UnmarshalByteSliceVarint(bs)
+					}
+					s mus.SizerFn[[]byte] = func(v []byte) (size int) {
+						return SizeByteSliceVarint(v)
+					}
+					sk mus.SkipperFn = func(bs []byte) (n int, err error) {
+						return SkipByteSliceVarint(bs)
+					}
 				)
 				testdata.Test[[]byte]([][]byte{sl}, m, u, s, t)
 				testdata.TestSkip[[]byte]([][]byte{sl}, m, sk, s, t)
@@ -640,19 +600,19 @@ func TestOrd(t *testing.T) {
 		t.Run("All MarshalSlice, UnmarshalSlice, SizeSlice, SkipSlice function with default lenM, lenU, lenS and empty slice must work correctly",
 			func(t *testing.T) {
 				var (
-					sl = []string{}
-					m  = mus.MarshallerFn[[]string](func(v []string, bs []byte) (n int) {
+					sl                            = []string{}
+					m  mus.MarshallerFn[[]string] = func(v []string, bs []byte) (n int) {
 						return MarshalSlice(v, nil, nil, bs)
-					})
-					u = mus.UnmarshallerFn[[]string](func(bs []byte) (v []string, n int, err error) {
+					}
+					u mus.UnmarshallerFn[[]string] = func(bs []byte) (v []string, n int, err error) {
 						return UnmarshalSlice[string](nil, nil, bs)
-					})
-					s = mus.SizerFn[[]string](func(v []string) (size int) {
+					}
+					s mus.SizerFn[[]string] = func(v []string) (size int) {
 						return SizeSlice(v, nil, nil)
-					})
-					sk = mus.SkipperFn(func(bs []byte) (n int, err error) {
+					}
+					sk mus.SkipperFn = func(bs []byte) (n int, err error) {
 						return SkipSlice(nil, nil, bs)
-					})
+					}
 				)
 				testdata.Test[[]string]([][]string{sl}, m, u, s, t)
 				testdata.TestSkip[[]string]([][]string{sl}, m, sk, s, t)
@@ -688,27 +648,19 @@ func TestOrd(t *testing.T) {
 		t.Run("All MarshalSliceVarint, UnmarshalSliceVarint, SizeSliceVarint, SkipSliceVarint functions must work correctly with empty slice",
 			func(t *testing.T) {
 				var (
-					sl = []string{}
-					m  = func() mus.MarshallerFn[[]string] {
-						return func(v []string, bs []byte) (n int) {
-							return MarshalSliceVarint(v, nil, bs)
-						}
-					}()
-					u = func() mus.UnmarshallerFn[[]string] {
-						return func(bs []byte) (v []string, n int, err error) {
-							return UnmarshalSliceVarint[string](nil, bs)
-						}
-					}()
-					s = func() mus.SizerFn[[]string] {
-						return func(v []string) (size int) {
-							return SizeSliceVarint(v, nil)
-						}
-					}()
-					sk = func() mus.SkipperFn {
-						return func(bs []byte) (n int, err error) {
-							return SkipSliceVarint(nil, bs)
-						}
-					}()
+					sl                            = []string{}
+					m  mus.MarshallerFn[[]string] = func(v []string, bs []byte) (n int) {
+						return MarshalSliceVarint(v, nil, bs)
+					}
+					u mus.UnmarshallerFn[[]string] = func(bs []byte) (v []string, n int, err error) {
+						return UnmarshalSliceVarint[string](nil, bs)
+					}
+					s mus.SizerFn[[]string] = func(v []string) (size int) {
+						return SizeSliceVarint(v, nil)
+					}
+					sk mus.SkipperFn = func(bs []byte) (n int, err error) {
+						return SkipSliceVarint(nil, bs)
+					}
 				)
 				testdata.Test[[]string]([][]string{sl}, m, u, s, t)
 				testdata.TestSkip[[]string]([][]string{sl}, m, sk, s, t)
@@ -1684,139 +1636,123 @@ func testAllMapFunctions(
 	t *testing.T,
 ) {
 	var (
-		str1         = "one"
-		str1Raw      = append([]byte{6}, []byte(str1)...)
-		str2         = "two"
-		str2Raw      = append([]byte{6}, []byte(str2)...)
-		int1    uint = 5
-		int1Raw      = []byte{5}
-		int2    uint = 8
-		int2Raw      = []byte{8}
-		mp           = map[string]uint{str1: int1, str2: int2}
-		m1           = func() mock.Marshaller[string] {
-			return mock.NewMarshaller[string]().RegisterNMarshal(4,
-				func(v string, bs []byte) (n int) {
-					switch v {
-					case str1:
-						return copy(bs, str1Raw)
-					case str2:
-						return copy(bs, str2Raw)
-					default:
-						t.Fatalf("unexepcted string, want '%v' or '%v' actual '%v'",
-							str1, str2, v)
-						return
-					}
-				},
-			)
-		}()
-		m2 = func() mock.Marshaller[uint] {
-			return mock.NewMarshaller[uint]().RegisterNMarshal(4,
-				func(v uint, bs []byte) (n int) {
-					switch v {
-					case int1:
-						return copy(bs, int1Raw)
-					case int2:
-						return copy(bs, int2Raw)
-					default:
-						t.Fatalf("unexepcted uint, want '%v' or '%v' actual '%v'",
-							int1, int2, v)
-						return
-					}
-				},
-			)
-		}()
-		u1 = func() mock.Unmarshaller[string] {
-			return mock.NewUnmarshaller[string]().RegisterNUnmarshal(2,
-				func(bs []byte) (v string, n int, err error) {
-					if bytes.Equal(bs[:len(str1Raw)], str1Raw) {
-						return str1, len(str1Raw), nil
-					} else if bytes.Equal(bs[:len(str2Raw)], str2Raw) {
-						return str2, len(str2Raw), nil
-					} else {
-						t.Fatalf("unexepcted bs, want '%v' or '%v' actual '%v'",
-							str1Raw, str2Raw, bs)
-						return
-					}
-				},
-			)
-		}()
-		u2 = func() mock.Unmarshaller[uint] {
-			return mock.NewUnmarshaller[uint]().RegisterNUnmarshal(2,
-				func(bs []byte) (v uint, n int, err error) {
-					if bytes.Equal(bs[:len(int1Raw)], int1Raw) {
-						return int1, len(int1Raw), nil
-					} else if bytes.Equal(bs[:len(int2Raw)], int2Raw) {
-						return int2, len(int2Raw), nil
-					} else {
-						t.Fatalf("unexepcted bs, want '%v' or '%v' actual '%v'",
-							int1Raw, int2Raw, bs)
-						return
-					}
-				},
-			)
-		}()
-		s1 = func() mock.Sizer[string] {
-			return mock.NewSizer[string]().RegisterNSize(4,
-				func(v string) (size int) {
-					switch v {
-					case str1:
-						return len(str1Raw)
-					case str2:
-						return len(str2Raw)
-					default:
-						t.Fatalf("unexepcted string, want '%v' or '%v' actual '%v'",
-							str1, str2, v)
-						return
-					}
-				},
-			)
-		}()
-		s2 = func() mock.Sizer[uint] {
-			return mock.NewSizer[uint]().RegisterNSize(4,
-				func(v uint) (size int) {
-					switch v {
-					case int1:
-						return len(int1Raw)
-					case int2:
-						return len(int2Raw)
-					default:
-						t.Fatalf("unexepcted uint, want '%v' or '%v' actual '%v'", int1,
-							int2, v)
-						return
-					}
-				},
-			)
-		}()
-		sk1 = func() mock.Skipper {
-			return mock.NewSkipper().RegisterNSkip(2,
-				func(bs []byte) (n int, err error) {
-					if bytes.Equal(bs[:len(str1Raw)], str1Raw) {
-						return len(str1Raw), nil
-					} else if bytes.Equal(bs[:len(str2Raw)], str2Raw) {
-						return len(str2Raw), nil
-					} else {
-						t.Fatalf("unexepcted bs, want '%v' or '%v' actual '%v'",
-							str1Raw, str2Raw, bs)
-						return
-					}
-				},
-			)
-		}()
-		sk2 = func() mock.Skipper {
-			return mock.NewSkipper().RegisterNSkip(2,
-				func(bs []byte) (n int, err error) {
-					if bytes.Equal(bs[:len(int1Raw)], int1Raw) {
-						return len(int1Raw), nil
-					} else if bytes.Equal(bs[:len(int2Raw)], int2Raw) {
-						return len(int2Raw), nil
-					} else {
-						t.Fatalf("unexepcted bs, want '%v' or '%v' actual '%v'",
-							int1Raw, int2Raw, bs)
-						return
-					}
-				},
-			)
-		}()
+		str1                            = "one"
+		str1Raw                         = append([]byte{6}, []byte(str1)...)
+		str2                            = "two"
+		str2Raw                         = append([]byte{6}, []byte(str2)...)
+		int1    uint                    = 5
+		int1Raw                         = []byte{5}
+		int2    uint                    = 8
+		int2Raw                         = []byte{8}
+		mp                              = map[string]uint{str1: int1, str2: int2}
+		m1      mock.Marshaller[string] = mock.NewMarshaller[string]().RegisterNMarshal(4,
+			func(v string, bs []byte) (n int) {
+				switch v {
+				case str1:
+					return copy(bs, str1Raw)
+				case str2:
+					return copy(bs, str2Raw)
+				default:
+					t.Fatalf("unexepcted string, want '%v' or '%v' actual '%v'",
+						str1, str2, v)
+					return
+				}
+			},
+		)
+		m2 mock.Marshaller[uint] = mock.NewMarshaller[uint]().RegisterNMarshal(4,
+			func(v uint, bs []byte) (n int) {
+				switch v {
+				case int1:
+					return copy(bs, int1Raw)
+				case int2:
+					return copy(bs, int2Raw)
+				default:
+					t.Fatalf("unexepcted uint, want '%v' or '%v' actual '%v'",
+						int1, int2, v)
+					return
+				}
+			},
+		)
+		u1 mock.Unmarshaller[string] = mock.NewUnmarshaller[string]().RegisterNUnmarshal(2,
+			func(bs []byte) (v string, n int, err error) {
+				if bytes.Equal(bs[:len(str1Raw)], str1Raw) {
+					return str1, len(str1Raw), nil
+				} else if bytes.Equal(bs[:len(str2Raw)], str2Raw) {
+					return str2, len(str2Raw), nil
+				} else {
+					t.Fatalf("unexepcted bs, want '%v' or '%v' actual '%v'",
+						str1Raw, str2Raw, bs)
+					return
+				}
+			},
+		)
+		u2 mock.Unmarshaller[uint] = mock.NewUnmarshaller[uint]().RegisterNUnmarshal(2,
+			func(bs []byte) (v uint, n int, err error) {
+				if bytes.Equal(bs[:len(int1Raw)], int1Raw) {
+					return int1, len(int1Raw), nil
+				} else if bytes.Equal(bs[:len(int2Raw)], int2Raw) {
+					return int2, len(int2Raw), nil
+				} else {
+					t.Fatalf("unexepcted bs, want '%v' or '%v' actual '%v'",
+						int1Raw, int2Raw, bs)
+					return
+				}
+			},
+		)
+		s1 mock.Sizer[string] = mock.NewSizer[string]().RegisterNSize(4,
+			func(v string) (size int) {
+				switch v {
+				case str1:
+					return len(str1Raw)
+				case str2:
+					return len(str2Raw)
+				default:
+					t.Fatalf("unexepcted string, want '%v' or '%v' actual '%v'",
+						str1, str2, v)
+					return
+				}
+			},
+		)
+		s2 mock.Sizer[uint] = mock.NewSizer[uint]().RegisterNSize(4,
+			func(v uint) (size int) {
+				switch v {
+				case int1:
+					return len(int1Raw)
+				case int2:
+					return len(int2Raw)
+				default:
+					t.Fatalf("unexepcted uint, want '%v' or '%v' actual '%v'", int1,
+						int2, v)
+					return
+				}
+			},
+		)
+		sk1 mock.Skipper = mock.NewSkipper().RegisterNSkip(2,
+			func(bs []byte) (n int, err error) {
+				if bytes.Equal(bs[:len(str1Raw)], str1Raw) {
+					return len(str1Raw), nil
+				} else if bytes.Equal(bs[:len(str2Raw)], str2Raw) {
+					return len(str2Raw), nil
+				} else {
+					t.Fatalf("unexepcted bs, want '%v' or '%v' actual '%v'",
+						str1Raw, str2Raw, bs)
+					return
+				}
+			},
+		)
+		sk2 mock.Skipper = mock.NewSkipper().RegisterNSkip(2,
+			func(bs []byte) (n int, err error) {
+				if bytes.Equal(bs[:len(int1Raw)], int1Raw) {
+					return len(int1Raw), nil
+				} else if bytes.Equal(bs[:len(int2Raw)], int2Raw) {
+					return len(int2Raw), nil
+				} else {
+					t.Fatalf("unexepcted bs, want '%v' or '%v' actual '%v'",
+						int1Raw, int2Raw, bs)
+					return
+				}
+			},
+		)
 		mocks = []*mok.Mock{m1.Mock, m2.Mock, u1.Mock, u2.Mock, s1.Mock,
 			s2.Mock}
 	)
