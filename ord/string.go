@@ -63,6 +63,11 @@ func UnmarshalValidString(lenU mus.Unmarshaller[int],
 		err = com.ErrNegativeLength
 		return
 	}
+	l := n + length
+	if len(bs) < l {
+		err = mus.ErrTooSmallByteSlice
+		return
+	}
 	if lenVl != nil {
 		if err = lenVl.Validate(length); err != nil {
 			if skip {
@@ -72,11 +77,6 @@ func UnmarshalValidString(lenU mus.Unmarshaller[int],
 		}
 	}
 	if length == 0 {
-		return
-	}
-	l := n + length
-	if len(bs) < l {
-		err = mus.ErrTooSmallByteSlice
 		return
 	}
 	return string(bs[n:l]), l, nil

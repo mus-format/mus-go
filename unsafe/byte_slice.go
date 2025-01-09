@@ -84,13 +84,7 @@ func UnmarshalValidByteSlice(lenU mus.Unmarshaller[int],
 // The lenS argument specifies the Sizer for the length of the slice, if nil,
 // varint.SizePositiveInt() is used.
 func SizeByteSlice(v []byte, lenS mus.Sizer[int]) (size int) {
-	length := len(v)
-	if lenS == nil {
-		size = varint.SizePositiveInt(length)
-	} else {
-		size = lenS.Size(length)
-	}
-	return size + length
+	return ord.SizeByteSlice(v, lenS)
 }
 
 // SkipByteSlice skips an encoded slice value.
@@ -101,19 +95,5 @@ func SizeByteSlice(v []byte, lenS mus.Sizer[int]) (size int) {
 // In addition to the number of skipped bytes, it may also return
 // mus.ErrTooSmallByteSlice, com.ErrOverflow or com.ErrNegativeLength.
 func SkipByteSlice(lenU mus.Unmarshaller[int], bs []byte) (n int, err error) {
-	var length int
-	if lenU == nil {
-		length, n, err = varint.UnmarshalPositiveInt(bs)
-	} else {
-		length, n, err = lenU.Unmarshal(bs)
-	}
-	if err != nil {
-		return
-	}
-	if length < 0 {
-		err = com.ErrNegativeLength
-		return
-	}
-	n += length
-	return
+	return ord.SkipByteSlice(lenU, bs)
 }
