@@ -5,6 +5,7 @@ import (
 
 	com "github.com/mus-format/common-go"
 	"github.com/mus-format/mus-go"
+	"github.com/mus-format/mus-go/ord"
 	"github.com/mus-format/mus-go/varint"
 )
 
@@ -15,17 +16,7 @@ import (
 //
 // Returns the number of used bytes. It will panic if bs is too small.
 func MarshalByteSlice(v []byte, lenM mus.Marshaller[int], bs []byte) (n int) {
-	length := len(v)
-	if lenM == nil {
-		n = varint.MarshalPositiveInt(length, bs)
-	} else {
-		n = lenM.Marshal(length, bs)
-	}
-	l := n + length
-	if len(bs) < l {
-		panic(mus.ErrTooSmallByteSlice)
-	}
-	return n + copy(bs[n:], unsafe_mod.Slice(unsafe_mod.SliceData(v), length))
+	return ord.MarshalByteSlice(v, lenM, bs)
 }
 
 // UnmarshalByteSlice parses an encoded slice value from bs.
