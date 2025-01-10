@@ -560,19 +560,19 @@ func TestUnsafe(t *testing.T) {
 		t.Run("All MarshalByteSlice, UnmarshalByteSlice, SizeByteSlice, SkipByteSlice functions with default lenM, lenU, lenS and empty slice must work correctly",
 			func(t *testing.T) {
 				var (
-					sl = []byte{}
-					m  = mus.MarshallerFn[[]byte](func(v []byte, bs []byte) (n int) {
+					sl                          = []byte{}
+					m  mus.MarshallerFn[[]byte] = func(v []byte, bs []byte) (n int) {
 						return MarshalByteSlice(v, nil, bs)
-					})
-					u = mus.UnmarshallerFn[[]byte](func(bs []byte) (v []byte, n int, err error) {
+					}
+					u mus.UnmarshallerFn[[]byte] = func(bs []byte) (v []byte, n int, err error) {
 						return UnmarshalByteSlice(nil, bs)
-					})
-					s = mus.SizerFn[[]byte](func(v []byte) (size int) {
+					}
+					s mus.SizerFn[[]byte] = func(v []byte) (size int) {
 						return SizeByteSlice(v, nil)
-					})
-					sk = mus.SkipperFn(func(bs []byte) (n int, err error) {
+					}
+					sk mus.SkipperFn = func(bs []byte) (n int, err error) {
 						return SkipByteSlice(nil, bs)
-					})
+					}
 				)
 				testdata.Test[[]byte]([][]byte{sl}, m, u, s, t)
 				testdata.TestSkip[[]byte]([][]byte{sl}, m, sk, s, t)
@@ -581,19 +581,19 @@ func TestUnsafe(t *testing.T) {
 		t.Run("All MarshalByteSlice, UnmarshalByteSlice, SizeByteSlice, SkipByteSlice functions with default lenM, lenU, lenS and not empty slice must work correctly",
 			func(t *testing.T) {
 				var (
-					sl = []byte{0, 1, 1, 255, 100, 0, 1, 10}
-					m  = mus.MarshallerFn[[]byte](func(v []byte, bs []byte) (n int) {
+					sl                          = []byte{0, 1, 1, 255, 100, 0, 1, 10}
+					m  mus.MarshallerFn[[]byte] = func(v []byte, bs []byte) (n int) {
 						return MarshalByteSlice(v, nil, bs)
-					})
-					u = mus.UnmarshallerFn[[]byte](func(bs []byte) (v []byte, n int, err error) {
+					}
+					u mus.UnmarshallerFn[[]byte] = func(bs []byte) (v []byte, n int, err error) {
 						return UnmarshalByteSlice(nil, bs)
-					})
-					s = mus.SizerFn[[]byte](func(v []byte) (size int) {
+					}
+					s mus.SizerFn[[]byte] = func(v []byte) (size int) {
 						return SizeByteSlice(v, nil)
-					})
-					sk = mus.SkipperFn(func(bs []byte) (n int, err error) {
+					}
+					sk mus.SkipperFn = func(bs []byte) (n int, err error) {
 						return SkipByteSlice(nil, bs)
-					})
+					}
 				)
 				testdata.Test[[]byte]([][]byte{sl}, m, u, s, t)
 				testdata.TestSkip[[]byte]([][]byte{sl}, m, sk, s, t)
@@ -602,27 +602,19 @@ func TestUnsafe(t *testing.T) {
 		t.Run("All MarshalByteSliceVarint, UnmarshalByteSliceVarint, SizeByteSliceVarint, SkipByteSliceVarint functions must work correctly with empty slice",
 			func(t *testing.T) {
 				var (
-					sl = []byte{}
-					m  = func() mus.MarshallerFn[[]byte] {
-						return func(v []byte, bs []byte) (n int) {
-							return MarshalByteSliceVarint(v, bs)
-						}
-					}()
-					u = func() mus.UnmarshallerFn[[]byte] {
-						return func(bs []byte) (v []byte, n int, err error) {
-							return UnmarshalByteSliceVarint(bs)
-						}
-					}()
-					s = func() mus.SizerFn[[]byte] {
-						return func(v []byte) (size int) {
-							return SizeByteSliceVarint(v)
-						}
-					}()
-					sk = func() mus.SkipperFn {
-						return func(bs []byte) (n int, err error) {
-							return SkipByteSliceVarint(bs)
-						}
-					}()
+					sl                          = []byte{}
+					m  mus.MarshallerFn[[]byte] = func(v []byte, bs []byte) (n int) {
+						return MarshalByteSliceVarint(v, bs)
+					}
+					u mus.UnmarshallerFn[[]byte] = func(bs []byte) (v []byte, n int, err error) {
+						return UnmarshalByteSliceVarint(bs)
+					}
+					s mus.SizerFn[[]byte] = func(v []byte) (size int) {
+						return SizeByteSliceVarint(v)
+					}
+					sk mus.SkipperFn = func(bs []byte) (n int, err error) {
+						return SkipByteSliceVarint(bs)
+					}
 				)
 				testdata.Test[[]byte]([][]byte{sl}, m, u, s, t)
 				testdata.TestSkip[[]byte]([][]byte{sl}, m, sk, s, t)
@@ -631,27 +623,19 @@ func TestUnsafe(t *testing.T) {
 		t.Run("All MarshalByteSliceVarint, UnmarshalByteSliceVarint, SizeByteSliceVarint, SkipByteSliceVarint functions must work correctly with not empty slice",
 			func(t *testing.T) {
 				var (
-					sl = []byte{0, 1, 1, 255, 100, 0, 1, 10}
-					m  = func() mus.MarshallerFn[[]byte] {
-						return func(v []byte, bs []byte) (n int) {
-							return MarshalByteSliceVarint(v, bs)
-						}
-					}()
-					u = func() mus.UnmarshallerFn[[]byte] {
-						return func(bs []byte) (v []byte, n int, err error) {
-							return UnmarshalByteSliceVarint(bs)
-						}
-					}()
-					s = func() mus.SizerFn[[]byte] {
-						return func(v []byte) (size int) {
-							return SizeByteSliceVarint(v)
-						}
-					}()
-					sk = func() mus.SkipperFn {
-						return func(bs []byte) (n int, err error) {
-							return SkipByteSliceVarint(bs)
-						}
-					}()
+					sl                          = []byte{0, 1, 1, 255, 100, 0, 1, 10}
+					m  mus.MarshallerFn[[]byte] = func(v []byte, bs []byte) (n int) {
+						return MarshalByteSliceVarint(v, bs)
+					}
+					u mus.UnmarshallerFn[[]byte] = func(bs []byte) (v []byte, n int, err error) {
+						return UnmarshalByteSliceVarint(bs)
+					}
+					s mus.SizerFn[[]byte] = func(v []byte) (size int) {
+						return SizeByteSliceVarint(v)
+					}
+					sk mus.SkipperFn = func(bs []byte) (n int, err error) {
+						return SkipByteSliceVarint(bs)
+					}
 				)
 				testdata.Test[[]byte]([][]byte{sl}, m, u, s, t)
 				testdata.TestSkip[[]byte]([][]byte{sl}, m, sk, s, t)
