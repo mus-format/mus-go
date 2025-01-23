@@ -158,14 +158,17 @@ import (
 func main() {
   var (
     sl = []int{1, 2, 3, 4, 5}
+    
     lenM mus.Marshaller // Length marshaller, if nil varint.MarshalPositiveInt() is used.
+    lenU mus.Unmarshaller // Length unmarshaller, if nil varint.UnmarshalPositiveInt() is used.
+
     m  = mus.MarshallerFn[int](varint.MarshalInt) // Implementation of the 
     // mus.Marshaller interface for slice elements.
-    lenU mus.Unmarshaller // Length unmarshaller, if nil varint.UnmarshalPositiveInt() is used.
     u = mus.UnmarshallerFn[int](varint.UnmarshalInt) // Implementation of the
     // mus.Unmarshaller interface for slice elements.
     s = mus.SizerFn[int](varint.SizeInt) // Implementation of the mus.Sizer
     // interface for slice elements.
+
     size = ord.SizeSlice[int](sl, s)
     bs   = make([]byte, size)
   )
