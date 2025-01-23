@@ -134,8 +134,8 @@ More details about Varint and Raw encodings can be found in the
 If in doubt, use Varint.
 
 ## ord (ordinary) Package
-Supports the following data types: `bool`, `string`, `slice`, `map`, and 
-pointers. 
+Supports the following data types: `bool`, `string`, `slice`, `byte slice`, 
+`map`, and pointers.
 
 Variable-length data types (like `string`, `slice`, or `map`) are encoded as: 
 `length + data`. You can choose binary representation for both of these parts. 
@@ -185,8 +185,8 @@ unmarshalling will also change the string’s contents. Here is an
 [example](https://github.com/mus-format/mus-examples-go/blob/main/unasafe/main.go) 
 that demonstrates this behavior more clearly.
 
-Supports the following data types: `bool`, `string`, `byte`, and all `uint`, 
-`int`, `float`.
+Supports the following data types: `bool`, `string`, `byte slice`, `byte`, and 
+all `uint`, `int`, `float`.
 
 ## pm (pointer mapping) Package
 Let's consider the following struct:
