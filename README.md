@@ -49,9 +49,9 @@ It is lightning fast, space efficient and well tested.
 - [Arrays Support](#arrays-support)
 - [MarshallerMUS Interface](#marshallermus-interface)
 - [Generic MarshalMUS Function](#generic-marshalmus-function)
-- [Data Type Metadata (DTM) Support](#data-type-metadata-dtm-support)
+- [DTM (Data Type Metadata) Support](#dtm-data-type-metadata-support)
 - [Data Versioning](#data-versioning)
-- [Marshal/Unmarshal interfaces (or oneof feature)](#marshalunmarshal-interfaces-or-oneof-feature)
+- [Marshal/Unmarshal Interfaces (or oneof feature)](#marshalunmarshal-interfaces-or-oneof-feature)
 - [Validation](#validation)
   - [String](#string)
   - [Slice](#slice)
@@ -61,28 +61,27 @@ It is lightning fast, space efficient and well tested.
 - [Zero Allocation Deserialization](#zero-allocation-deserialization)
 
 # cmd-stream-go
-[cmd-stream-go](https://github.com/cmd-stream/cmd-stream-go) - high-performance
-client-server library for Golang that implements the Command pattern. 
-cmd-stream-go/MUS is about [3 times faster](https://github.com/ymz-ncnk/go-client-server-communication-benchmarks) 
+[cmd-stream-go](https://github.com/cmd-stream/cmd-stream-go) allows you to 
+execute commands on the server. cmd-stream-go/MUS is about [3 times faster](https://github.com/ymz-ncnk/go-client-server-communication-benchmarks) 
 than gRPC/Protobuf.
 
 # musgen-go
-Writing mus-go code manually can be quite tedious and error-prone. It's much 
+Writing mus-go code manually can be tedious and error-prone. Instead, it’s much 
 better to use a [code generator](https://github.com/mus-format/musgen-go) that 
-can produce `Marshal`, `Unmarshal`, `Size`, and `Skip` functions for you. Also 
-it is very easy to use - just give it a type and call `Generate()`.
+automatically produces `Marshal`, `Unmarshal`, `Size`, and `Skip` functions for 
+you. It’s also incredibly easy to use - simply provide a type and call 
+`Generate()`.
 
 # Benchmarks
 - [github.com/ymz-ncnk/go-serialization-benchmarks](https://github.com/ymz-ncnk/go-serialization-benchmarks) - 
   contains the results of running serializers in different modes.
 - [github.com/alecthomas/go_serialization_benchmarks](https://github.com/alecthomas/go_serialization_benchmarks)
 
-Why did I write another [benchmarks](https://github.com/ymz-ncnk/go-serialization-benchmarks)?
-Existing [benchmarks](https://github.com/alecthomas/go_serialization_benchmarks) 
-currently have some issues - just try to run them several times, you will most 
-likely get different results, such that it's impossible to determine which 
-serializer is faster. Having done so, I simply did not know which one to
-choose. That was one of the reasons, and basically I made them for my own use.
+Why did I create another [benchmarks](https://github.com/ymz-ncnk/go-serialization-benchmarks)?  
+The existing [benchmarks](https://github.com/alecthomas/go_serialization_benchmarks) 
+have some notable issues - try running them several times, and you’ll likely get
+inconsistent results, making it difficult to determine which serializer is truly 
+faster. That was one of the reasons, and basically I made them for my own use.
 
 # How To Use
 Don't forget to visit [mus-examples-go](https://github.com/mus-format/mus-examples-go).
@@ -137,13 +136,13 @@ If in doubt, use Varint.
 Supports the following data types: `bool`, `string`, `slice`, `byte slice`, 
 `map`, and pointers.
 
-Variable-length data types (like `string`, `slice`, or `map`) are encoded as: 
-`length + data`. You can choose binary representation for both of these parts. 
-By default, the length is encoded using Varint without ZigZag (see 
-`...PositiveInt()` functions from the varint package). In this case the 
-maximum length is limited by the maximum value of the `int` type on your system.
-This is ok for different architectures - an attempt to unmarshal, for example, 
-too long string on a 32-bit system, will result in `ErrOverflow`.
+Variable-length data types (such as `string`, `slice`, or `map`) are encoded as 
+`length + data`. You can select the binary representation for both these parts. 
+By default, the length is encoded using Varint without ZigZag (`...PositiveInt()` 
+functions from the varint package). In this case the maximum length is limited 
+by the maximum value of the `int` type on your system. This is ok for different 
+architectures - an attempt to unmarshal, for example, too long string on a 
+32-bit system, will result in `ErrOverflow`.
 
 Let's examine how the slice type is serialized:
 ```go
@@ -315,10 +314,10 @@ type MarshallerMUS interface {
 }
 
 // ... and the function itself.
-func MarshalMUS[T MarshallerMUS](t T) (bs []byte) {
-  bs = make([]byte, t.SizeMUS())
-  t.MarshalMUS(bs)
-  return
+func MarshalMUS(v MarshallerMUS) (bs []byte) {
+	bs = make([]byte, v.SizeMUS())
+	v.MarshalMUS(bs)
+	return
 }
 
 // Define a structure that implements the MarshallerMUS interface.
@@ -334,13 +333,13 @@ func main() {
 
 The full code can be found [here](https://github.com/mus-format/mus-examples-go/tree/main/generic_marshal).
 
-# Data Type Metadata (DTM) Support
-[mus-dts-go](https://github.com/mus-format/mus-dts-go) provides DTM support.
+# DTM (Data Type Metadata) Support
+[mus-dts-go](https://github.com/mus-format/mus-dts-go) provides [DTM](https://medium.com/p/21d7be309e8d) support.
 
 # Data Versioning
 mus-dts-go can be used to implement data versioning. [Here](https://github.com/mus-format/mus-examples-go/tree/main/versionings) is an example.
 
-# Marshal/Unmarshal interfaces (or oneof feature)
+# Marshal/Unmarshal Interfaces (or oneof feature)
 You should read the [mus-dts-go](https://github.com/mus-format/mus-dts-go)
 documentation first.
 
