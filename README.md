@@ -161,11 +161,11 @@ func main() {
     lenM mus.Marshaller // Length marshaller, if nil varint.MarshalPositiveInt() is used.
     lenU mus.Unmarshaller // Length unmarshaller, if nil varint.UnmarshalPositiveInt() is used.
 
-    m  = mus.MarshallerFn[int](varint.MarshalInt) // Implementation of the 
+    m mus.MarshallerFn[int] = varint.MarshalInt // Implementation of the 
     // mus.Marshaller interface for slice elements.
-    u = mus.UnmarshallerFn[int](varint.UnmarshalInt) // Implementation of the
+    u mus.UnmarshallerFn[int] = varint.UnmarshalInt // Implementation of the
     // mus.Unmarshaller interface for slice elements.
-    s = mus.SizerFn[int](varint.SizeInt) // Implementation of the mus.Sizer
+    s mus.SizerFn[int] = varint.SizeInt // Implementation of the mus.Sizer
     // interface for slice elements.
 
     size = ord.SizeSlice[int](sl, s)
