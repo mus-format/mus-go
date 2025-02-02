@@ -82,6 +82,18 @@ func TestOrd(t *testing.T) {
 
 	t.Run("string", func(t *testing.T) {
 
+		t.Run("All MarshalStr, UnmarshalStr, SizeStr, SkipStr function must work correctly",
+			func(t *testing.T) {
+				var (
+					m  mus.MarshallerFn[string]   = MarshalStr
+					u  mus.UnmarshallerFn[string] = UnmarshalStr
+					s  mus.SizerFn[string]        = SizeStr
+					sk mus.SkipperFn              = SkipStr
+				)
+				testdata.Test[string](com_testdata.StringTestCases, m, u, s, t)
+				testdata.TestSkip[string](com_testdata.StringTestCases, m, sk, s, t)
+			})
+
 		t.Run("All MarshalString, UnmarshalString, SizeString, SkipString function with default lenM, lenU, lenS must work correctly",
 			func(t *testing.T) {
 				var (
@@ -486,6 +498,7 @@ func TestOrd(t *testing.T) {
 						return SkipByteSliceVarint(bs)
 					}
 				)
+
 				testdata.Test[[]byte]([][]byte{sl}, m, u, s, t)
 				testdata.TestSkip[[]byte]([][]byte{sl}, m, sk, s, t)
 			})
