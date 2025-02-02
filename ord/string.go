@@ -30,7 +30,7 @@ func SizeStr(v string) (n int) {
 	return SizeString(v, nil)
 }
 
-// SkipString skips an encoded string value.
+// SkipStr skips an encoded string value.
 //
 // Provides an implementation of the Skipper interface for the string type.
 // See SkipString for details.
