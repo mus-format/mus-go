@@ -24,10 +24,10 @@ Container data types need their own implementations, for example:
 ```go
 // MarshalIntSlice marshals []int.
 func MarshalIntSlice(sl []int, bs []byte) (n int) {
-	// Define the Marshaller for slice elements.
-	var m mus.Marshaller[int] = mus.MarshallerFn[int](varint.MarshalInt)
-	// Marshal the slice into 'bs' using 'm'.
-	return MarshalSlice[int](sl, nil, m, bs)
+  // Define the Marshaller for slice elements.
+  var m mus.Marshaller[int] = mus.MarshallerFn[int](varint.MarshalInt)
+  // Marshal the slice into 'bs' using 'm'.
+  return MarshalSlice[int](sl, nil, m, bs)
 }
 
 // The MarshalIntSlice function (or its anonymous equivalent) can now be used as 
@@ -338,9 +338,9 @@ type MarshallerMUS interface {
 
 // ... and the function itself.
 func MarshalMUS(v MarshallerMUS) (bs []byte) {
-	bs = make([]byte, v.SizeMUS())
-	v.MarshalMUS(bs)
-	return
+  bs = make([]byte, v.SizeMUS())
+  v.MarshalMUS(bs)
+  return
 }
 
 // Define a structure that implements the MarshallerMUS interface.
