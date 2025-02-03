@@ -27,7 +27,7 @@ func MarshalIntSlice(sl []int, bs []byte) (n int) {
   // Define the Marshaller for slice elements.
   var m mus.Marshaller[int] = mus.MarshallerFn[int](varint.MarshalInt)
   // Marshal the slice into 'bs' using 'm'.
-  return MarshalSlice[int](sl, nil, m, bs)
+  return ord.MarshalSlice[int](sl, nil, m, bs)
 }
 
 // The MarshalIntSlice function (or its anonymous equivalent) can now be used as 
