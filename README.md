@@ -17,10 +17,10 @@ It is lightning fast, space efficient and well tested.
 
 ## Description
 mus-go defines the `Marshaller`, `Unmarshaller`, `Sizer`, and `Skipper` 
-[interfaces](mus.go), along with their functional implementations (e.g., 
-`MarshalString`, `UnmarshalString`, etc.) for primitive data types.
+[interfaces](mus.go), along with their functional implementations (`MarshalString`, 
+`UnmarshalString`, etc.) for primitive data types.
 
-Container data types need their own implementations. For example:
+Container data types need their own implementations, for example:
 ```go
 // MarshalIntSlice marshals []int.
 func MarshalIntSlice(sl []int, bs []byte) (n int) {
