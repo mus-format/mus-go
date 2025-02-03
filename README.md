@@ -16,29 +16,6 @@ To get started quickly, go to the [code generator](https://github.com/mus-format
 It is lightning fast, space efficient and well tested.
 
 ## Description
-mus-go defines the `Marshaller`, `Unmarshaller`, `Sizer`, and `Skipper` 
-[interfaces](mus.go), along with their functional implementations (`MarshalInt`, 
-`UnmarshalInt`, etc.) for primitive data types. 
-
-For container data types you need define your own implementations. Example:
-```go
-// MarshalIntSlice marshals []int.
-func MarshalIntSlice(sl []int, bs []byte) (n int) {
-  // Define the Marshaller for slice elements.
-  var m mus.Marshaller[int] = mus.MarshallerFn[int](varint.MarshalInt)
-  // Marshal the slice into 'bs' using 'm'.
-  return ord.MarshalSlice[int](sl, nil, m, bs)
-}
-
-// The MarshalIntSlice function (or its anonymous equivalent) can now be used as 
-// the Marshaller for elements of the [][]int type.
-```
-
-The same applies to structural data types (see [Structs Support](#structs-support)).
-In general, if a type requires custom serialization, simply implement the 
-`Marshaller`, `Unmarshaller`, ... interfaces for it.
-
-Also mus-go:
 - Has a [streaming version](https://github.com/mus-format/mus-stream-go).
 - Can run on both 32 and 64-bit systems.
 - Variable-length data types (like `string`, `slice`, or `map`) are encoded as: 
