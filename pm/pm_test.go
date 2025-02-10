@@ -15,110 +15,112 @@ import (
 
 func MarshalPointerMappingStruct(v com_testdata.PointerMappingStruct,
 	bs []byte) (n int) {
-	mp := com.NewPtrMap()
-	n = MarshalPtr[int](v.A1, mus.MarshallerFn[int](varint.MarshalInt), mp,
-		bs)
-	n += MarshalPtr[int](v.A2, mus.MarshallerFn[int](varint.MarshalInt), mp,
-		bs[n:])
-	n += MarshalPtr[int](v.B1, mus.MarshallerFn[int](varint.MarshalInt), mp,
-		bs[n:])
-	n += MarshalPtr[int](v.B2, mus.MarshallerFn[int](varint.MarshalInt), mp,
-		bs[n:])
-	n += MarshalPtr[string](v.C1, mus.MarshallerFn[string](MarshalStringVarint),
-		mp,
-		bs[n:])
-	n += MarshalPtr[string](v.C2, mus.MarshallerFn[string](MarshalStringVarint),
-		mp,
-		bs[n:])
+	var (
+		ptrMap     = com.NewPtrMap()
+		marshalInt = NewPtrMarshallerFn[int](
+			mus.MarshallerFn[int](varint.MarshalInt), ptrMap)
+		marshalStr = NewPtrMarshallerFn[string](
+			mus.MarshallerFn[string](ord.MarshalStr), ptrMap)
+	)
+	n = marshalInt(v.A1, bs)
+	n += marshalInt(v.A2, bs[n:])
+	n += marshalInt(v.B1, bs[n:])
+	n += marshalInt(v.B2, bs[n:])
+
+	n += marshalStr(v.C1, bs[n:])
+	n += marshalStr(v.C2, bs[n:])
 	return
 }
 
 func UnmarshalPointerMappingStruct(bs []byte) (
 	v com_testdata.PointerMappingStruct, n int, err error) {
-	mp := com.NewReversePtrMap()
-	v.A1, n, err = UnmarshalPtr[int](mus.UnmarshallerFn[int](varint.UnmarshalInt),
-		mp,
-		bs)
+	var (
+		ptrMap       = com.NewReversePtrMap()
+		unmarshalInt = NewPtrUnmarshallerFn[int](
+			mus.UnmarshallerFn[int](varint.UnmarshalInt), ptrMap)
+		unmarshalStr = NewPtrUnmarshallerFn[string](
+			mus.UnmarshallerFn[string](ord.UnmarshalStr), ptrMap)
+	)
+	v.A1, n, err = unmarshalInt(bs)
 	if err != nil {
 		return
 	}
 	var n1 int
-	v.A2, n1, err = UnmarshalPtr[int](mus.UnmarshallerFn[int](varint.UnmarshalInt),
-		mp,
-		bs[n:])
+	v.A2, n1, err = unmarshalInt(bs[n:])
 	n += n1
 	if err != nil {
 		return
 	}
-	v.B1, n1, err = UnmarshalPtr[int](mus.UnmarshallerFn[int](varint.UnmarshalInt),
-		mp,
-		bs[n:])
+	v.B1, n1, err = unmarshalInt(bs[n:])
 	n += n1
 	if err != nil {
 		return
 	}
-	v.B2, n1, err = UnmarshalPtr[int](mus.UnmarshallerFn[int](varint.UnmarshalInt),
-		mp,
-		bs[n:])
+	v.B2, n1, err = unmarshalInt(bs[n:])
 	n += n1
 	if err != nil {
 		return
 	}
-	v.C1, n1, err = UnmarshalPtr[string](
-		mus.UnmarshallerFn[string](UnmarshalStringVarint),
-		mp,
-		bs[n:])
+	v.C1, n1, err = unmarshalStr(bs[n:])
 	n += n1
 	if err != nil {
 		return
 	}
-	v.C2, n1, err = UnmarshalPtr[string](
-		mus.UnmarshallerFn[string](UnmarshalStringVarint),
-		mp,
-		bs[n:])
+	v.C2, n1, err = unmarshalStr(bs[n:])
 	n += n1
 	return
 }
 
 func SizePointerMappingStruct(v com_testdata.PointerMappingStruct) (size int) {
-	mp := com.NewPtrMap()
-	size = SizePtr[int](v.A1, mus.SizerFn[int](varint.SizeInt), mp)
-	size += SizePtr[int](v.A2, mus.SizerFn[int](varint.SizeInt), mp)
-	size += SizePtr[int](v.B1, mus.SizerFn[int](varint.SizeInt), mp)
-	size += SizePtr[int](v.B2, mus.SizerFn[int](varint.SizeInt), mp)
-	size += SizePtr[string](v.C1, mus.SizerFn[string](SizeStringVarint), mp)
-	return size + SizePtr[string](v.C2, mus.SizerFn[string](SizeStringVarint),
-		mp)
+	var (
+		ptrMap  = com.NewPtrMap()
+		sizeInt = NewPtrSizerFn[int](
+			mus.SizerFn[int](varint.SizeInt), ptrMap)
+		sizeStr = NewPtrSizerFn[string](
+			mus.SizerFn[string](ord.SizeStr), ptrMap)
+	)
+	size = sizeInt(v.A1)
+	size += sizeInt(v.A2)
+	size += sizeInt(v.B1)
+	size += sizeInt(v.B2)
+	size += sizeStr(v.C1)
+	return size + sizeStr(v.C2)
 }
 
 func SkipPointerMappingStruct(bs []byte) (n int, err error) {
-	mp := com.NewReversePtrMap()
-	n, err = SkipPtr(mus.SkipperFn(varint.SkipInt), mp, bs)
+	var (
+		ptrMap  = com.NewReversePtrMap()
+		skipInt = NewPtrSkipperFn(
+			mus.SkipperFn(varint.SkipInt), ptrMap)
+		skipStr = NewPtrSkipperFn(
+			mus.SkipperFn(ord.SkipStr), ptrMap)
+	)
+	n, err = skipInt(bs)
 	if err != nil {
 		return
 	}
 	var n1 int
-	n1, err = SkipPtr(mus.SkipperFn(varint.SkipInt), mp, bs[n:])
+	n1, err = skipInt(bs[n:])
 	n += n1
 	if err != nil {
 		return
 	}
-	n1, err = SkipPtr(mus.SkipperFn(varint.SkipInt), mp, bs[n:])
+	n1, err = skipInt(bs[n:])
 	n += n1
 	if err != nil {
 		return
 	}
-	n1, err = SkipPtr(mus.SkipperFn(varint.SkipInt), mp, bs[n:])
+	n1, err = skipInt(bs[n:])
 	n += n1
 	if err != nil {
 		return
 	}
-	n1, err = SkipPtr(mus.SkipperFn(SkipStringVarint), mp, bs[n:])
+	n1, err = skipStr(bs[n:])
 	n += n1
 	if err != nil {
 		return
 	}
-	n1, err = SkipPtr(mus.SkipperFn(SkipStringVarint), mp, bs[n:])
+	n1, err = skipStr(bs[n:])
 	n += n1
 	return
 }
@@ -338,28 +340,4 @@ func TestPM(t *testing.T) {
 			}
 		})
 
-}
-
-// StringVarint
-
-func MarshalStringVarint(v string, bs []byte) (n int) {
-	return ord.MarshalString(v, nil, bs)
-}
-
-func UnmarshalStringVarint(bs []byte) (v string,
-	n int, err error) {
-	return ord.UnmarshalString(nil, bs)
-}
-
-func UnmarshalValidStringVarint(lenVl com.Validator[int], skip bool, bs []byte) (
-	v string, n int, err error) {
-	return ord.UnmarshalValidString(nil, lenVl, skip, bs)
-}
-
-func SizeStringVarint(v string) (n int) {
-	return ord.SizeString(v, nil)
-}
-
-func SkipStringVarint(bs []byte) (n int, err error) {
-	return ord.SkipString(nil, bs)
 }

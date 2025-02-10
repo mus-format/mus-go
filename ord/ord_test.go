@@ -97,36 +97,31 @@ func TestOrd(t *testing.T) {
 		t.Run("All MarshalString, UnmarshalString, SizeString, SkipString function with default lenM, lenU, lenS must work correctly",
 			func(t *testing.T) {
 				var (
-					m mus.MarshallerFn[string] = func(t string, bs []byte) (n int) {
-						return MarshalString(t, nil, bs)
-					}
-					u mus.UnmarshallerFn[string] = func(bs []byte) (t string, n int, err error) {
-						return UnmarshalString(nil, bs)
-					}
-					s mus.SizerFn[string] = func(t string) (size int) {
-						return SizeString(t, nil)
-					}
-					sk mus.SkipperFn = func(bs []byte) (n int, err error) {
-						return SkipString(nil, bs)
-					}
+					m  mus.Marshaller[string]   = NewStringMarshallerFn(nil)
+					u  mus.Unmarshaller[string] = NewStringUnmarshallerFn(nil)
+					s  mus.Sizer[string]        = NewStringSizerFn(nil)
+					sk mus.Skipper              = NewStringSkipperFn(nil)
 				)
 				testdata.Test[string](com_testdata.StringTestCases, m, u, s, t)
 				testdata.TestSkip[string](com_testdata.StringTestCases, m, sk, s, t)
 			})
 
-		t.Run("All MarshalStringVarint, UnmarshalStringVarint, SizeStringVarint, SkipStringVarint functions must work correctly",
+		t.Run("All MarshalStringVarint, UnmarshalVarintString, SizeStringVarint, SkipStringVarint functions must work correctly",
 			func(t *testing.T) {
 				var (
-					m  mus.MarshallerFn[string]   = MarshalStringVarint
-					u  mus.UnmarshallerFn[string] = UnmarshalStringVarint
-					s  mus.SizerFn[string]        = SizeStringVarint
-					sk mus.SkipperFn              = SkipStringVarint
+					m mus.Marshaller[string] = NewStringMarshallerFn(
+						mus.MarshallerFn[int](varint.MarshalInt))
+					u mus.Unmarshaller[string] = NewStringUnmarshallerFn(
+						mus.UnmarshallerFn[int](varint.UnmarshalInt))
+					s mus.Sizer[string] = NewStringSizerFn(
+						mus.SizerFn[int](varint.SizeInt))
+					sk mus.Skipper = NewStringSkipperFn(mus.UnmarshallerFn[int](varint.UnmarshalInt))
 				)
 				testdata.Test[string](com_testdata.StringTestCases, m, u, s, t)
 				testdata.TestSkip[string](com_testdata.StringTestCases, m, sk, s, t)
 			})
 
-		t.Run("MarshalStringVarint should panic with ErrTooSmallByteSlice if there is no space in bs",
+		t.Run("MarshalString should panic with ErrTooSmallByteSlice if there is no space in bs",
 			func(t *testing.T) {
 				wantErr := mus.ErrTooSmallByteSlice
 				defer func() {
@@ -137,55 +132,54 @@ func TestOrd(t *testing.T) {
 						}
 					}
 				}()
-				MarshalStringVarint("hello world", make([]byte, 2))
+				MarshalString("hello world", nil, make([]byte, 2))
 			})
 
-		t.Run("UnmarshalStringVarint should return ErrNegativeLength if meets negative length",
+		t.Run("UnmarshalString should return ErrNegativeLength if meets negative length",
 			func(t *testing.T) {
 				var (
 					wantV     = ""
-					wantN     = 1
+					wantN, bs = MakeBsWithNegativeLength()
 					wantErr   = com.ErrNegativeLength
-					bs        = []byte{1}
-					v, n, err = UnmarshalStringVarint(bs)
 				)
+				v, n, err := UnmarshalString(nil, bs)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
-		t.Run("UnmarshalStringVarint should return ErrTooSmallByteSlice if there is no space in bs",
+		t.Run("UnmarshalString should return ErrTooSmallByteSlice if there is no space in bs",
 			func(t *testing.T) {
 				var (
 					wantV     = ""
 					wantN     = 1
 					wantErr   = mus.ErrTooSmallByteSlice
-					bs        = []byte{4, 2}
-					v, n, err = UnmarshalStringVarint(bs)
+					bs        = []byte{2, 2}
+					v, n, err = UnmarshalString(nil, bs)
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
-		t.Run("UnmarshalStringVarint should return ErrTooSmallByteSlice if meets invalid length", func(t *testing.T) {
+		t.Run("UnmarshalString should return ErrTooSmallByteSlice if meets invalid length", func(t *testing.T) {
 			var (
 				wantV     = ""
 				wantN     = 2
 				wantErr   = mus.ErrTooSmallByteSlice
 				bs        = []byte{200, 200}
-				v, n, err = UnmarshalStringVarint(bs)
+				v, n, err = UnmarshalString(nil, bs)
 			)
 			com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 		})
 
-		t.Run("If skip == true and lenVl validator returns an error, UnmarshalStringValid should return an error",
+		t.Run("If skip == true and lenVl validator returns an error, UnmarshalValidString should return an error",
 			func(t *testing.T) {
 				var (
-					wantV     = ""
-					wantN     = 3
-					wantErr   = errors.New("lenVl validator error")
-					bs        = []byte{4, 2, 2}
-					maxLength = com_mock.NewValidator[int]().RegisterValidate(
+					wantV   = ""
+					wantN   = 3
+					wantErr = errors.New("lenVl validator error")
+					bs      = []byte{2, 2, 2}
+					lenVl   = com_mock.NewValidator[int]().RegisterValidate(
 						func(v int) (err error) { return wantErr },
 					)
-					v, n, err = UnmarshalValidStringVarint(maxLength, true, bs)
+					v, n, err = UnmarshalValidString(nil, lenVl, true, bs)
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
@@ -193,14 +187,14 @@ func TestOrd(t *testing.T) {
 		t.Run("If skip == false and lenVl validator returns an error, UnmarshalStringValid should return an error",
 			func(t *testing.T) {
 				var (
-					wantV     = ""
-					wantN     = 1
-					wantErr   = errors.New("lenVl validator error")
-					bs        = []byte{4, 2, 2}
-					maxLength = com_mock.NewValidator[int]().RegisterValidate(
+					wantV   = ""
+					wantN   = 1
+					wantErr = errors.New("lenVl validator error")
+					bs      = []byte{2, 2, 2}
+					lenVl   = com_mock.NewValidator[int]().RegisterValidate(
 						func(v int) (err error) { return wantErr },
 					)
-					v, n, err = UnmarshalValidStringVarint(maxLength, false, bs)
+					v, n, err = UnmarshalValidString(nil, lenVl, false, bs)
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
@@ -214,40 +208,39 @@ func TestOrd(t *testing.T) {
 				lenVl   com.ValidatorFn[int] = func(t int) (err error) {
 					return wantErr
 				}
-				v, n, err = UnmarshalValidStringVarint(lenVl, false, bs)
+				v, n, err = UnmarshalValidString(nil, lenVl, false, bs)
 			)
 			com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 		})
 
-		t.Run("SkipStringVarint should return ErrNegativeLength if meets negative length",
+		t.Run("SkipString should return ErrNegativeLength if meets negative length",
 			func(t *testing.T) {
 				var (
-					wantN   = 1
-					wantErr = com.ErrNegativeLength
-					bs      = []byte{1}
-					n, err  = SkipStringVarint(bs)
+					wantN, bs = MakeBsWithNegativeLength()
+					wantErr   = com.ErrNegativeLength
 				)
+				n, err := SkipString(nil, bs)
 				com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
 			})
 
-		t.Run("SkipStringVarint should return ErrTooSmallByteSlice if there is no space in bs",
+		t.Run("SkipString should return ErrTooSmallByteSlice if there is no space in bs",
 			func(t *testing.T) {
 				var (
 					wantN   = 1
 					wantErr = mus.ErrTooSmallByteSlice
-					bs      = []byte{4, 2}
-					n, err  = SkipStringVarint(bs)
+					bs      = []byte{2, 2}
+					n, err  = SkipString(nil, bs)
 				)
 				com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
 			})
 
-		t.Run("If SkipStringVarint should return an error if it fails to unmarshal a length",
+		t.Run("If SkipString should return an error if it fails to unmarshal a length",
 			func(t *testing.T) {
 				var (
 					wantN   = 0
 					wantErr = mus.ErrTooSmallByteSlice
 					bs      = []byte{}
-					n, err  = SkipStringVarint(bs)
+					n, err  = SkipString(nil, bs)
 				)
 				com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
 			})
@@ -259,18 +252,10 @@ func TestOrd(t *testing.T) {
 		t.Run("All MarshalPtr, UnmarshalPtr, SizePtr, SkipPtr functions must work correctly for nil ptr",
 			func(t *testing.T) {
 				var (
-					m mus.MarshallerFn[*string] = func(v *string, bs []byte) (n int) {
-						return MarshalPtr(v, nil, bs)
-					}
-					u mus.UnmarshallerFn[*string] = func(bs []byte) (t *string, n int, err error) {
-						return UnmarshalPtr[string](nil, bs)
-					}
-					s mus.SizerFn[*string] = func(v *string) (size int) {
-						return SizePtr(v, nil)
-					}
-					sk mus.SkipperFn = func(bs []byte) (n int, err error) {
-						return SkipPtr(nil, bs)
-					}
+					m  mus.MarshallerFn[*string]   = NewPtrMarshallerFn[string](nil)
+					u  mus.UnmarshallerFn[*string] = NewPtrUnmarshallerFn[string](nil)
+					s  mus.SizerFn[*string]        = NewPtrSizerFn[string](nil)
+					sk mus.SkipperFn               = NewPtrSkipperFn(nil)
 				)
 				testdata.Test[*string]([]*string{nil}, m, u, s, t)
 				testdata.TestSkip[*string]([]*string{nil}, m, sk, s, t)
@@ -324,18 +309,10 @@ func TestOrd(t *testing.T) {
 							}
 						},
 					)
-					m mus.MarshallerFn[*string] = func(v *string, bs []byte) (n int) {
-						return MarshalPtr(v, mus.Marshaller[string](m1), bs)
-					}
-					u mus.UnmarshallerFn[*string] = func(bs []byte) (t *string, n int, err error) {
-						return UnmarshalPtr(mus.Unmarshaller[string](u1), bs)
-					}
-					s mus.SizerFn[*string] = func(v *string) (size int) {
-						return SizePtr(v, mus.Sizer[string](s1))
-					}
-					sk mus.SkipperFn = func(bs []byte) (n int, err error) {
-						return SkipPtr(mus.Skipper(sk1), bs)
-					}
+					m  mus.MarshallerFn[*string]   = NewPtrMarshallerFn[string](m1)
+					u  mus.UnmarshallerFn[*string] = NewPtrUnmarshallerFn[string](u1)
+					s  mus.SizerFn[*string]        = NewPtrSizerFn[string](s1)
+					sk mus.SkipperFn               = NewPtrSkipperFn(sk1)
 				)
 				testdata.Test[*string]([]*string{ptr}, m, u, s, t)
 				testdata.TestSkip[*string]([]*string{ptr}, m, sk, s, t)
@@ -352,7 +329,7 @@ func TestOrd(t *testing.T) {
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
-		t.Run("Unmarshal should return ErrWrongFormat if meets wrong format",
+		t.Run("UnmarshalPtr should return ErrWrongFormat if meets wrong format",
 			func(t *testing.T) {
 				var (
 					wantV     *string = nil
@@ -399,7 +376,7 @@ func TestOrd(t *testing.T) {
 				com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
 			})
 
-		t.Run("If Skipper fails with an error, Skip should return it",
+		t.Run("If Skipper fails with an error, SkipPtr should return it",
 			func(t *testing.T) {
 				var (
 					wantN   = 3
@@ -421,19 +398,11 @@ func TestOrd(t *testing.T) {
 		t.Run("All MarshalByteSlice, UnmarshalByteSlice, SizeByteSlice, SkipByteSlice functions with default lenM, lenU, lenS and empty slice must work correctly",
 			func(t *testing.T) {
 				var (
-					sl                          = []byte{}
-					m  mus.MarshallerFn[[]byte] = func(v []byte, bs []byte) (n int) {
-						return MarshalByteSlice(v, nil, bs)
-					}
-					u mus.UnmarshallerFn[[]byte] = func(bs []byte) (v []byte, n int, err error) {
-						return UnmarshalByteSlice(nil, bs)
-					}
-					s mus.SizerFn[[]byte] = func(v []byte) (size int) {
-						return SizeByteSlice(v, nil)
-					}
-					sk mus.SkipperFn = func(bs []byte) (n int, err error) {
-						return SkipByteSlice(nil, bs)
-					}
+					sl                            = []byte{}
+					m  mus.MarshallerFn[[]byte]   = NewByteSliceMarshallerFn(nil)
+					u  mus.UnmarshallerFn[[]byte] = NewByteSliceUnmarshallerFn(nil)
+					s  mus.SizerFn[[]byte]        = NewByteSliceSizerFn(nil)
+					sk mus.SkipperFn              = NewByteSliceSkipperFn(nil)
 				)
 				testdata.Test[[]byte]([][]byte{sl}, m, u, s, t)
 				testdata.TestSkip[[]byte]([][]byte{sl}, m, sk, s, t)
@@ -442,61 +411,37 @@ func TestOrd(t *testing.T) {
 		t.Run("All MarshalByteSlice, UnmarshalByteSlice, SizeByteSlice, SkipByteSlice functions with default lenM, lenU, lenS and not empty slice must work correctly",
 			func(t *testing.T) {
 				var (
-					sl                          = []byte{0, 1, 1, 255, 100, 0, 1, 10}
-					m  mus.MarshallerFn[[]byte] = func(v []byte, bs []byte) (n int) {
-						return MarshalByteSlice(v, nil, bs)
-					}
-					u mus.UnmarshallerFn[[]byte] = func(bs []byte) (v []byte, n int, err error) {
-						return UnmarshalByteSlice(nil, bs)
-					}
-					s mus.SizerFn[[]byte] = func(v []byte) (size int) {
-						return SizeByteSlice(v, nil)
-					}
-					sk mus.SkipperFn = func(bs []byte) (n int, err error) {
-						return SkipByteSlice(nil, bs)
-					}
+					sl                            = []byte{0, 1, 1, 255, 100, 0, 1, 10}
+					m  mus.MarshallerFn[[]byte]   = NewByteSliceMarshallerFn(nil)
+					u  mus.UnmarshallerFn[[]byte] = NewByteSliceUnmarshallerFn(nil)
+					s  mus.SizerFn[[]byte]        = NewByteSliceSizerFn(nil)
+					sk mus.SkipperFn              = NewByteSliceSkipperFn(nil)
 				)
 				testdata.Test[[]byte]([][]byte{sl}, m, u, s, t)
 				testdata.TestSkip[[]byte]([][]byte{sl}, m, sk, s, t)
 			})
 
-		t.Run("All MarshalByteSliceVarint, UnmarshalByteSliceVarint, SizeByteSliceVarint, SkipByteSliceVarint functions must work correctly with empty slice",
+		t.Run("All MarshalVarintByteSlice, UnmarshalVarintByteSlice, SizeVarintByteSlice, SkipVarintByteSlice functions must work correctly with empty slice",
 			func(t *testing.T) {
 				var (
-					sl                          = []byte{}
-					m  mus.MarshallerFn[[]byte] = func(v []byte, bs []byte) (n int) {
-						return MarshalByteSliceVarint(v, bs)
-					}
-					u mus.UnmarshallerFn[[]byte] = func(bs []byte) (v []byte, n int, err error) {
-						return UnmarshalByteSliceVarint(bs)
-					}
-					s mus.SizerFn[[]byte] = func(v []byte) (size int) {
-						return SizeByteSliceVarint(v)
-					}
-					sk mus.SkipperFn = func(bs []byte) (n int, err error) {
-						return SkipByteSliceVarint(bs)
-					}
+					sl                            = []byte{}
+					m  mus.MarshallerFn[[]byte]   = NewByteSliceMarshallerFn(mus.MarshallerFn[int](varint.MarshalInt))
+					u  mus.UnmarshallerFn[[]byte] = NewByteSliceUnmarshallerFn(mus.UnmarshallerFn[int](varint.UnmarshalInt))
+					s  mus.SizerFn[[]byte]        = NewByteSliceSizerFn(mus.SizerFn[int](varint.SizeInt))
+					sk mus.SkipperFn              = NewByteSliceSkipperFn(mus.UnmarshallerFn[int](varint.UnmarshalInt))
 				)
 				testdata.Test[[]byte]([][]byte{sl}, m, u, s, t)
 				testdata.TestSkip[[]byte]([][]byte{sl}, m, sk, s, t)
 			})
 
-		t.Run("All MarshalByteSliceVarint, UnmarshalByteSliceVarint, SizeByteSliceVarint, SkipByteSliceVarint functions must work correctly with not empty slice",
+		t.Run("All MarshalVarintByteSlice, UnmarshalVarintByteSlice, SizeVarintByteSlice, SkipVarintByteSlice functions must work correctly with not empty slice",
 			func(t *testing.T) {
 				var (
-					sl                          = []byte{0, 1, 1, 255, 100, 0, 1, 10}
-					m  mus.MarshallerFn[[]byte] = func(v []byte, bs []byte) (n int) {
-						return MarshalByteSliceVarint(v, bs)
-					}
-					u mus.UnmarshallerFn[[]byte] = func(bs []byte) (v []byte, n int, err error) {
-						return UnmarshalByteSliceVarint(bs)
-					}
-					s mus.SizerFn[[]byte] = func(v []byte) (size int) {
-						return SizeByteSliceVarint(v)
-					}
-					sk mus.SkipperFn = func(bs []byte) (n int, err error) {
-						return SkipByteSliceVarint(bs)
-					}
+					sl                            = []byte{0, 1, 1, 255, 100, 0, 1, 10}
+					m  mus.MarshallerFn[[]byte]   = NewByteSliceMarshallerFn(mus.MarshallerFn[int](varint.MarshalInt))
+					u  mus.UnmarshallerFn[[]byte] = NewByteSliceUnmarshallerFn(mus.UnmarshallerFn[int](varint.UnmarshalInt))
+					s  mus.SizerFn[[]byte]        = NewByteSliceSizerFn(mus.SizerFn[int](varint.SizeInt))
+					sk mus.SkipperFn              = NewByteSliceSkipperFn(mus.UnmarshallerFn[int](varint.UnmarshalInt))
 				)
 
 				testdata.Test[[]byte]([][]byte{sl}, m, u, s, t)
@@ -517,92 +462,92 @@ func TestOrd(t *testing.T) {
 				MarshalByteSlice([]byte{1, 2, 3, 4}, nil, make([]byte, 2))
 			})
 
-		t.Run("UnmarshalByteSliceVarint should return ErrTooSmallByteSlice if there is no space in bs",
+		t.Run("UnmarshalByteSlice should return ErrTooSmallByteSlice if there is no space in bs",
 			func(t *testing.T) {
 				var (
 					wantV     []byte = nil
 					wantN            = 0
 					wantErr          = mus.ErrTooSmallByteSlice
-					v, n, err        = UnmarshalByteSliceVarint([]byte{})
+					v, n, err        = UnmarshalByteSlice(nil, []byte{})
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
-		t.Run("UnmarshalByteSliceVarint should return ErrTooSmallByteSlice if bs is too small",
+		t.Run("UnmarshalByteSlice should return ErrTooSmallByteSlice if bs is too small",
 			func(t *testing.T) {
 				var (
 					wantV     []byte = nil
 					wantN            = 1
 					wantErr          = mus.ErrTooSmallByteSlice
-					v, n, err        = UnmarshalByteSliceVarint([]byte{4, 1})
+					v, n, err        = UnmarshalByteSlice(nil, []byte{4, 1})
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
-		t.Run("UnmarshalByteSliceVarint should return ErrNegativeLength if meets a negative length",
+		t.Run("UnmarshalByteSlice should return ErrNegativeLength if meets a negative length",
 			func(t *testing.T) {
 				var (
 					wantV     []byte = nil
-					wantN            = 1
+					wantN, bs        = MakeBsWithNegativeLength()
 					wantErr          = com.ErrNegativeLength
-					v, n, err        = UnmarshalByteSliceVarint([]byte{1})
 				)
+				v, n, err := UnmarshalByteSlice(nil, bs)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
-		t.Run("If lenVl validator returns an error, UnmarshalValidByteSliceVarint should return it",
+		t.Run("If lenVl validator returns an error, UnmarshalValidByteSlice should return it",
 			func(t *testing.T) {
 				var (
-					wantV     []byte = nil
-					wantN            = 1
-					wantErr          = errors.New("too large slice")
-					bs               = []byte{4, 4, 1, 1}
-					maxLength        = com_mock.NewValidator[int]().RegisterValidate(
+					wantV   []byte = nil
+					wantN          = 1
+					wantErr        = errors.New("too large slice")
+					bs             = []byte{2, 4, 1}
+					lenVl          = com_mock.NewValidator[int]().RegisterValidate(
 						func(v int) (err error) {
 							return wantErr
 						},
 					)
-					v, n, err = UnmarshalValidByteSliceVarint(maxLength, false, bs)
+					v, n, err = UnmarshalValidByteSlice(nil, lenVl, false, bs)
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil,
 					t)
 			})
 
-		t.Run("If skip == true and lenVl validator returns an error, UnmarshalValidByteSliceVarint should return it and skip the rest of the slice",
+		t.Run("If skip == true and lenVl validator returns an error, UnmarshalValidByteSlice should return it and skip the rest of the slice",
 			func(t *testing.T) {
 				var (
-					wantV     []byte = nil
-					wantN            = 3
-					wantErr          = errors.New("too large slice")
-					bs               = []byte{4, 4, 1}
-					maxLength        = com_mock.NewValidator[int]().RegisterValidate(
+					wantV   []byte = nil
+					wantN          = 3
+					wantErr        = errors.New("too large slice")
+					bs             = []byte{2, 4, 1}
+					lenVl          = com_mock.NewValidator[int]().RegisterValidate(
 						func(v int) (err error) {
 							return wantErr
 						},
 					)
-					v, n, err = UnmarshalValidByteSliceVarint(maxLength, true, bs)
+					v, n, err = UnmarshalValidByteSlice(nil, lenVl, true, bs)
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil,
 					t)
 			})
 
-		t.Run("SkipByteSliceVarint should return ErrTooSmallByteSlice if there is no space in bs",
+		t.Run("SkipByteSlice should return ErrTooSmallByteSlice if there is no space in bs",
 			func(t *testing.T) {
 				var (
 					wantN   = 0
 					wantErr = mus.ErrTooSmallByteSlice
-					n, err  = SkipByteSliceVarint([]byte{})
+					n, err  = SkipByteSlice(nil, []byte{})
 				)
 				com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
 			})
 
-		t.Run("SkipByteSliceVarint should return ErrNegativeLength if meets a negative length",
+		t.Run("SkipByteSlice should return ErrNegativeLength if meets a negative length",
 			func(t *testing.T) {
 				var (
-					wantN   = 1
-					wantErr = com.ErrNegativeLength
-					n, err  = SkipByteSliceVarint([]byte{1})
+					wantN, bs = MakeBsWithNegativeLength()
+					wantErr   = com.ErrNegativeLength
 				)
+				n, err := SkipByteSlice(nil, bs)
 				com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
 			})
 
@@ -614,18 +559,13 @@ func TestOrd(t *testing.T) {
 			func(t *testing.T) {
 				var (
 					sl                            = []string{}
-					m  mus.MarshallerFn[[]string] = func(v []string, bs []byte) (n int) {
-						return MarshalSlice(v, nil, nil, bs)
-					}
-					u mus.UnmarshallerFn[[]string] = func(bs []byte) (v []string, n int, err error) {
-						return UnmarshalSlice[string](nil, nil, bs)
-					}
-					s mus.SizerFn[[]string] = func(v []string) (size int) {
-						return SizeSlice(v, nil, nil)
-					}
-					sk mus.SkipperFn = func(bs []byte) (n int, err error) {
-						return SkipSlice(nil, nil, bs)
-					}
+					m  mus.MarshallerFn[[]string] = NewSliceMarshallerFn[string](nil,
+						mus.MarshallerFn[string](MarshalStr))
+					u mus.UnmarshallerFn[[]string] = NewSliceUnmarshallerFn[string](nil,
+						mus.UnmarshallerFn[string](UnmarshalStr))
+					s mus.SizerFn[[]string] = NewSliceSizerFn[string](nil,
+						mus.SizerFn[string](SizeStr))
+					sk mus.SkipperFn = NewSliceSkipperFn(nil, mus.SkipperFn(SkipStr))
 				)
 				testdata.Test[[]string]([][]string{sl}, m, u, s, t)
 				testdata.TestSkip[[]string]([][]string{sl}, m, sk, s, t)
@@ -635,100 +575,84 @@ func TestOrd(t *testing.T) {
 			func(t *testing.T) {
 				testAllSliceFunctions(
 					func(m1 mus.Marshaller[string]) mus.MarshallerFn[[]string] {
-						return func(v []string, bs []byte) (n int) {
-							return MarshalSlice(v, nil, m1, bs)
-						}
+						return NewSliceMarshallerFn(nil, m1)
 					},
 					func(u1 mus.Unmarshaller[string]) mus.UnmarshallerFn[[]string] {
-						return func(bs []byte) (v []string, n int, err error) {
-							return UnmarshalSlice[string](nil, u1, bs)
-						}
+						return NewSliceUnmarshallerFn(nil, u1)
 					},
 					func(s1 mus.Sizer[string]) mus.SizerFn[[]string] {
-						return func(v []string) (size int) {
-							return SizeSlice(v, nil, s1)
-						}
+						return NewSliceSizerFn(nil, s1)
 					},
 					func(sk1 mus.Skipper) mus.SkipperFn {
-						return func(bs []byte) (n int, err error) {
-							return SkipSlice(nil, sk1, bs)
-						}
-					},
-					t,
-				)
+						return NewSliceSkipperFn(nil, sk1)
+					}, t)
 			})
 
-		t.Run("All MarshalSliceVarint, UnmarshalSliceVarint, SizeSliceVarint, SkipSliceVarint functions must work correctly with empty slice",
+		t.Run("All MarshalVarintSlice, UnmarshalVarintSlice, SizeVarintSlice, SkipVarintSlice functions must work correctly with empty slice",
 			func(t *testing.T) {
 				var (
 					sl                            = []string{}
-					m  mus.MarshallerFn[[]string] = func(v []string, bs []byte) (n int) {
-						return MarshalSliceVarint(v, nil, bs)
-					}
-					u mus.UnmarshallerFn[[]string] = func(bs []byte) (v []string, n int, err error) {
-						return UnmarshalSliceVarint[string](nil, bs)
-					}
-					s mus.SizerFn[[]string] = func(v []string) (size int) {
-						return SizeSliceVarint(v, nil)
-					}
-					sk mus.SkipperFn = func(bs []byte) (n int, err error) {
-						return SkipSliceVarint(nil, bs)
-					}
+					m  mus.MarshallerFn[[]string] = NewSliceMarshallerFn[string](
+						mus.MarshallerFn[int](varint.MarshalInt),
+						mus.MarshallerFn[string](MarshalStr),
+					)
+					u mus.UnmarshallerFn[[]string] = NewSliceUnmarshallerFn[string](
+						mus.UnmarshallerFn[int](varint.UnmarshalInt),
+						mus.UnmarshallerFn[string](UnmarshalStr),
+					)
+					s mus.SizerFn[[]string] = NewSliceSizerFn[string](
+						mus.SizerFn[int](varint.SizeInt),
+						mus.SizerFn[string](SizeStr),
+					)
+					sk mus.SkipperFn = NewSliceSkipperFn(
+						mus.UnmarshallerFn[int](varint.UnmarshalInt),
+						mus.SkipperFn(SkipStr),
+					)
 				)
 				testdata.Test[[]string]([][]string{sl}, m, u, s, t)
 				testdata.TestSkip[[]string]([][]string{sl}, m, sk, s, t)
 			})
 
-		t.Run("All MarshalSliceVarint, UnmarshalSliceVarint, SizeSliceVarint, SkipSliceVarint functions must work correctly with not empty slice",
+		t.Run("All MarshalVarintSlice, UnmarshalVarintSlice, SizeVarintSlice, SkipVarintSlice functions must work correctly with not empty slice",
 			func(t *testing.T) {
 				testAllSliceFunctions(
 					func(m1 mus.Marshaller[string]) mus.MarshallerFn[[]string] {
-						return func(v []string, bs []byte) (n int) {
-							return MarshalSliceVarint(v, m1, bs)
-						}
+						return NewSliceMarshallerFn(mus.MarshallerFn[int](varint.MarshalInt), m1)
 					},
 					func(u1 mus.Unmarshaller[string]) mus.UnmarshallerFn[[]string] {
-						return func(bs []byte) (v []string, n int, err error) {
-							return UnmarshalSliceVarint[string](u1, bs)
-						}
+						return NewSliceUnmarshallerFn(mus.UnmarshallerFn[int](varint.UnmarshalInt), u1)
 					},
 					func(s1 mus.Sizer[string]) mus.SizerFn[[]string] {
-						return func(v []string) (size int) {
-							return SizeSliceVarint(v, s1)
-						}
+						return NewSliceSizerFn(mus.SizerFn[int](varint.SizeInt), s1)
 					},
 					func(sk1 mus.Skipper) mus.SkipperFn {
-						return func(bs []byte) (n int, err error) {
-							return SkipSliceVarint(sk1, bs)
-						}
-					},
-					t,
-				)
+						return NewSliceSkipperFn(mus.UnmarshallerFn[int](varint.UnmarshalInt), sk1)
+					}, t)
 			})
 
-		t.Run("UnmarshalSliceVarint should return ErrTooSmallByteSlice if there is no space in bs",
+		t.Run("UnmarshalSlice should return ErrTooSmallByteSlice if there is no space in bs",
 			func(t *testing.T) {
 				var (
-					wantV     []uint = nil
-					wantN            = 0
-					wantErr          = mus.ErrTooSmallByteSlice
-					v, n, err        = UnmarshalSliceVarint[uint](nil, []byte{})
+					wantV     []string = nil
+					wantN              = 0
+					wantErr            = mus.ErrTooSmallByteSlice
+					v, n, err          = UnmarshalSlice[string](nil, nil, []byte{})
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
-		t.Run("UnmarshalSliceVarint should return ErrNegativeLength if meets a negative length",
+		t.Run("UnmarshalSlice should return ErrNegativeLength if meets a negative length",
 			func(t *testing.T) {
 				var (
-					wantV     []uint = nil
-					wantN            = 1
-					wantErr          = com.ErrNegativeLength
-					v, n, err        = UnmarshalSliceVarint[uint](nil, []byte{1})
+					wantV     []string = nil
+					wantN, bs          = MakeBsWithNegativeLength()
+					wantErr            = com.ErrNegativeLength
 				)
+				v, n, err := UnmarshalSlice[string](nil, nil, bs)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
-		t.Run("If Unmarshaller fails with an error, UnmarshalSliceVarint should return it",
+		t.Run("If Unmarshaller fails with an error, UnmarshalSlice should return it",
 			func(t *testing.T) {
 				var (
 					wantV   []uint = make([]uint, 1)
@@ -740,18 +664,18 @@ func TestOrd(t *testing.T) {
 						},
 					)
 					mocks     = []*mok.Mock{u.Mock}
-					v, n, err = UnmarshalSliceVarint[uint](u, []byte{2})
+					v, n, err = UnmarshalSlice[uint](nil, u, []byte{1})
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 			})
 
-		t.Run("If Skipper != nil and lenVl validator returns an error, UnmarshalValidSliceVarint should return it",
+		t.Run("If Skipper != nil and lenVl validator returns an error, UnmarshalValidSlice should return it",
 			func(t *testing.T) {
 				var (
 					wantV     []uint = nil
 					wantN            = 5
 					wantErr          = errors.New("lenVl validator error")
-					bs               = []byte{8, 4, 1, 1, 0}
+					bs               = []byte{4, 4, 1, 1, 0}
 					maxLength        = com_mock.NewValidator[int]().RegisterValidate(
 						func(v int) (err error) {
 							if v != 4 {
@@ -764,23 +688,20 @@ func TestOrd(t *testing.T) {
 						func(bs []byte) (n int, err error) { return 1, nil },
 					)
 					mocks     = []*mok.Mock{sk.Mock}
-					v, n, err = UnmarshalValidSliceVarint[uint](maxLength, nil, nil, sk, bs)
+					v, n, err = UnmarshalValidSlice[uint](nil, maxLength, nil, nil, sk, bs)
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 			})
 
-		t.Run("If lenVl validator returns an error and Skipper returns an error, UnmarshalValidSliceVarint should return the last one",
+		t.Run("If lenVl validator returns an error and Skipper returns an error, UnmarshalValidSlice should return the last one",
 			func(t *testing.T) {
 				var (
 					wantV     []uint = nil
 					wantN            = 4
 					wantErr          = errors.New("skip rest error")
-					bs               = []byte{4, 4, 1, 1}
+					bs               = []byte{3, 4, 1, 1}
 					maxLength        = com_mock.NewValidator[int]().RegisterValidate(
 						func(v int) (err error) {
-							if v != 2 {
-								t.Errorf("unexpected v, want '%v' actual '%v'", 5, v)
-							}
 							return wantErr
 						},
 					)
@@ -788,13 +709,13 @@ func TestOrd(t *testing.T) {
 						func(bs []byte) (n int, err error) { return 3, wantErr },
 					)
 					mocks     = []*mok.Mock{sk.Mock}
-					v, n, err = UnmarshalValidSliceVarint[uint](maxLength, nil, nil, sk, bs)
+					v, n, err = UnmarshalValidSlice[uint](nil, maxLength, nil, nil, sk, bs)
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks,
 					t)
 			})
 
-		t.Run("If Skipper == nil and lenVl validator returns an error, UnmarshalValidSliceVarint should return it",
+		t.Run("If Skipper == nil and lenVl validator returns an error, UnmarshalValidSlice should return it",
 			func(t *testing.T) {
 				var (
 					wantV     []uint = nil
@@ -805,21 +726,21 @@ func TestOrd(t *testing.T) {
 							return wantErr
 						},
 					)
-					bs        = []byte{6, 10, 2, 3}
+					bs        = []byte{3, 10, 2, 3}
 					mocks     = []*mok.Mock{maxLength.Mock}
-					v, n, err = UnmarshalValidSliceVarint[uint](maxLength, nil, nil, nil, bs)
+					v, n, err = UnmarshalValidSlice[uint](nil, maxLength, nil, nil, nil, bs)
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks,
 					t)
 			})
 
-		t.Run("If Validator returns an error, UnmarshalValidSliceVarint should return it",
+		t.Run("If Validator returns an error, UnmarshalVarintSlice should return it",
 			func(t *testing.T) {
 				var (
 					wantV   []uint = []uint{10, 0, 0}
 					wantN          = 4
 					wantErr        = errors.New("Validator error")
-					bs             = []byte{6, 10, 2, 3}
+					bs             = []byte{3, 10, 2, 3}
 					vl             = com_mock.NewValidator[uint]().RegisterValidate(
 						func(v uint) (err error) {
 							if v != 10 {
@@ -853,18 +774,18 @@ func TestOrd(t *testing.T) {
 						},
 					)
 					mocks     = []*mok.Mock{vl.Mock, u.Mock, sk.Mock}
-					v, n, err = UnmarshalValidSliceVarint[uint](nil, u, vl, sk, bs)
+					v, n, err = UnmarshalValidSlice[uint](nil, nil, u, vl, sk, bs)
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 			})
 
-		t.Run("If Validator returns an error and Skipper returns an error, UnmarshalValidSliceVarint should return the last one",
+		t.Run("If Validator returns an error and Skipper returns an error, UnmarshalValidSlice should return the last one",
 			func(t *testing.T) {
 				var (
 					wantV   = []uint{0, 0, 0}
 					wantN   = 4
 					wantErr = errors.New("skip rest error")
-					bs      = []byte{6, 10, 2, 3}
+					bs      = []byte{3, 10, 2, 3}
 					vl      = com_mock.NewValidator[uint]().RegisterValidate(
 						func(v uint) (err error) {
 							if v != 10 {
@@ -888,28 +809,28 @@ func TestOrd(t *testing.T) {
 						},
 					)
 					mocks     = []*mok.Mock{vl.Mock, u.Mock, sk.Mock}
-					v, n, err = UnmarshalValidSliceVarint[uint](nil, u, vl, sk, bs)
+					v, n, err = UnmarshalValidSlice[uint](nil, nil, u, vl, sk, bs)
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 			})
 
-		t.Run("SkipSliceVarint should return ErrTooSmallByteSlice if there is no space in bs",
+		t.Run("SkipSlice should return ErrTooSmallByteSlice if there is no space in bs",
 			func(t *testing.T) {
 				var (
 					wantN   = 0
 					wantErr = mus.ErrTooSmallByteSlice
-					n, err  = SkipSliceVarint(nil, []byte{})
+					n, err  = SkipSlice(nil, nil, []byte{})
 				)
 				com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
 			})
 
-		t.Run("SkipSliceVarint should return ErrNegativeLength if there is no space in bs",
+		t.Run("SkipSlice should return ErrNegativeLength if there is no space in bs",
 			func(t *testing.T) {
 				var (
-					wantN   = 1
-					wantErr = com.ErrNegativeLength
-					n, err  = SkipSliceVarint(nil, []byte{1})
+					wantN, bs = MakeBsWithNegativeLength()
+					wantErr   = com.ErrNegativeLength
 				)
+				n, err := SkipSlice(nil, nil, bs)
 				com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
 			})
 
@@ -921,79 +842,59 @@ func TestOrd(t *testing.T) {
 			func(t *testing.T) {
 				testAllMapFunctions(
 					func(m1 mus.Marshaller[string], m2 mus.Marshaller[uint]) mus.MarshallerFn[map[string]uint] {
-						return func(v map[string]uint, bs []byte) (n int) {
-							return MarshalMap(v, nil, m1, m2, bs)
-						}
+						return NewMapMarshallerFn(nil, m1, m2)
 					},
 					func(u1 mus.Unmarshaller[string], u2 mus.Unmarshaller[uint]) mus.UnmarshallerFn[map[string]uint] {
-						return func(bs []byte) (v map[string]uint, n int, err error) {
-							return UnmarshalMap[string, uint](nil, u1, u2, bs)
-						}
+						return NewMapUnmarshallerFn(nil, u1, u2)
 					},
 					func(s1 mus.Sizer[string], s2 mus.Sizer[uint]) mus.SizerFn[map[string]uint] {
-						return func(v map[string]uint) (size int) {
-							return SizeMap(v, nil, s1, s2)
-						}
+						return NewMapSizerFn(nil, s1, s2)
 					},
 					func(sk1, sk2 mus.Skipper) mus.SkipperFn {
-						return func(bs []byte) (n int, err error) {
-							return SkipMap(nil, sk1, sk2, bs)
-						}
-					},
-					t,
-				)
+						return NewMapSkipperFn[string, uint](nil, sk1, sk2)
+					}, t)
 			})
 
-		t.Run("All MarshalMapVarint, UnmarshalMapVarint, SizeMapVarint, SkipMapVarint functions must work correctly",
+		t.Run("All MarshalVarintMap, UnmarshalVarintMap, SizeVarintMap, SkipVarintMap functions must work correctly",
 			func(t *testing.T) {
 				testAllMapFunctions(
 					func(m1 mus.Marshaller[string], m2 mus.Marshaller[uint]) mus.MarshallerFn[map[string]uint] {
-						return func(v map[string]uint, bs []byte) (n int) {
-							return MarshalMapVarint(v, m1, m2, bs)
-						}
+						return NewMapMarshallerFn(mus.MarshallerFn[int](varint.MarshalInt), m1, m2)
 					},
 					func(u1 mus.Unmarshaller[string], u2 mus.Unmarshaller[uint]) mus.UnmarshallerFn[map[string]uint] {
-						return func(bs []byte) (v map[string]uint, n int, err error) {
-							return UnmarshalMapVarint[string, uint](u1, u2, bs)
-						}
+						return NewMapUnmarshallerFn(mus.UnmarshallerFn[int](varint.UnmarshalInt), u1, u2)
 					},
 					func(s1 mus.Sizer[string], s2 mus.Sizer[uint]) mus.SizerFn[map[string]uint] {
-						return func(v map[string]uint) (size int) {
-							return SizeMapVarint(v, s1, s2)
-						}
+						return NewMapSizerFn(mus.SizerFn[int](varint.SizeInt), s1, s2)
 					},
 					func(sk1, sk2 mus.Skipper) mus.SkipperFn {
-						return func(bs []byte) (n int, err error) {
-							return SkipMapVarint(sk1, sk2, bs)
-						}
-					},
-					t,
-				)
+						return NewMapSkipperFn[string, uint](mus.UnmarshallerFn[int](varint.UnmarshalInt), sk1, sk2)
+					}, t)
 			})
 
-		t.Run("UnmarshalMapVarint should return ErrTooSmallByteSlice if there no space in bs",
+		t.Run("UnmarshalMap should return ErrTooSmallByteSlice if there no space in bs",
 			func(t *testing.T) {
 				var (
 					wantV     map[uint]uint = nil
 					wantN                   = 0
 					wantErr                 = mus.ErrTooSmallByteSlice
-					v, n, err               = UnmarshalMapVarint[uint, uint](nil, nil, []byte{})
+					v, n, err               = UnmarshalMap[uint, uint](nil, nil, nil, []byte{})
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
-		t.Run("UnmarshalMapVarint should return ErrNegativeLength if meets negative length",
+		t.Run("UnmarshalMap should return ErrNegativeLength if meets negative length",
 			func(t *testing.T) {
 				var (
 					wantV     map[uint]uint = nil
-					wantN                   = 1
+					wantN, bs               = MakeBsWithNegativeLength()
 					wantErr                 = com.ErrNegativeLength
-					v, n, err               = UnmarshalMapVarint[uint, uint](nil, nil, []byte{1})
 				)
+				v, n, err := UnmarshalMap[uint, uint](nil, nil, nil, bs)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
-		t.Run("If Key Unmarshaller fails with an error, UnmarshalMapVarint should return it",
+		t.Run("If Key Unmarshaller fails with an error, UnmarshalMap should return it",
 			func(t *testing.T) {
 				var (
 					wantV   = make(map[uint]uint, 1)
@@ -1010,12 +911,12 @@ func TestOrd(t *testing.T) {
 						},
 					)
 					mocks     = []*mok.Mock{u1.Mock}
-					v, n, err = UnmarshalMapVarint[uint, uint](u1, nil, bs)
+					v, n, err = UnmarshalMap[uint, uint](nil, u1, nil, bs)
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 			})
 
-		t.Run("If Value Unmarshaller fails with an error, UnmarshalMapVarint should return it",
+		t.Run("If Value Unmarshaller fails with an error, UnmarshalMap should return it",
 			func(t *testing.T) {
 				var (
 					wantV   = make(map[uint]uint, 1)
@@ -1037,19 +938,19 @@ func TestOrd(t *testing.T) {
 						},
 					)
 					mocks     = []*mok.Mock{u1.Mock, u2.Mock}
-					v, n, err = UnmarshalMapVarint[uint, uint](u1, u2, bs)
+					v, n, err = UnmarshalMap[uint, uint](nil, u1, u2, bs)
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 			})
 
-		t.Run("If lenVl validator returns an error, UnmarshalValidMapVarint should return it",
+		t.Run("If lenVl validator returns an error, UnmarshalValidMap should return it",
 			func(t *testing.T) {
 				var (
-					wantV     map[uint]uint = nil
-					wantN                   = 5
-					wantErr                 = errors.New("lenVl validator error")
-					bs                      = []byte{4, 199, 1, 3, 4}
-					maxLength               = com_mock.NewValidator[int]().RegisterValidate(
+					wantV   map[uint]uint = nil
+					wantN                 = 5
+					wantErr               = errors.New("lenVl validator error")
+					bs                    = []byte{2, 199, 1, 3, 4}
+					lenVl                 = com_mock.NewValidator[int]().RegisterValidate(
 						func(v int) (err error) {
 							if v != 2 {
 								t.Errorf("unexpected v, want '%v' actual '%v'", 2, v)
@@ -1092,8 +993,8 @@ func TestOrd(t *testing.T) {
 							return 1, nil
 						},
 					)
-					mocks     = []*mok.Mock{maxLength.Mock, sk1.Mock, sk2.Mock}
-					v, n, err = UnmarshalValidMapVarint[uint, uint](maxLength, nil, nil,
+					mocks     = []*mok.Mock{lenVl.Mock, sk1.Mock, sk2.Mock}
+					v, n, err = UnmarshalValidMap[uint, uint](nil, lenVl, nil, nil,
 						nil,
 						nil,
 						sk1,
@@ -1103,17 +1004,17 @@ func TestOrd(t *testing.T) {
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 			})
 
-		t.Run("If lenVl validator returns an error and Key Skipper returns an error, UnmarshalValidMapVarint should return the last one",
+		t.Run("If lenVl validator returns an error and Key Skipper returns an error, UnmarshalValidMap should return the last one",
 			func(t *testing.T) {
 				var (
-					wantV     map[uint]uint = nil
-					wantN                   = 2
-					wantErr                 = errors.New("skip key error")
-					bs                      = []byte{4, 199, 1, 3, 4}
-					maxLength               = com_mock.NewValidator[int]().RegisterValidate(
+					wantV   map[uint]uint = nil
+					wantN                 = 2
+					wantErr               = errors.New("skip key error")
+					bs                    = []byte{4, 199, 1, 3, 4}
+					lenVl                 = com_mock.NewValidator[int]().RegisterValidate(
 						func(v int) (err error) {
-							if v != 2 {
-								t.Errorf("unexpected v, want '%v' actual '%v'", 2, v)
+							if v != 4 {
+								t.Errorf("unexpected v, want '%v' actual '%v'", 4, v)
 							}
 							return errors.New("lenVl validator error")
 						},
@@ -1129,8 +1030,8 @@ func TestOrd(t *testing.T) {
 						},
 					)
 					sk2       = mock.NewSkipper()
-					mocks     = []*mok.Mock{maxLength.Mock, sk1.Mock, sk2.Mock}
-					v, n, err = UnmarshalValidMapVarint[uint, uint](maxLength, nil, nil, nil,
+					mocks     = []*mok.Mock{lenVl.Mock, sk1.Mock, sk2.Mock}
+					v, n, err = UnmarshalValidMap[uint, uint](nil, lenVl, nil, nil, nil,
 						nil,
 						sk1,
 						sk2,
@@ -1140,14 +1041,14 @@ func TestOrd(t *testing.T) {
 					t)
 			})
 
-		t.Run("If lenVl validator returns an error and Value Skipper returns an error, UnmarshalValidMapVarint should return the last one",
+		t.Run("If lenVl validator returns an error and Value Skipper returns an error, UnmarshalValidMap should return the last one",
 			func(t *testing.T) {
 				var (
-					wantV     map[uint]uint = nil
-					wantN                   = 3
-					wantErr                 = errors.New("skip key error")
-					bs                      = []byte{4, 199, 1, 3, 4}
-					maxLength               = com_mock.NewValidator[int]().RegisterValidate(
+					wantV   map[uint]uint = nil
+					wantN                 = 3
+					wantErr               = errors.New("skip key error")
+					bs                    = []byte{4, 199, 1, 3, 4}
+					lenVl                 = com_mock.NewValidator[int]().RegisterValidate(
 						func(v int) (err error) {
 							return errors.New("lenVl validator error")
 						},
@@ -1172,8 +1073,8 @@ func TestOrd(t *testing.T) {
 							return 1, wantErr
 						},
 					)
-					mocks     = []*mok.Mock{maxLength.Mock, sk1.Mock, sk2.Mock}
-					v, n, err = UnmarshalValidMapVarint[uint, uint](maxLength, nil, nil, nil,
+					mocks     = []*mok.Mock{lenVl.Mock, sk1.Mock, sk2.Mock}
+					v, n, err = UnmarshalValidMap[uint, uint](nil, lenVl, nil, nil, nil,
 						nil,
 						sk1,
 						sk2,
@@ -1182,21 +1083,21 @@ func TestOrd(t *testing.T) {
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 			})
 
-		t.Run("If Key Skipper == nil and lenVl validator returns an error, UnmarshalValidMapVarint should return it immediately",
+		t.Run("If Key Skipper == nil and lenVl validator returns an error, UnmarshalValidMap should return it immediately",
 			func(t *testing.T) {
 				var (
-					wantV     map[uint]uint = nil
-					wantN                   = 1
-					wantErr                 = errors.New("lenVl Validator error")
-					bs                      = []byte{4, 199, 1, 3, 4}
-					sk2                     = mock.NewSkipper()
-					maxLength               = com_mock.NewValidator[int]().RegisterValidate(
+					wantV   map[uint]uint = nil
+					wantN                 = 1
+					wantErr               = errors.New("lenVl Validator error")
+					bs                    = []byte{4, 199, 1, 3, 4}
+					sk2                   = mock.NewSkipper()
+					lenVl                 = com_mock.NewValidator[int]().RegisterValidate(
 						func(v int) (err error) {
 							return wantErr
 						},
 					)
-					mocks     = []*mok.Mock{maxLength.Mock, sk2.Mock}
-					v, n, err = UnmarshalValidMapVarint[uint, uint](maxLength, nil, nil, nil,
+					mocks     = []*mok.Mock{lenVl.Mock, sk2.Mock}
+					v, n, err = UnmarshalValidMap[uint, uint](nil, lenVl, nil, nil, nil,
 						nil,
 						nil,
 						sk2,
@@ -1206,21 +1107,21 @@ func TestOrd(t *testing.T) {
 					t)
 			})
 
-		t.Run("If Value Skipper == nil and lenVl validator returns an error, UnmarshalValidMapVarint should return it immediately",
+		t.Run("If Value Skipper == nil and lenVl validator returns an error, UnmarshalValidMap should return it immediately",
 			func(t *testing.T) {
 				var (
-					wantV     map[uint]uint = nil
-					wantN                   = 1
-					wantErr                 = errors.New("lenVl Validator error")
-					bs                      = []byte{4, 199, 1, 3, 4}
-					sk1                     = mock.NewSkipper()
-					maxLength               = com_mock.NewValidator[int]().RegisterValidate(
+					wantV   map[uint]uint = nil
+					wantN                 = 1
+					wantErr               = errors.New("lenVl Validator error")
+					bs                    = []byte{4, 199, 1, 3, 4}
+					sk1                   = mock.NewSkipper()
+					lenVl                 = com_mock.NewValidator[int]().RegisterValidate(
 						func(v int) (err error) {
 							return wantErr
 						},
 					)
-					mocks     = []*mok.Mock{maxLength.Mock}
-					v, n, err = UnmarshalValidMapVarint[uint, uint](maxLength, nil, nil, nil,
+					mocks     = []*mok.Mock{lenVl.Mock}
+					v, n, err = UnmarshalValidMap[uint, uint](nil, lenVl, nil, nil, nil,
 						nil,
 						sk1,
 						nil,
@@ -1230,13 +1131,13 @@ func TestOrd(t *testing.T) {
 					t)
 			})
 
-		t.Run("If Key Validator returns an error, UnmarshalValidMapVarint should return it",
+		t.Run("If Key Validator returns an error, UnmarshalValidMap should return it",
 			func(t *testing.T) {
 				var (
 					wantV   = make(map[uint]uint, 2)
 					wantN   = 5
 					wantErr = errors.New("key Validator error")
-					bs      = []byte{4, 10, 1, 3, 4}
+					bs      = []byte{2, 10, 1, 3, 4}
 					u1      = mock.NewUnmarshaller[uint]().RegisterUnmarshal(
 						func(bs []byte) (v uint, n int, err error) {
 							return 10, 1, nil
@@ -1277,20 +1178,21 @@ func TestOrd(t *testing.T) {
 						},
 					)
 					mocks     = []*mok.Mock{u1.Mock, v1.Mock, sk1.Mock, sk2.Mock}
-					v, n, err = UnmarshalValidMapVarint[uint, uint](nil, u1, nil, v1, nil, sk1,
+					v, n, err = UnmarshalValidMap[uint, uint](nil, nil, u1, nil, v1, nil,
+						sk1,
 						sk2,
 						bs)
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 			})
 
-		t.Run("If Key Validator returns an error and Value Skipper returns an error, UnmarshalValidMapVarint should return the last one",
+		t.Run("If Key Validator returns an error and Value Skipper returns an error, UnmarshalValidMap should return the last one",
 			func(t *testing.T) {
 				var (
 					wantV   = make(map[uint]uint, 2)
 					wantN   = 4
 					wantErr = errors.New("value Skipper error")
-					bs      = []byte{4, 10, 100, 1, 3, 4}
+					bs      = []byte{2, 10, 100, 1, 3, 4}
 					u1      = mock.NewUnmarshaller[uint]().RegisterUnmarshal(
 						func(bs []byte) (v uint, n int, err error) {
 							return 10, 1, nil
@@ -1312,7 +1214,8 @@ func TestOrd(t *testing.T) {
 						},
 					)
 					mocks     = []*mok.Mock{u1.Mock, v1.Mock, sk2.Mock}
-					v, n, err = UnmarshalValidMapVarint[uint, uint](nil, u1, nil, v1, nil, nil,
+					v, n, err = UnmarshalValidMap[uint, uint](nil, nil, u1, nil, v1, nil,
+						nil,
 						sk2,
 						bs)
 				)
@@ -1320,13 +1223,13 @@ func TestOrd(t *testing.T) {
 					t)
 			})
 
-		t.Run("If Value Skipper == nil and Key Validator returns an error, UnmarshalValidMapVarint should return it",
+		t.Run("If Value Skipper == nil and Key Validator returns an error, UnmarshalValidMap should return it",
 			func(t *testing.T) {
 				var (
 					wantV   = make(map[uint]uint, 2)
 					wantN   = 2
 					wantErr = errors.New("key Validator error")
-					bs      = []byte{4, 10, 100, 1, 3, 4}
+					bs      = []byte{2, 10, 100, 1, 3, 4}
 					u1      = mock.NewUnmarshaller[uint]().RegisterUnmarshal(
 						func(bs []byte) (v uint, n int, err error) {
 							return 10, 1, nil
@@ -1338,7 +1241,8 @@ func TestOrd(t *testing.T) {
 						},
 					)
 					mocks     = []*mok.Mock{u1.Mock, v1.Mock}
-					v, n, err = UnmarshalValidMapVarint[uint, uint](nil, u1, nil, v1, nil, nil,
+					v, n, err = UnmarshalValidMap[uint, uint](nil, nil, u1, nil, v1, nil,
+						nil,
 						nil,
 						bs)
 				)
@@ -1346,13 +1250,13 @@ func TestOrd(t *testing.T) {
 					t)
 			})
 
-		t.Run("If Key Validator retuns an error and Key Skipper returns an error, UnmarshalValidMapVarint should return the last one",
+		t.Run("If Key Validator retuns an error and Key Skipper returns an error, UnmarshalValidMap should return the last one",
 			func(t *testing.T) {
 				var (
 					wantV   = make(map[uint]uint, 2)
 					wantN   = 5
 					wantErr = errors.New("key Validator error")
-					bs      = []byte{4, 10, 1, 200, 1, 4}
+					bs      = []byte{2, 10, 1, 200, 1, 4}
 					u1      = mock.NewUnmarshaller[uint]().RegisterUnmarshal(
 						func(bs []byte) (v uint, n int, err error) {
 							return 10, 1, nil
@@ -1384,7 +1288,8 @@ func TestOrd(t *testing.T) {
 						},
 					)
 					mocks     = []*mok.Mock{u1.Mock, v1.Mock, sk1.Mock}
-					v, n, err = UnmarshalValidMapVarint[uint, uint](nil, u1, nil, v1, nil, sk1,
+					v, n, err = UnmarshalValidMap[uint, uint](nil, nil, u1, nil, v1, nil,
+						sk1,
 						sk2,
 						bs)
 				)
@@ -1392,13 +1297,13 @@ func TestOrd(t *testing.T) {
 					t)
 			})
 
-		t.Run("If Value Validator returns an error, UnmarshalValidMapVarint should return it",
+		t.Run("If Value Validator returns an error, UnmarshalValidMap should return it",
 			func(t *testing.T) {
 				var (
 					wantV   = make(map[uint]uint, 2)
 					wantN   = 5
 					wantErr = errors.New("value Validator error")
-					bs      = []byte{4, 10, 11, 3, 4}
+					bs      = []byte{2, 10, 11, 3, 4}
 					u1      = mock.NewUnmarshaller[uint]().RegisterUnmarshal(
 						func(bs []byte) (v uint, n int, err error) {
 							return 10, 1, nil
@@ -1434,20 +1339,21 @@ func TestOrd(t *testing.T) {
 						},
 					)
 					mocks     = []*mok.Mock{u1.Mock, u2.Mock, v2.Mock, sk1.Mock, sk2.Mock}
-					v, n, err = UnmarshalValidMapVarint[uint, uint](nil, u1, u2, nil, v2, sk1,
+					v, n, err = UnmarshalValidMap[uint, uint](nil, nil, u1, u2, nil, v2,
+						sk1,
 						sk2,
 						bs)
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 			})
 
-		t.Run("If value Validator returns an error and Key Skipper returns an error, UnmarshalValidMapVarint should return the last one",
+		t.Run("If value Validator returns an error and Key Skipper returns an error, UnmarshalValidMap should return the last one",
 			func(t *testing.T) {
 				var (
 					wantV   = make(map[uint]uint, 2)
 					wantN   = 4
 					wantErr = errors.New("skip key error")
-					bs      = []byte{4, 10, 11, 201, 4, 4}
+					bs      = []byte{2, 10, 11, 201, 4, 4}
 					u1      = mock.NewUnmarshaller[uint]().RegisterUnmarshal(
 						func(bs []byte) (v uint, n int, err error) {
 							return 10, 1, nil
@@ -1468,7 +1374,7 @@ func TestOrd(t *testing.T) {
 					)
 					sk2       = mock.NewSkipper()
 					mocks     = []*mok.Mock{u1.Mock, u2.Mock, v2.Mock, sk1.Mock, sk2.Mock}
-					v, n, err = UnmarshalValidMapVarint[uint, uint](nil, u1, u2, nil, v2,
+					v, n, err = UnmarshalValidMap[uint, uint](nil, nil, u1, u2, nil, v2,
 						sk1,
 						sk2,
 						bs)
@@ -1477,7 +1383,7 @@ func TestOrd(t *testing.T) {
 					t)
 			})
 
-		t.Run("If Value Validator returns an error and Value Skipper returns an error, UnmarshalValidMapVarint should return the last one",
+		t.Run("If Value Validator returns an error and Value Skipper returns an error, UnmarshalValidMap should return the last one",
 			func(t *testing.T) {
 				var (
 					wantV   = make(map[uint]uint, 2)
@@ -1513,7 +1419,8 @@ func TestOrd(t *testing.T) {
 					bs    = []byte{4, 10, 11, 3, 200, 1}
 					mocks = []*mok.Mock{u1.Mock, u2.Mock, v1.Mock, v2.Mock, sk1.Mock,
 						sk2.Mock}
-					v, n, err = UnmarshalValidMapVarint[uint, uint](nil, u1, u2, v1, v2, sk1,
+					v, n, err = UnmarshalValidMap[uint, uint](nil, nil, u1, u2, v1, v2,
+						sk1,
 						sk2,
 						bs)
 				)
@@ -1521,24 +1428,23 @@ func TestOrd(t *testing.T) {
 					t)
 			})
 
-		t.Run("SkipMapVarint should return ErrNegativeLength if meets a negative length",
+		t.Run("SkipMap should return ErrNegativeLength if meets a negative length",
 			func(t *testing.T) {
 				var (
-					wantN   = 1
-					wantErr = com.ErrNegativeLength
-					bs      = []byte{1}
-					n, err  = SkipMapVarint(nil, nil, bs)
+					wantN, bs = MakeBsWithNegativeLength()
+					wantErr   = com.ErrNegativeLength
 				)
+				n, err := SkipMap(nil, nil, nil, bs)
 				com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
 			})
 
-		t.Run("SkipMapVarint should return ErrTooSmallByteSlice if there is no space in bs",
+		t.Run("SkipMap should return ErrTooSmallByteSlice if there is no space in bs",
 			func(t *testing.T) {
 				var (
 					wantN   = 0
 					wantErr = mus.ErrTooSmallByteSlice
 					bs      = []byte{}
-					n, err  = SkipMapVarint(nil, nil, bs)
+					n, err  = SkipMap(nil, nil, nil, bs)
 				)
 				com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
 			})
@@ -1615,19 +1521,6 @@ func testAllSliceFunctions(
 				}
 			},
 		)
-		// m mus.MarshallerFn[[]string] = func(v []string, bs []byte) (n int) {
-		// 	return MarshalSlice(v, nil, m1, bs)
-		// }
-		// u mus.UnmarshallerFn[[]string] = func(bs []byte) (t []string, n int, err error) {
-		// 	return UnmarshalSlice(nil, u1, bs)
-		// }
-		// s mus.SizerFn[[]string] = func(v []string) (size int) {
-		// 	return SizeSlice(v, nil, s1)
-		// }
-		// sk mus.SkipperFn = func(bs []byte) (n int, err error) {
-		// 	return SkipSlice(nil, sk1, bs)
-		// }
-
 	)
 	testdata.Test[[]string]([][]string{sl},
 		m(m1),
@@ -1784,121 +1677,9 @@ func testAllMapFunctions(
 	}
 }
 
-// StringVarint
-
-func MarshalStringVarint(v string, bs []byte) (n int) {
-	return MarshalString(v, mus.MarshallerFn[int](varint.MarshalInt), bs)
-}
-
-func UnmarshalStringVarint(bs []byte) (v string,
-	n int, err error) {
-	return UnmarshalValidStringVarint(nil, false, bs)
-}
-
-func UnmarshalValidStringVarint(lenVl com.Validator[int], skip bool, bs []byte) (
-	v string, n int, err error) {
-	return UnmarshalValidString(mus.UnmarshallerFn[int](varint.UnmarshalInt),
-		lenVl, skip, bs)
-}
-
-func SizeStringVarint(v string) (n int) {
-	return SizeString(v, mus.SizerFn[int](varint.SizeInt))
-}
-
-func SkipStringVarint(bs []byte) (n int, err error) {
-	return SkipString(mus.UnmarshallerFn[int](varint.UnmarshalInt), bs)
-}
-
-// ByteSliceVarint
-
-func MarshalByteSliceVarint(v []byte, bs []byte) (n int) {
-	return MarshalByteSlice(v, mus.MarshallerFn[int](varint.MarshalInt), bs)
-}
-
-func UnmarshalByteSliceVarint(bs []byte) (v []byte,
-	n int, err error) {
-	return UnmarshalValidByteSliceVarint(nil, false, bs)
-}
-
-func UnmarshalValidByteSliceVarint(lenVl com.Validator[int], skip bool,
-	bs []byte,
-) (v []byte, n int, err error) {
-	return UnmarshalValidByteSlice(mus.UnmarshallerFn[int](varint.UnmarshalInt),
-		lenVl, skip, bs)
-}
-
-func SizeByteSliceVarint(v []byte) (size int) {
-	return SizeByteSlice(v, mus.SizerFn[int](varint.SizeInt))
-}
-
-func SkipByteSliceVarint(bs []byte) (n int,
-	err error) {
-	return SkipByteSlice(mus.UnmarshallerFn[int](varint.UnmarshalInt), bs)
-}
-
-// SliceVarint
-
-func MarshalSliceVarint[T any](v []T, m mus.Marshaller[T], bs []byte) (n int) {
-	return MarshalSlice(v, mus.MarshallerFn[int](varint.MarshalInt), m, bs)
-}
-
-func UnmarshalSliceVarint[T any](u mus.Unmarshaller[T], bs []byte) (v []T,
-	n int, err error) {
-	return UnmarshalValidSliceVarint[T](nil, u, nil, nil, bs)
-}
-
-func UnmarshalValidSliceVarint[T any](lenVl com.Validator[int],
-	u mus.Unmarshaller[T],
-	vl com.Validator[T],
-	sk mus.Skipper,
-	bs []byte,
-) (v []T, n int, err error) {
-	return UnmarshalValidSlice[T](mus.UnmarshallerFn[int](varint.UnmarshalInt),
-		lenVl, u, vl, sk, bs)
-}
-
-func SizeSliceVarint[T any](v []T, s mus.Sizer[T]) (size int) {
-	return SizeSlice(v, mus.SizerFn[int](varint.SizeInt), s)
-}
-
-func SkipSliceVarint(sk mus.Skipper, bs []byte) (n int,
-	err error) {
-	return SkipSlice(mus.UnmarshallerFn[int](varint.UnmarshalInt), sk, bs)
-}
-
-// MapVarint
-
-func MarshalMapVarint[T comparable, V any](v map[T]V, m1 mus.Marshaller[T],
-	m2 mus.Marshaller[V],
-	bs []byte,
-) (n int) {
-	return MarshalMap(v, mus.MarshallerFn[int](varint.MarshalInt), m1, m2, bs)
-}
-
-func UnmarshalMapVarint[T comparable, V any](u1 mus.Unmarshaller[T],
-	u2 mus.Unmarshaller[V],
-	bs []byte,
-) (v map[T]V, n int, err error) {
-	return UnmarshalValidMapVarint[T, V](nil, u1, u2, nil, nil, nil, nil, bs)
-}
-
-func UnmarshalValidMapVarint[T comparable, V any](lenVl com.Validator[int],
-	u1 mus.Unmarshaller[T],
-	u2 mus.Unmarshaller[V],
-	vl1 com.Validator[T],
-	vl2 com.Validator[V],
-	sk1, sk2 mus.Skipper,
-	bs []byte,
-) (v map[T]V, n int, err error) {
-	return UnmarshalValidMap[T, V](mus.UnmarshallerFn[int](varint.UnmarshalInt),
-		lenVl, u1, u2, vl1, vl2, sk1, sk2, bs)
-}
-
-func SizeMapVarint[T comparable, V any](v map[T]V, s1 mus.Sizer[T],
-	s2 mus.Sizer[V]) (size int) {
-	return SizeMap(v, mus.SizerFn[int](varint.SizeInt), s1, s2)
-}
-
-func SkipMapVarint(sk1, sk2 mus.Skipper, bs []byte) (n int, err error) {
-	return SkipMap(mus.UnmarshallerFn[int](varint.UnmarshalInt), sk1, sk2, bs)
+func MakeBsWithNegativeLength() (n int, bs []byte) {
+	n = varint.SizePositiveInt(-1)
+	bs = make([]byte, n)
+	varint.MarshalPositiveInt(-1, bs)
+	return
 }

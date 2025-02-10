@@ -171,30 +171,34 @@ func TestUnsafe(t *testing.T) {
 		t.Run("All MarshalString, UnmarshalString, SizeString, SkipString function with default lenM, lenU, lenS must work correctly",
 			func(t *testing.T) {
 				var (
-					m mus.MarshallerFn[string] = func(t string, bs []byte) (n int) {
-						return MarshalString(t, nil, bs)
-					}
-					u mus.UnmarshallerFn[string] = func(bs []byte) (t string, n int, err error) {
-						return UnmarshalString(nil, bs)
-					}
-					s mus.SizerFn[string] = func(t string) (size int) {
-						return SizeString(t, nil)
-					}
-					sk mus.SkipperFn = func(bs []byte) (n int, err error) {
-						return SkipString(nil, bs)
-					}
+					m  = NewStringMarshallerFn(nil)
+					u  = NewStringUnmarshallerFn(nil)
+					s  = NewStringSizerFn(nil)
+					sk = NewStringSkipperFn(nil)
+					// m  mus.MarshallerFn[string] = func(t string, bs []byte) (n int) {
+					// 	return MarshalString(t, nil, bs)
+					// }
+					// u mus.UnmarshallerFn[string] = func(bs []byte) (t string, n int, err error) {
+					// 	return UnmarshalString(nil, bs)
+					// }
+					// s mus.SizerFn[string] = func(t string) (size int) {
+					// 	return SizeString(t, nil)
+					// }
+					// sk mus.SkipperFn = func(bs []byte) (n int, err error) {
+					// 	return SkipString(nil, bs)
+					// }
 				)
 				testdata.Test[string](com_testdata.StringTestCases, m, u, s, t)
 				testdata.TestSkip[string](com_testdata.StringTestCases, m, sk, s, t)
 			})
 
-		t.Run("All MarshalStringVarint, UnmarshalStringVarint, SizeStringVarint, SkipStringVarint functions must work correctly",
+		t.Run("All MarshalVarintcString, UnmarshalVarintString, SizeVarintString, SkipVarintString functions must work correctly",
 			func(t *testing.T) {
 				var (
-					m  mus.MarshallerFn[string]   = MarshalStringVarint
-					u  mus.UnmarshallerFn[string] = UnmarshalStringVarint
-					s  mus.SizerFn[string]        = SizeStringVarint
-					sk mus.SkipperFn              = SkipStringVarint
+					m  = NewStringMarshallerFn(mus.MarshallerFn[int](varint.MarshalInt))
+					u  = NewStringUnmarshallerFn(mus.UnmarshallerFn[int](varint.UnmarshalInt))
+					s  = NewStringSizerFn(mus.SizerFn[int](varint.SizeInt))
+					sk = NewStringSkipperFn(mus.UnmarshallerFn[int](varint.UnmarshalInt))
 				)
 				testdata.Test[string](com_testdata.StringTestCases, m, u, s, t)
 				testdata.TestSkip[string](com_testdata.StringTestCases, m, sk, s, t)
@@ -216,52 +220,51 @@ func TestUnsafe(t *testing.T) {
 					}
 				}()
 
-				MarshalStringVarint(s, bs)
+				MarshalString(s, nil, bs)
 			})
 
-		t.Run("If UnmarshalValidStringVarint fails to unmarshal a length, it should return an error",
+		t.Run("If UnmarshalValidString fails to unmarshal a length, it should return an error",
 			func(t *testing.T) {
 				var (
 					wantV     = ""
 					wantN     = 0
 					wantErr   = mus.ErrTooSmallByteSlice
 					bs        = []byte{}
-					v, n, err = UnmarshalValidStringVarint(nil, false, bs)
+					v, n, err = UnmarshalValidString(nil, nil, false, bs)
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
-		t.Run("UnmarshalValidStringVarint should return ErrNegativeLength if meets a negative length",
+		t.Run("UnmarshalValidString should return ErrNegativeLength if meets a negative length",
 			func(t *testing.T) {
 				var (
 					wantV     = ""
-					wantN     = 1
+					wantN, bs = MakeBsWithNegativeLength()
 					wantErr   = com.ErrNegativeLength
-					bs        = []byte{1}
-					v, n, err = UnmarshalValidStringVarint(nil, false, bs)
+					v, n, err = UnmarshalValidString(nil, nil, false, bs)
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
-		t.Run("UnmarshalValidStringVarint should return ErrTooSmallByteSlice if there is no space in bs",
+		t.Run("UnmarshalValidString should return ErrTooSmallByteSlice if there is no space in bs",
 			func(t *testing.T) {
 				var (
 					wantV     = ""
 					wantN     = 1
 					wantErr   = mus.ErrTooSmallByteSlice
-					bs        = []byte{6, 1, 1}
-					v, n, err = UnmarshalValidStringVarint(nil, false, bs)
+					bs        = []byte{3, 1, 1}
+					v, n, err = UnmarshalValidString(nil, nil, false, bs)
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
-		t.Run("If skip == true and lenVl validator returns an error, UnmarshalValidStringVarint should return it",
+		t.Run("If skip == true and lenVl validator returns an error, UnmarshalValidString should return it",
 			func(t *testing.T) {
 				var (
-					wantV     = ""
-					wantN     = 4
-					wantErr   = errors.New("lenVl validator error")
-					maxLength = com_mock.NewValidator[int]().RegisterValidate(
+					wantV   = ""
+					wantN   = 4
+					wantErr = errors.New("lenVl validator error")
+					lenVl   = com_mock.NewValidator[int]().RegisterValidate(
 						func(v int) (err error) {
 							var wantV = 3
 							if v != wantV {
@@ -270,19 +273,19 @@ func TestUnsafe(t *testing.T) {
 							return wantErr
 						},
 					)
-					bs        = []byte{6, 1, 1, 1}
-					v, n, err = UnmarshalValidStringVarint(maxLength, true, bs)
+					bs        = []byte{3, 1, 1, 1}
+					v, n, err = UnmarshalValidString(nil, lenVl, true, bs)
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
-		t.Run("If skip == false and lenVl validator returns an error, UnmarshalValidStringVarint should return it",
+		t.Run("If skip == false and lenVl validator returns an error, UnmarshalValidString should return it",
 			func(t *testing.T) {
 				var (
-					wantV     = ""
-					wantN     = 1
-					wantErr   = errors.New("lenVl validator error")
-					maxLength = com_mock.NewValidator[int]().RegisterValidate(
+					wantV   = ""
+					wantN   = 1
+					wantErr = errors.New("lenVl validator error")
+					lenVl   = com_mock.NewValidator[int]().RegisterValidate(
 						func(v int) (err error) {
 							var wantV = 3
 							if v != wantV {
@@ -291,8 +294,8 @@ func TestUnsafe(t *testing.T) {
 							return wantErr
 						},
 					)
-					bs        = []byte{6, 1, 1, 1}
-					v, n, err = UnmarshalValidStringVarint(maxLength, false, bs)
+					bs        = []byte{3, 1, 1, 1}
+					v, n, err = UnmarshalValidString(nil, lenVl, false, bs)
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
@@ -306,7 +309,7 @@ func TestUnsafe(t *testing.T) {
 				lenVl   com.ValidatorFn[int] = func(t int) (err error) {
 					return wantErr
 				}
-				v, n, err = UnmarshalValidStringVarint(lenVl, false, bs)
+				v, n, err = UnmarshalValidString(nil, lenVl, false, bs)
 			)
 			com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 		})
@@ -560,19 +563,11 @@ func TestUnsafe(t *testing.T) {
 		t.Run("All MarshalByteSlice, UnmarshalByteSlice, SizeByteSlice, SkipByteSlice functions with default lenM, lenU, lenS and empty slice must work correctly",
 			func(t *testing.T) {
 				var (
-					sl                          = []byte{}
-					m  mus.MarshallerFn[[]byte] = func(v []byte, bs []byte) (n int) {
-						return MarshalByteSlice(v, nil, bs)
-					}
-					u mus.UnmarshallerFn[[]byte] = func(bs []byte) (v []byte, n int, err error) {
-						return UnmarshalByteSlice(nil, bs)
-					}
-					s mus.SizerFn[[]byte] = func(v []byte) (size int) {
-						return SizeByteSlice(v, nil)
-					}
-					sk mus.SkipperFn = func(bs []byte) (n int, err error) {
-						return SkipByteSlice(nil, bs)
-					}
+					sl = []byte{}
+					m  = NewByteSliceMarshallerFn(nil)
+					u  = NewByteSliceUnmarshallerFn(nil)
+					s  = NewByteSliceSizerFn(nil)
+					sk = NewByteSliceSkipperFn(nil)
 				)
 				testdata.Test[[]byte]([][]byte{sl}, m, u, s, t)
 				testdata.TestSkip[[]byte]([][]byte{sl}, m, sk, s, t)
@@ -581,61 +576,37 @@ func TestUnsafe(t *testing.T) {
 		t.Run("All MarshalByteSlice, UnmarshalByteSlice, SizeByteSlice, SkipByteSlice functions with default lenM, lenU, lenS and not empty slice must work correctly",
 			func(t *testing.T) {
 				var (
-					sl                          = []byte{0, 1, 1, 255, 100, 0, 1, 10}
-					m  mus.MarshallerFn[[]byte] = func(v []byte, bs []byte) (n int) {
-						return MarshalByteSlice(v, nil, bs)
-					}
-					u mus.UnmarshallerFn[[]byte] = func(bs []byte) (v []byte, n int, err error) {
-						return UnmarshalByteSlice(nil, bs)
-					}
-					s mus.SizerFn[[]byte] = func(v []byte) (size int) {
-						return SizeByteSlice(v, nil)
-					}
-					sk mus.SkipperFn = func(bs []byte) (n int, err error) {
-						return SkipByteSlice(nil, bs)
-					}
+					sl = []byte{0, 1, 1, 255, 100, 0, 1, 10}
+					m  = NewByteSliceMarshallerFn(nil)
+					u  = NewByteSliceUnmarshallerFn(nil)
+					s  = NewByteSliceSizerFn(nil)
+					sk = NewByteSliceSkipperFn(nil)
 				)
 				testdata.Test[[]byte]([][]byte{sl}, m, u, s, t)
 				testdata.TestSkip[[]byte]([][]byte{sl}, m, sk, s, t)
 			})
 
-		t.Run("All MarshalByteSliceVarint, UnmarshalByteSliceVarint, SizeByteSliceVarint, SkipByteSliceVarint functions must work correctly with empty slice",
+		t.Run("All MarshalVarintByteSlice, UnmarshalVarintByteSlice, SizeVarintByteSlice, SkipVarintByteSlice functions must work correctly with empty slice",
 			func(t *testing.T) {
 				var (
-					sl                          = []byte{}
-					m  mus.MarshallerFn[[]byte] = func(v []byte, bs []byte) (n int) {
-						return MarshalByteSliceVarint(v, bs)
-					}
-					u mus.UnmarshallerFn[[]byte] = func(bs []byte) (v []byte, n int, err error) {
-						return UnmarshalByteSliceVarint(bs)
-					}
-					s mus.SizerFn[[]byte] = func(v []byte) (size int) {
-						return SizeByteSliceVarint(v)
-					}
-					sk mus.SkipperFn = func(bs []byte) (n int, err error) {
-						return SkipByteSliceVarint(bs)
-					}
+					sl = []byte{}
+					m  = NewByteSliceMarshallerFn(mus.MarshallerFn[int](varint.MarshalInt))
+					u  = NewByteSliceUnmarshallerFn(mus.UnmarshallerFn[int](varint.UnmarshalInt))
+					s  = NewByteSliceSizerFn(mus.SizerFn[int](varint.SizeInt))
+					sk = NewByteSliceSkipperFn(mus.UnmarshallerFn[int](varint.UnmarshalInt))
 				)
 				testdata.Test[[]byte]([][]byte{sl}, m, u, s, t)
 				testdata.TestSkip[[]byte]([][]byte{sl}, m, sk, s, t)
 			})
 
-		t.Run("All MarshalByteSliceVarint, UnmarshalByteSliceVarint, SizeByteSliceVarint, SkipByteSliceVarint functions must work correctly with not empty slice",
+		t.Run("All MarshalVarintByteSlice, UnmarshalVarintByteSlice, SizeVarintByteSlice, SkipVarintByteSlice functions must work correctly with not empty slice",
 			func(t *testing.T) {
 				var (
-					sl                          = []byte{0, 1, 1, 255, 100, 0, 1, 10}
-					m  mus.MarshallerFn[[]byte] = func(v []byte, bs []byte) (n int) {
-						return MarshalByteSliceVarint(v, bs)
-					}
-					u mus.UnmarshallerFn[[]byte] = func(bs []byte) (v []byte, n int, err error) {
-						return UnmarshalByteSliceVarint(bs)
-					}
-					s mus.SizerFn[[]byte] = func(v []byte) (size int) {
-						return SizeByteSliceVarint(v)
-					}
-					sk mus.SkipperFn = func(bs []byte) (n int, err error) {
-						return SkipByteSliceVarint(bs)
-					}
+					sl = []byte{0, 1, 1, 255, 100, 0, 1, 10}
+					m  = NewByteSliceMarshallerFn(mus.MarshallerFn[int](varint.MarshalInt))
+					u  = NewByteSliceUnmarshallerFn(mus.UnmarshallerFn[int](varint.UnmarshalInt))
+					s  = NewByteSliceSizerFn(mus.SizerFn[int](varint.SizeInt))
+					sk = NewByteSliceSkipperFn(mus.UnmarshallerFn[int](varint.UnmarshalInt))
 				)
 				testdata.Test[[]byte]([][]byte{sl}, m, u, s, t)
 				testdata.TestSkip[[]byte]([][]byte{sl}, m, sk, s, t)
@@ -661,7 +632,7 @@ func TestUnsafe(t *testing.T) {
 					wantV     []byte = nil
 					wantN            = 0
 					wantErr          = mus.ErrTooSmallByteSlice
-					v, n, err        = UnmarshalByteSliceVarint([]byte{})
+					v, n, err        = UnmarshalByteSlice(nil, []byte{})
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
@@ -672,7 +643,7 @@ func TestUnsafe(t *testing.T) {
 					wantV     []byte = nil
 					wantN            = 1
 					wantErr          = mus.ErrTooSmallByteSlice
-					v, n, err        = UnmarshalByteSliceVarint([]byte{4, 1})
+					v, n, err        = UnmarshalByteSlice(nil, []byte{2, 1})
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
@@ -681,65 +652,65 @@ func TestUnsafe(t *testing.T) {
 			func(t *testing.T) {
 				var (
 					wantV     []byte = nil
-					wantN            = 1
+					wantN, bs        = MakeBsWithNegativeLength()
 					wantErr          = com.ErrNegativeLength
-					v, n, err        = UnmarshalByteSliceVarint([]byte{1})
+					v, n, err        = UnmarshalByteSlice(nil, bs)
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
-		t.Run("If lenVl validator returns an error, UnmarshalValidByteSliceVarint should return it",
+		t.Run("If lenVl validator returns an error, UnmarshalValidByteSlice should return it",
 			func(t *testing.T) {
 				var (
-					wantV     []byte = nil
-					wantN            = 1
-					wantErr          = errors.New("too large slice")
-					bs               = []byte{4, 4, 1, 1}
-					maxLength        = com_mock.NewValidator[int]().RegisterValidate(
+					wantV   []byte = nil
+					wantN          = 1
+					wantErr        = errors.New("too large slice")
+					bs             = []byte{3, 4, 1, 1}
+					lenVl          = com_mock.NewValidator[int]().RegisterValidate(
 						func(v int) (err error) {
 							return wantErr
 						},
 					)
-					v, n, err = UnmarshalValidByteSliceVarint(maxLength, false, bs)
+					v, n, err = UnmarshalValidByteSlice(nil, lenVl, false, bs)
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil,
 					t)
 			})
 
-		t.Run("If skip == true and lenVl validator returns an error, UnmarshalValidByteSliceVarint should return it and skip the rest of the slice",
+		t.Run("If skip == true and lenVl validator returns an error, UnmarshalValidByteSlice should return it and skip the rest of the slice",
 			func(t *testing.T) {
 				var (
-					wantV     []byte = nil
-					wantN            = 3
-					wantErr          = errors.New("too large slice")
-					bs               = []byte{4, 4, 1}
-					maxLength        = com_mock.NewValidator[int]().RegisterValidate(
+					wantV   []byte = nil
+					wantN          = 3
+					wantErr        = errors.New("too large slice")
+					bs             = []byte{2, 4, 1}
+					lenVl          = com_mock.NewValidator[int]().RegisterValidate(
 						func(v int) (err error) {
 							return wantErr
 						},
 					)
-					v, n, err = UnmarshalValidByteSliceVarint(maxLength, true, bs)
+					v, n, err = UnmarshalValidByteSlice(nil, lenVl, true, bs)
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil,
 					t)
 			})
 
-		t.Run("SkipByteSliceVarint should return ErrTooSmallByteSlice if there is no space in bs",
+		t.Run("SkipByteSlice should return ErrTooSmallByteSlice if there is no space in bs",
 			func(t *testing.T) {
 				var (
 					wantN   = 0
 					wantErr = mus.ErrTooSmallByteSlice
-					n, err  = SkipByteSliceVarint([]byte{})
+					n, err  = SkipByteSlice(nil, []byte{})
 				)
 				com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
 			})
 
-		t.Run("SkipByteSliceVarint should return ErrNegativeLength if meets a negative length",
+		t.Run("SkipByteSlice should return ErrNegativeLength if meets a negative length",
 			func(t *testing.T) {
 				var (
-					wantN   = 1
-					wantErr = com.ErrNegativeLength
-					n, err  = SkipByteSliceVarint([]byte{1})
+					wantN, bs = MakeBsWithNegativeLength()
+					wantErr   = com.ErrNegativeLength
+					n, err    = SkipByteSlice(nil, bs)
 				)
 				com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
 			})
@@ -748,54 +719,9 @@ func TestUnsafe(t *testing.T) {
 
 }
 
-// StringVarint
-
-func MarshalStringVarint(v string, bs []byte) (n int) {
-	return MarshalString(v, mus.MarshallerFn[int](varint.MarshalInt), bs)
-}
-
-func UnmarshalStringVarint(bs []byte) (v string,
-	n int, err error) {
-	return UnmarshalValidStringVarint(nil, false, bs)
-}
-
-func UnmarshalValidStringVarint(lenVl com.Validator[int], skip bool, bs []byte) (
-	v string, n int, err error) {
-	return UnmarshalValidString(mus.UnmarshallerFn[int](varint.UnmarshalInt),
-		lenVl, skip, bs)
-}
-
-func SizeStringVarint(v string) (n int) {
-	return SizeString(v, mus.SizerFn[int](varint.SizeInt))
-}
-
-func SkipStringVarint(bs []byte) (n int, err error) {
-	return SkipString(mus.UnmarshallerFn[int](varint.UnmarshalInt), bs)
-}
-
-// ByteSliceVarint
-
-func MarshalByteSliceVarint(v []byte, bs []byte) (n int) {
-	return MarshalByteSlice(v, mus.MarshallerFn[int](varint.MarshalInt), bs)
-}
-
-func UnmarshalByteSliceVarint(bs []byte) (v []byte,
-	n int, err error) {
-	return UnmarshalValidByteSliceVarint(nil, false, bs)
-}
-
-func UnmarshalValidByteSliceVarint(lenVl com.Validator[int], skip bool,
-	bs []byte,
-) (v []byte, n int, err error) {
-	return UnmarshalValidByteSlice(mus.UnmarshallerFn[int](varint.UnmarshalInt),
-		lenVl, skip, bs)
-}
-
-func SizeByteSliceVarint(v []byte) (size int) {
-	return SizeByteSlice(v, mus.SizerFn[int](varint.SizeInt))
-}
-
-func SkipByteSliceVarint(bs []byte) (n int,
-	err error) {
-	return SkipByteSlice(mus.UnmarshallerFn[int](varint.UnmarshalInt), bs)
+func MakeBsWithNegativeLength() (n int, bs []byte) {
+	n = varint.SizePositiveInt(-1)
+	bs = make([]byte, n)
+	varint.MarshalPositiveInt(-1, bs)
+	return
 }
