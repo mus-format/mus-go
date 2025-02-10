@@ -6,6 +6,49 @@ import (
 	"github.com/mus-format/mus-go/varint"
 )
 
+// NewSliceMarshallerFn creates a slice Marshaller.
+func NewSliceMarshallerFn[T any](lenM mus.Marshaller[int],
+	m mus.Marshaller[T]) mus.MarshallerFn[[]T] {
+	return func(v []T, bs []byte) (n int) {
+		return MarshalSlice(v, lenM, m, bs)
+	}
+}
+
+// NewSliceUnmarshallerFn creates a slice Unmarshaller.
+func NewSliceUnmarshallerFn[T any](lenU mus.Unmarshaller[int],
+	u mus.Unmarshaller[T],
+) mus.UnmarshallerFn[[]T] {
+	return func(bs []byte) (v []T, n int, err error) {
+		return UnmarshalValidSlice(lenU, nil, u, nil, nil, bs)
+	}
+}
+
+// NewValidSliceUnmarshallerFn creates a slice Unmarshaller with validation.
+func NewValidSliceUnmarshallerFn[T any](lenU mus.Unmarshaller[int],
+	lenVl com.Validator[int],
+	u mus.Unmarshaller[T],
+	vl com.Validator[T],
+	sk mus.Skipper,
+) mus.UnmarshallerFn[[]T] {
+	return func(bs []byte) (v []T, n int, err error) {
+		return UnmarshalValidSlice(lenU, lenVl, u, vl, sk, bs)
+	}
+}
+
+// NewSliceSizerFn creates a slice Sizer.
+func NewSliceSizerFn[T any](lenS mus.Sizer[int], s mus.Sizer[T]) mus.SizerFn[[]T] {
+	return func(v []T) (size int) {
+		return SizeSlice(v, lenS, s)
+	}
+}
+
+// NewSliceSkipperFn creates a slice Skipper.
+func NewSliceSkipperFn(lenU mus.Unmarshaller[int], sk mus.Skipper) mus.SkipperFn {
+	return func(bs []byte) (n int, err error) {
+		return SkipSlice(lenU, sk, bs)
+	}
+}
+
 // MarshalSlice fills bs with an encoded slice value.
 //
 // The lenM argument specifies the Marshaller for the length of the slice, if

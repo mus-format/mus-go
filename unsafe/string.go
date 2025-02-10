@@ -9,6 +9,74 @@ import (
 	"github.com/mus-format/mus-go/varint"
 )
 
+// NewStringMarshallerFn creates a string Marshaller.
+func NewStringMarshallerFn(lenM mus.Marshaller[int]) mus.MarshallerFn[string] {
+	return func(v string, bs []byte) (n int) {
+		return MarshalString(v, lenM, bs)
+	}
+}
+
+// NewStringUnmarshallerFn creates a string Unmarshaller.
+func NewStringUnmarshallerFn(lenU mus.Unmarshaller[int]) mus.UnmarshallerFn[string] {
+	return func(bs []byte) (v string, n int, err error) {
+		return UnmarshalValidString(lenU, nil, false, bs)
+	}
+}
+
+// NewValidStringUnmarshallerFn creates a string Unmarshaller with validation.
+func NewValidStringUnmarshallerFn(lenU mus.Unmarshaller[int],
+	lenVl com.Validator[int], skip bool) mus.UnmarshallerFn[string] {
+	return func(bs []byte) (v string, n int, err error) {
+		return UnmarshalValidString(lenU, lenVl, skip, bs)
+	}
+}
+
+// NewStringSizerFn creates a string Sizer.
+func NewStringSizerFn(lenS mus.Sizer[int]) mus.SizerFn[string] {
+	return func(v string) (size int) {
+		return SizeString(v, lenS)
+	}
+}
+
+// NewStringSkipperFn creates a string Skipper.
+func NewStringSkipperFn(lenU mus.Unmarshaller[int]) mus.SkipperFn {
+	return func(bs []byte) (n int, err error) {
+		return SkipString(lenU, bs)
+	}
+}
+
+// MarshalStr fills bs with an encoded string value.
+//
+// Provides an implementation of the Marshaller interface for the string type.
+// See MarshalString for details.
+func MarshalStr(v string, bs []byte) (n int) {
+	return MarshalString(v, nil, bs)
+}
+
+// UnmarshalStr parses an encoded string value from bs.
+//
+// Provides an implementation of the Unmarshaller interface for the string type.
+// See UnmarshalString for details.
+func UnmarshalStr(bs []byte) (v string, n int, err error) {
+	return UnmarshalValidString(nil, nil, false, bs)
+}
+
+// SizeStr returns the size of an encoded string value.
+//
+// Provides an implementation of the Sizer interface for the string type.
+// See SizeString for details.
+func SizeStr(v string) (n int) {
+	return SizeString(v, nil)
+}
+
+// SkipStr skips an encoded string value.
+//
+// Provides an implementation of the Skipper interface for the string type.
+// See SkipString for details.
+func SkipStr(bs []byte) (n int, err error) {
+	return SkipString(nil, bs)
+}
+
 // MarshalString fills bs with an encoded string value.
 //
 // The lenM argument specifies the Marshaller for the string length.

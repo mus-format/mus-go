@@ -6,6 +6,42 @@ import (
 	"github.com/mus-format/mus-go/varint"
 )
 
+// NewStringMarshallerFn creates a string Marshaller.
+func NewStringMarshallerFn(lenM mus.Marshaller[int]) mus.MarshallerFn[string] {
+	return func(v string, bs []byte) (n int) {
+		return MarshalString(v, lenM, bs)
+	}
+}
+
+// NewStringUnmarshallerFn creates a string Unmarshaller.
+func NewStringUnmarshallerFn(lenU mus.Unmarshaller[int]) mus.UnmarshallerFn[string] {
+	return func(bs []byte) (v string, n int, err error) {
+		return UnmarshalValidString(lenU, nil, false, bs)
+	}
+}
+
+// NewValidStringUnmarshallerFn creates a string Unmarshaller with validation.
+func NewValidStringUnmarshallerFn(lenU mus.Unmarshaller[int],
+	lenVl com.Validator[int], skip bool) mus.UnmarshallerFn[string] {
+	return func(bs []byte) (v string, n int, err error) {
+		return UnmarshalValidString(lenU, lenVl, skip, bs)
+	}
+}
+
+// NewStringSizerFn creates a string Sizer.
+func NewStringSizerFn(lenS mus.Sizer[int]) mus.SizerFn[string] {
+	return func(v string) (size int) {
+		return SizeString(v, lenS)
+	}
+}
+
+// NewStringSkipperFn creates a string Skipper.
+func NewStringSkipperFn(lenU mus.Unmarshaller[int]) mus.SkipperFn {
+	return func(bs []byte) (n int, err error) {
+		return SkipString(lenU, bs)
+	}
+}
+
 // MarshalStr fills bs with an encoded string value.
 //
 // Provides an implementation of the Marshaller interface for the string type.

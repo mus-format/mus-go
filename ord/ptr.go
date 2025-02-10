@@ -5,6 +5,34 @@ import (
 	"github.com/mus-format/mus-go"
 )
 
+// NewPtrMarshallerFn creates a pointer Marshaller.
+func NewPtrMarshallerFn[T any](m mus.Marshaller[T]) mus.MarshallerFn[*T] {
+	return func(v *T, bs []byte) (n int) {
+		return MarshalPtr(v, m, bs)
+	}
+}
+
+// NewPtrUnmarshallerFn creates a pointer Unmarshaller.
+func NewPtrUnmarshallerFn[T any](u mus.Unmarshaller[T]) mus.UnmarshallerFn[*T] {
+	return func(bs []byte) (v *T, n int, err error) {
+		return UnmarshalPtr(u, bs)
+	}
+}
+
+// NewPtrSizerFn creates a pointer Sizer.
+func NewPtrSizerFn[T any](s mus.Sizer[T]) mus.SizerFn[*T] {
+	return func(v *T) (size int) {
+		return SizePtr(v, s)
+	}
+}
+
+// NewPtrSkipperFn creates a pointer Skipper.
+func NewPtrSkipperFn(sk mus.Skipper) mus.SkipperFn {
+	return func(bs []byte) (n int, err error) {
+		return SkipPtr(sk, bs)
+	}
+}
+
 // MarshalPtr fills bs with the encoded pointer value.
 //
 // The m argument specifies the Marshaller for the pointer base type.

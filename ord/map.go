@@ -6,6 +6,60 @@ import (
 	"github.com/mus-format/mus-go/varint"
 )
 
+// NewMapMarshallerFn creates a map Marshaller.
+func NewMapMarshallerFn[T comparable, V any](lenM mus.Marshaller[int],
+	m1 mus.Marshaller[T],
+	m2 mus.Marshaller[V],
+) mus.MarshallerFn[map[T]V] {
+	return func(v map[T]V, bs []byte) (n int) {
+		return MarshalMap(v, lenM, m1, m2, bs)
+	}
+}
+
+// NewMapUnmarshallerFn creates a map Unmarshaller.
+func NewMapUnmarshallerFn[T comparable, V any](lenU mus.Unmarshaller[int],
+	u1 mus.Unmarshaller[T],
+	u2 mus.Unmarshaller[V],
+) mus.UnmarshallerFn[map[T]V] {
+	return func(bs []byte) (v map[T]V, n int, err error) {
+		return UnmarshalValidMap(lenU, nil, u1, u2, nil, nil, nil, nil, bs)
+	}
+}
+
+// NewValidMapUnmarshallerFn creates a map Unmarshaller with validation.
+func NewValidMapUnmarshallerFn[T comparable, V any](lenU mus.Unmarshaller[int],
+	lenVl com.Validator[int],
+	u1 mus.Unmarshaller[T],
+	u2 mus.Unmarshaller[V],
+	vl1 com.Validator[T],
+	vl2 com.Validator[V],
+	sk1, sk2 mus.Skipper,
+) mus.UnmarshallerFn[map[T]V] {
+	return func(bs []byte) (v map[T]V, n int, err error) {
+		return UnmarshalValidMap(lenU, lenVl, u1, u2, vl1, vl2, sk1, sk2, bs)
+	}
+}
+
+// NewMapSizerFn creates a map Sizer.
+func NewMapSizerFn[T comparable, V any](lenS mus.Sizer[int],
+	s1 mus.Sizer[T],
+	s2 mus.Sizer[V],
+) mus.SizerFn[map[T]V] {
+	return func(v map[T]V) (size int) {
+		return SizeMap(v, lenS, s1, s2)
+	}
+}
+
+// NewMapSkipperFn creates a map Skipper.
+func NewMapSkipperFn[T comparable, V any](lenU mus.Unmarshaller[int],
+	sk1 mus.Skipper,
+	sk2 mus.Skipper,
+) mus.SkipperFn {
+	return func(bs []byte) (n int, err error) {
+		return SkipMap(lenU, sk1, sk2, bs)
+	}
+}
+
 // MarshalMap fills bs with the encoded map value.
 //
 // The lenM argument specifies the Marshaller for the length of the map, if nil,

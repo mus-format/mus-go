@@ -9,6 +9,44 @@ import (
 	"github.com/mus-format/mus-go/varint"
 )
 
+// NewByteSliceMarshallerFn creates a []byte Marshaller.
+func NewByteSliceMarshallerFn(lenM mus.Marshaller[int]) mus.MarshallerFn[[]byte] {
+	return func(v []byte, bs []byte) (n int) {
+		return MarshalByteSlice(v, lenM, bs)
+	}
+}
+
+// NewByteSliceUnmarshallerFn creates a []byte Unmarshaller.
+func NewByteSliceUnmarshallerFn(lenU mus.Unmarshaller[int]) mus.UnmarshallerFn[[]byte] {
+	return func(bs []byte) (v []byte, n int, err error) {
+		return UnmarshalValidByteSlice(lenU, nil, false, bs)
+	}
+}
+
+// NewByteValidSliceUnmarshallerFn creates a []byte Unmarshaller with validation.
+func NewValidByteSliceUnmarshallerFn(lenU mus.Unmarshaller[int],
+	lenVl com.Validator[int],
+	skip bool,
+) mus.UnmarshallerFn[[]byte] {
+	return func(bs []byte) (v []byte, n int, err error) {
+		return UnmarshalValidByteSlice(lenU, lenVl, skip, bs)
+	}
+}
+
+// NewByteSliceSizerFn creates a []byte Sizer.
+func NewByteSliceSizerFn(lenS mus.Sizer[int]) mus.SizerFn[[]byte] {
+	return func(v []byte) (size int) {
+		return SizeByteSlice(v, lenS)
+	}
+}
+
+// NewByteSliceSkipperFn creates a []byte Skipper.
+func NewByteSliceSkipperFn(lenU mus.Unmarshaller[int]) mus.SkipperFn {
+	return func(bs []byte) (n int, err error) {
+		return SkipByteSlice(lenU, bs)
+	}
+}
+
 // MarshalByteSlice fills bs with an encoded slice value.
 //
 // The lenM argument specifies the Marshaller for the length of the slice, if
