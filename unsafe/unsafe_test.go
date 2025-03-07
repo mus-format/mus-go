@@ -10,7 +10,9 @@ import (
 	"github.com/mus-format/mus-go"
 	"github.com/mus-format/mus-go/raw"
 	"github.com/mus-format/mus-go/testdata"
+	"github.com/mus-format/mus-go/testdata/mock"
 	"github.com/mus-format/mus-go/varint"
+	"github.com/ymz-ncnk/mok"
 )
 
 func TestUnsafe(t *testing.T) {
@@ -40,10 +42,10 @@ func TestUnsafe(t *testing.T) {
 				if !com_testdata.ComparePtrs(unmarshalUint, unmarshalInteger32[uint]) {
 					t.Error("unexpected unmarshalUint func")
 				}
-				if !com_testdata.ComparePtrs(sizeUint, raw.SizeUint) {
-					t.Error("unexpected sizeUint func")
+				if sizeUint != com.Num32RawSize {
+					t.Error("unexpected sizeUint value")
 				}
-				if !com_testdata.ComparePtrs(skipUint, raw.SkipUint) {
+				if !com_testdata.ComparePtrs(skipUint, raw.SkipInteger32) {
 					t.Error("unexpected skipUint func")
 				}
 			})
@@ -57,10 +59,10 @@ func TestUnsafe(t *testing.T) {
 				if !com_testdata.ComparePtrs(unmarshalUint, unmarshalInteger64[uint]) {
 					t.Error("unexpected unmarshalUint func")
 				}
-				if !com_testdata.ComparePtrs(sizeUint, raw.SizeUint) {
-					t.Error("unexpected sizeUint func")
+				if sizeUint != com.Num64RawSize {
+					t.Error("unexpected sizeUint value")
 				}
-				if !com_testdata.ComparePtrs(skipUint, raw.SkipUint) {
+				if !com_testdata.ComparePtrs(skipUint, raw.SkipInteger64) {
 					t.Error("unexpected skipUint func")
 				}
 			})
@@ -91,10 +93,10 @@ func TestUnsafe(t *testing.T) {
 				if !com_testdata.ComparePtrs(unmarshalInt, unmarshalInteger32[int]) {
 					t.Error("unexpected unmarshalInt func")
 				}
-				if !com_testdata.ComparePtrs(sizeInt, raw.SizeInt) {
-					t.Error("unexpected sizeInt func")
+				if sizeInt != com.Num32RawSize {
+					t.Error("unexpected sizeInt value")
 				}
-				if !com_testdata.ComparePtrs(skipInt, raw.SkipInt) {
+				if !com_testdata.ComparePtrs(skipInt, raw.SkipInteger32) {
 					t.Error("unexpected skipInt func")
 				}
 			})
@@ -108,10 +110,10 @@ func TestUnsafe(t *testing.T) {
 				if !com_testdata.ComparePtrs(unmarshalInt, unmarshalInteger64[int]) {
 					t.Error("unexpected unmarshalInt func")
 				}
-				if !com_testdata.ComparePtrs(sizeInt, raw.SizeInt) {
-					t.Error("unexpected sizeInt func")
+				if sizeInt != com.Num64RawSize {
+					t.Error("unexpected sizeInt value")
 				}
-				if !com_testdata.ComparePtrs(skipInt, raw.SkipInt) {
+				if !com_testdata.ComparePtrs(skipInt, raw.SkipInteger64) {
 					t.Error("unexpected skipInt func")
 				}
 			})
@@ -168,40 +170,11 @@ func TestUnsafe(t *testing.T) {
 
 	t.Run("string", func(t *testing.T) {
 
-		t.Run("All MarshalString, UnmarshalString, SizeString, SkipString function with default lenM, lenU, lenS must work correctly",
+		t.Run("String serializer should work correctly",
 			func(t *testing.T) {
-				var (
-					m  = NewStringMarshallerFn(nil)
-					u  = NewStringUnmarshallerFn(nil)
-					s  = NewStringSizerFn(nil)
-					sk = NewStringSkipperFn(nil)
-					// m  mus.MarshallerFn[string] = func(t string, bs []byte) (n int) {
-					// 	return MarshalString(t, nil, bs)
-					// }
-					// u mus.UnmarshallerFn[string] = func(bs []byte) (t string, n int, err error) {
-					// 	return UnmarshalString(nil, bs)
-					// }
-					// s mus.SizerFn[string] = func(t string) (size int) {
-					// 	return SizeString(t, nil)
-					// }
-					// sk mus.SkipperFn = func(bs []byte) (n int, err error) {
-					// 	return SkipString(nil, bs)
-					// }
-				)
-				testdata.Test[string](com_testdata.StringTestCases, m, u, s, t)
-				testdata.TestSkip[string](com_testdata.StringTestCases, m, sk, s, t)
-			})
-
-		t.Run("All MarshalVarintcString, UnmarshalVarintString, SizeVarintString, SkipVarintString functions must work correctly",
-			func(t *testing.T) {
-				var (
-					m  = NewStringMarshallerFn(mus.MarshallerFn[int](varint.MarshalInt))
-					u  = NewStringUnmarshallerFn(mus.UnmarshallerFn[int](varint.UnmarshalInt))
-					s  = NewStringSizerFn(mus.SizerFn[int](varint.SizeInt))
-					sk = NewStringSkipperFn(mus.UnmarshallerFn[int](varint.UnmarshalInt))
-				)
-				testdata.Test[string](com_testdata.StringTestCases, m, u, s, t)
-				testdata.TestSkip[string](com_testdata.StringTestCases, m, sk, s, t)
+				ser := String
+				testdata.Test[string](com_testdata.StringTestCases, ser, t)
+				testdata.TestSkip[string](com_testdata.StringTestCases, ser, t)
 			})
 
 		t.Run("Marshal should return ErrTooSmallByteSlice if there is no space in bs",
@@ -220,66 +193,95 @@ func TestUnsafe(t *testing.T) {
 					}
 				}()
 
-				MarshalString(s, nil, bs)
+				String.Marshal(s, bs)
 			})
 
-		t.Run("If UnmarshalValidString fails to unmarshal a length, it should return an error",
+		t.Run("If lenSer fails to unmarshal length, Unmarshal should return an error",
 			func(t *testing.T) {
 				var (
-					wantV     = ""
-					wantN     = 0
-					wantErr   = mus.ErrTooSmallByteSlice
-					bs        = []byte{}
-					v, n, err = UnmarshalValidString(nil, nil, false, bs)
+					wantV   = ""
+					wantN   = 0
+					wantErr = mus.ErrTooSmallByteSlice
+					lenSer  = mock.NewSerializer[int]().RegisterUnmarshal(
+						func(bs []byte) (t int, n int, err error) {
+							return 0, 0, wantErr
+						},
+					)
+					v, n, err = NewStringSerWith(lenSer).Unmarshal(nil)
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
-		t.Run("UnmarshalValidString should return ErrNegativeLength if meets a negative length",
+		t.Run("Unmarshal should return ErrNegativeLength if meets a negative length",
 			func(t *testing.T) {
 				var (
 					wantV     = ""
-					wantN, bs = MakeBsWithNegativeLength()
+					wantN, bs = NegativeLengthBs()
 					wantErr   = com.ErrNegativeLength
-					v, n, err = UnmarshalValidString(nil, nil, false, bs)
+					v, n, err = String.Unmarshal(bs)
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
-		t.Run("UnmarshalValidString should return ErrTooSmallByteSlice if there is no space in bs",
+		t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
 			func(t *testing.T) {
 				var (
 					wantV     = ""
 					wantN     = 1
 					wantErr   = mus.ErrTooSmallByteSlice
 					bs        = []byte{3, 1, 1}
-					v, n, err = UnmarshalValidString(nil, nil, false, bs)
+					v, n, err = String.Unmarshal(bs)
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
-		t.Run("If skip == true and lenVl validator returns an error, UnmarshalValidString should return it",
+		t.Run("String serializer should work correctly",
+			func(t *testing.T) {
+				ser := NewValidStringSer(nil)
+				testdata.Test[string](com_testdata.StringTestCases, ser, t)
+				testdata.TestSkip[string](com_testdata.StringTestCases, ser, t)
+			})
+
+		t.Run("If lenSer fails to unmarshal length, Unmarshal should return an error",
 			func(t *testing.T) {
 				var (
 					wantV   = ""
-					wantN   = 4
-					wantErr = errors.New("lenVl validator error")
-					lenVl   = com_mock.NewValidator[int]().RegisterValidate(
-						func(v int) (err error) {
-							var wantV = 3
-							if v != wantV {
-								t.Errorf("unexpected v, want '%v' actual '%v'", wantV, v)
-							}
-							return wantErr
+					wantN   = 0
+					wantErr = mus.ErrTooSmallByteSlice
+					lenSer  = mock.NewSerializer[int]().RegisterUnmarshal(
+						func(bs []byte) (t int, n int, err error) {
+							return 0, 0, wantErr
 						},
 					)
-					bs        = []byte{3, 1, 1, 1}
-					v, n, err = UnmarshalValidString(nil, lenVl, true, bs)
+					v, n, err = NewValidStringSerWith(lenSer, nil).Unmarshal(nil)
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
-		t.Run("If skip == false and lenVl validator returns an error, UnmarshalValidString should return it",
+		t.Run("Valid Unmarshal should return ErrNegativeLength if meets a negative length",
+			func(t *testing.T) {
+				var (
+					wantV     = ""
+					wantN, bs = NegativeLengthBs()
+					wantErr   = com.ErrNegativeLength
+					v, n, err = NewValidStringSer(nil).Unmarshal(bs)
+				)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			})
+
+		t.Run("Valid Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
+			func(t *testing.T) {
+				var (
+					wantV     = ""
+					wantN     = 1
+					wantErr   = mus.ErrTooSmallByteSlice
+					bs        = []byte{3, 1, 1}
+					v, n, err = NewValidStringSer(nil).Unmarshal(bs)
+				)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			})
+
+		t.Run("If lenVl returns an error, valid Unmarshal should return it",
 			func(t *testing.T) {
 				var (
 					wantV   = ""
@@ -295,7 +297,7 @@ func TestUnsafe(t *testing.T) {
 						},
 					)
 					bs        = []byte{3, 1, 1, 1}
-					v, n, err = UnmarshalValidString(nil, lenVl, false, bs)
+					v, n, err = NewValidStringSer(lenVl).Unmarshal(bs)
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
@@ -309,150 +311,89 @@ func TestUnsafe(t *testing.T) {
 				lenVl   com.ValidatorFn[int] = func(t int) (err error) {
 					return wantErr
 				}
-				v, n, err = UnmarshalValidString(nil, lenVl, false, bs)
+				v, n, err = NewValidStringSer(lenVl).Unmarshal(bs)
 			)
 			com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 		})
 
 	})
 
-	t.Run("All MarshalByte, UnmarshalByte, SizeByte, SkipByte functions must work correctly",
-		func(t *testing.T) {
-			var (
-				m  mus.MarshallerFn[byte]   = MarshalByte
-				u  mus.UnmarshallerFn[byte] = UnmarshalByte
-				s  mus.SizerFn[byte]        = SizeByte
-				sk mus.SkipperFn            = SkipByte
-			)
-			testdata.Test[byte](com_testdata.ByteTestCases, m, u, s, t)
-			testdata.TestSkip[byte](com_testdata.ByteTestCases, m, sk, s, t)
-		})
+	t.Run("byte", func(t *testing.T) {
+
+		t.Run("Byte serializer should work correctly",
+			func(t *testing.T) {
+				ser := Byte
+				testdata.Test[byte](com_testdata.ByteTestCases, ser, t)
+				testdata.TestSkip[byte](com_testdata.ByteTestCases, ser, t)
+			})
+
+	})
 
 	t.Run("unsigned", func(t *testing.T) {
 
-		t.Run("All MarshalUint64, UnmarshalUint64, SizeUint64, SkipUint64 functions must work correctly",
-			func(t *testing.T) {
-				var (
-					m  mus.MarshallerFn[uint64]   = MarshalUint64
-					u  mus.UnmarshallerFn[uint64] = UnmarshalUint64
-					s  mus.SizerFn[uint64]        = SizeUint64
-					sk mus.SkipperFn              = SkipUint64
-				)
-				testdata.Test[uint64](com_testdata.Uint64TestCases, m, u, s, t)
-				testdata.TestSkip[uint64](com_testdata.Uint64TestCases, m, sk, s, t)
-			})
+		t.Run("Uint64 serializer should work correctly", func(t *testing.T) {
+			ser := Uint64
+			testdata.Test[uint64](com_testdata.Uint64TestCases, ser, t)
+			testdata.TestSkip[uint64](com_testdata.Uint64TestCases, ser, t)
+		})
 
-		t.Run("All MarshalUint32, UnmarshalUint32, SizeUint32, SkipUint32 functions must work correctly",
-			func(t *testing.T) {
-				var (
-					m  mus.MarshallerFn[uint32]   = MarshalUint32
-					u  mus.UnmarshallerFn[uint32] = UnmarshalUint32
-					s  mus.SizerFn[uint32]        = SizeUint32
-					sk mus.SkipperFn              = SkipUint32
-				)
-				testdata.Test[uint32](com_testdata.Uint32TestCases, m, u, s, t)
-				testdata.TestSkip[uint32](com_testdata.Uint32TestCases, m, sk, s, t)
-			})
+		t.Run("Uint32 serializer should work correctly", func(t *testing.T) {
+			ser := Uint32
+			testdata.Test[uint32](com_testdata.Uint32TestCases, ser, t)
+			testdata.TestSkip[uint32](com_testdata.Uint32TestCases, ser, t)
+		})
 
-		t.Run("All MarshalUint16, UnmarshalUint16, SizeUint16, SkipUint16 functions must work correctly",
-			func(t *testing.T) {
-				var (
-					m  mus.MarshallerFn[uint16]   = MarshalUint16
-					u  mus.UnmarshallerFn[uint16] = UnmarshalUint16
-					s  mus.SizerFn[uint16]        = SizeUint16
-					sk mus.SkipperFn              = SkipUint16
-				)
-				testdata.Test[uint16](com_testdata.Uint16TestCases, m, u, s, t)
-				testdata.TestSkip[uint16](com_testdata.Uint16TestCases, m, sk, s, t)
-			})
+		t.Run("Uint16 serializer should work correctly", func(t *testing.T) {
+			ser := Uint16
+			testdata.Test[uint16](com_testdata.Uint16TestCases, ser, t)
+			testdata.TestSkip[uint16](com_testdata.Uint16TestCases, ser, t)
+		})
 
-		t.Run("All MarshalUint8, UnmarshalUint8, SizeUint8, SkipUint8 functions must work correctly",
-			func(t *testing.T) {
-				var (
-					m  mus.MarshallerFn[uint8]   = MarshalUint8
-					u  mus.UnmarshallerFn[uint8] = UnmarshalUint8
-					s  mus.SizerFn[uint8]        = SizeUint8
-					sk mus.SkipperFn             = SkipUint8
-				)
-				testdata.Test[uint8](com_testdata.Uint8TestCases, m, u, s, t)
-				testdata.TestSkip[uint8](com_testdata.Uint8TestCases, m, sk, s, t)
-			})
+		t.Run("Uint8 serializer should work correctly", func(t *testing.T) {
+			ser := Uint8
+			testdata.Test[uint8](com_testdata.Uint8TestCases, ser, t)
+			testdata.TestSkip[uint8](com_testdata.Uint8TestCases, ser, t)
+		})
 
-		t.Run("All MarshalUint, UnmarshalUint, SizeUint, SkipUint functions must work correctly",
-			func(t *testing.T) {
-				var (
-					m  mus.MarshallerFn[uint]   = MarshalUint
-					u  mus.UnmarshallerFn[uint] = UnmarshalUint
-					s  mus.SizerFn[uint]        = SizeUint
-					sk mus.SkipperFn            = SkipUint
-				)
-				testdata.Test[uint](com_testdata.UintTestCases, m, u, s, t)
-				testdata.TestSkip[uint](com_testdata.UintTestCases, m, sk, s, t)
-			})
+		t.Run("Uint serializer should work correctly", func(t *testing.T) {
+			ser := Uint
+			testdata.Test[uint](com_testdata.UintTestCases, ser, t)
+			testdata.TestSkip[uint](com_testdata.UintTestCases, ser, t)
+		})
 
 	})
 
 	t.Run("signed", func(t *testing.T) {
 
-		t.Run("All MarshalInt64, UnmarshalInt64, SizeInt64, SkipInt64 functions must work correctly",
-			func(t *testing.T) {
-				var (
-					m  mus.MarshallerFn[int64]   = MarshalInt64
-					u  mus.UnmarshallerFn[int64] = UnmarshalInt64
-					s  mus.SizerFn[int64]        = SizeInt64
-					sk mus.SkipperFn             = SkipInt64
-				)
-				testdata.Test[int64](com_testdata.Int64TestCases, m, u, s, t)
-				testdata.TestSkip[int64](com_testdata.Int64TestCases, m, sk, s, t)
-			})
+		t.Run("Int64 serializer should work correctly", func(t *testing.T) {
+			ser := Int64
+			testdata.Test[int64](com_testdata.Int64TestCases, ser, t)
+			testdata.TestSkip[int64](com_testdata.Int64TestCases, ser, t)
+		})
 
-		t.Run("All MarshalInt32, UnmarshalInt32, SizeInt32, SkipInt32 functions must work correctly",
-			func(t *testing.T) {
-				var (
-					m  mus.MarshallerFn[int32]   = MarshalInt32
-					u  mus.UnmarshallerFn[int32] = UnmarshalInt32
-					s  mus.SizerFn[int32]        = SizeInt32
-					sk mus.SkipperFn             = SkipInt32
-				)
-				testdata.Test[int32](com_testdata.Int32TestCases, m, u, s, t)
-				testdata.TestSkip[int32](com_testdata.Int32TestCases, m, sk, s, t)
-			})
+		t.Run("Int32 serializer should work correctly", func(t *testing.T) {
+			ser := Int32
+			testdata.Test[int32](com_testdata.Int32TestCases, ser, t)
+			testdata.TestSkip[int32](com_testdata.Int32TestCases, ser, t)
+		})
 
-		t.Run("All MarshalInt16, UnmarshalInt16, SizeInt16, SkipInt16 functions must work correctly",
-			func(t *testing.T) {
-				var (
-					m  mus.MarshallerFn[int16]   = MarshalInt16
-					u  mus.UnmarshallerFn[int16] = UnmarshalInt16
-					s  mus.SizerFn[int16]        = SizeInt16
-					sk mus.SkipperFn             = SkipInt16
-				)
-				testdata.Test[int16](com_testdata.Int16TestCases, m, u, s, t)
-				testdata.TestSkip[int16](com_testdata.Int16TestCases, m, sk, s, t)
-			})
+		t.Run("Int16 serializer should work correctly", func(t *testing.T) {
+			ser := Int16
+			testdata.Test[int16](com_testdata.Int16TestCases, ser, t)
+			testdata.TestSkip[int16](com_testdata.Int16TestCases, ser, t)
+		})
 
-		t.Run("All MarshalInt8, UnmarshalInt8, SizeInt8, SkipInt8 functions must work correctly",
-			func(t *testing.T) {
-				var (
-					m  mus.MarshallerFn[int8]   = MarshalInt8
-					u  mus.UnmarshallerFn[int8] = UnmarshalInt8
-					s  mus.SizerFn[int8]        = SizeInt8
-					sk mus.SkipperFn            = SkipInt8
-				)
-				testdata.Test[int8](com_testdata.Int8TestCases, m, u, s, t)
-				testdata.TestSkip[int8](com_testdata.Int8TestCases, m, sk, s, t)
-			})
+		t.Run("Int8 serializer should work correctly", func(t *testing.T) {
+			ser := Int8
+			testdata.Test[int8](com_testdata.Int8TestCases, ser, t)
+			testdata.TestSkip[int8](com_testdata.Int8TestCases, ser, t)
+		})
 
-		t.Run("All MarshalInt, UnmarshalInt, SizeInt, SkipInt functions must work correctly",
-			func(t *testing.T) {
-				var (
-					m  mus.MarshallerFn[int]   = MarshalInt
-					u  mus.UnmarshallerFn[int] = UnmarshalInt
-					s  mus.SizerFn[int]        = SizeInt
-					sk mus.SkipperFn           = SkipInt
-				)
-				testdata.Test[int](com_testdata.IntTestCases, m, u, s, t)
-				testdata.TestSkip[int](com_testdata.IntTestCases, m, sk, s, t)
-			})
+		t.Run("Int serializer should work correctly", func(t *testing.T) {
+			ser := Int
+			testdata.Test[int](com_testdata.IntTestCases, ser, t)
+			testdata.TestSkip[int](com_testdata.IntTestCases, ser, t)
+		})
 
 	})
 
@@ -460,18 +401,11 @@ func TestUnsafe(t *testing.T) {
 
 		t.Run("float64", func(t *testing.T) {
 
-			t.Run("All MarshalFloat64, UnmarshalFloat64, SizeFloat64, SkipFloat64 functions must work correctly",
-				func(t *testing.T) {
-					var (
-						m  mus.MarshallerFn[float64]   = MarshalFloat64
-						u  mus.UnmarshallerFn[float64] = UnmarshalFloat64
-						s  mus.SizerFn[float64]        = SizeFloat64
-						sk mus.SkipperFn               = SkipFloat64
-					)
-					testdata.Test[float64](com_testdata.Float64TestCases, m, u, s, t)
-					testdata.TestSkip[float64](com_testdata.Float64TestCases, m, sk, s,
-						t)
-				})
+			t.Run("Float64 serializer should work correctly", func(t *testing.T) {
+				ser := Float64
+				testdata.Test[float64](com_testdata.Float64TestCases, ser, t)
+				testdata.TestSkip[float64](com_testdata.Float64TestCases, ser, t)
+			})
 
 			t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
 				func(t *testing.T) {
@@ -480,78 +414,63 @@ func TestUnsafe(t *testing.T) {
 						wantN             = 0
 						wantErr           = mus.ErrTooSmallByteSlice
 						bs                = []byte{}
-						v, n, err         = UnmarshalFloat64(bs)
+						v, n, err         = Float64.Unmarshal(bs)
 					)
-					com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err,
-						nil, t)
+					com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 				})
-
 		})
 
 		t.Run("float32", func(t *testing.T) {
 
-			t.Run("All MarshalFloat32, UnmarshalFloat32, SizeFloat32, SkipFloat32 functions must work correctly",
-				func(t *testing.T) {
-					var (
-						m  mus.MarshallerFn[float32]   = MarshalFloat32
-						u  mus.UnmarshallerFn[float32] = UnmarshalFloat32
-						s  mus.SizerFn[float32]        = SizeFloat32
-						sk mus.SkipperFn               = SkipFloat32
-					)
-					testdata.Test[float32](com_testdata.Float32TestCases, m, u, s, t)
-					testdata.TestSkip[float32](com_testdata.Float32TestCases, m, sk, s, t)
-				})
+			t.Run("Float32 serializer should work correctly", func(t *testing.T) {
+				ser := Float32
+				testdata.Test[float32](com_testdata.Float32TestCases, ser, t)
+				testdata.TestSkip[float32](com_testdata.Float32TestCases, ser, t)
+			})
 
-			t.Run("UnmarshalFloat32 should return ErrTooSmallByteSlice if there is no space in bs",
+			t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
 				func(t *testing.T) {
 					var (
 						wantV     float32 = 0.0
 						wantN             = 0
 						wantErr           = mus.ErrTooSmallByteSlice
 						bs                = []byte{}
-						v, n, err         = UnmarshalFloat32(bs)
+						v, n, err         = Float32.Unmarshal(bs)
 					)
 					com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 				})
-
 		})
 
 	})
 
 	t.Run("bool", func(t *testing.T) {
 
-		t.Run("All MarshalBool, UnmarshalBool, SizeBool, SkipBool functions must work correctly",
-			func(t *testing.T) {
-				var (
-					m  mus.MarshallerFn[bool]   = MarshalBool
-					u  mus.UnmarshallerFn[bool] = UnmarshalBool
-					s  mus.SizerFn[bool]        = SizeBool
-					sk mus.SkipperFn            = SkipBool
-				)
-				testdata.Test[bool](com_testdata.BoolTestCases, m, u, s, t)
-				testdata.TestSkip[bool](com_testdata.BoolTestCases, m, sk, s, t)
-			})
+		t.Run("Bool serializer should work correctly", func(t *testing.T) {
+			ser := Bool
+			testdata.Test[bool](com_testdata.BoolTestCases, ser, t)
+			testdata.TestSkip[bool](com_testdata.BoolTestCases, ser, t)
+		})
 
-		t.Run("UnmarshalBool should return ErrTooSmallByteSlice if there is no space in bs",
+		t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
 			func(t *testing.T) {
 				var (
 					wantV     bool = false
 					wantN          = 0
 					wantErr        = mus.ErrTooSmallByteSlice
 					bs             = []byte{}
-					v, n, err      = UnmarshalBool(bs)
+					v, n, err      = Bool.Unmarshal(bs)
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
-		t.Run("UnmarshalBool should return ErrWrongFormat if meets wrong format",
+		t.Run("Unmarshal should return ErrWrongFormat if meets wrong format",
 			func(t *testing.T) {
 				var (
 					wantV     bool = false
 					wantN          = 0
 					wantErr        = com.ErrWrongFormat
 					bs             = []byte{2}
-					v, n, err      = UnmarshalBool(bs)
+					v, n, err      = Bool.Unmarshal(bs)
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
@@ -560,61 +479,27 @@ func TestUnsafe(t *testing.T) {
 
 	t.Run("byte_slice", func(t *testing.T) {
 
-		t.Run("All MarshalByteSlice, UnmarshalByteSlice, SizeByteSlice, SkipByteSlice functions with default lenM, lenU, lenS and empty slice must work correctly",
+		t.Run("ByteSlice serializer should work correctly with empty slice",
 			func(t *testing.T) {
-				var (
-					sl = []byte{}
-					m  = NewByteSliceMarshallerFn(nil)
-					u  = NewByteSliceUnmarshallerFn(nil)
-					s  = NewByteSliceSizerFn(nil)
-					sk = NewByteSliceSkipperFn(nil)
-				)
-				testdata.Test[[]byte]([][]byte{sl}, m, u, s, t)
-				testdata.TestSkip[[]byte]([][]byte{sl}, m, sk, s, t)
+				ser := ByteSlice
+				testdata.Test[[]byte]([][]byte{{}}, ser, t)
+				testdata.TestSkip[[]byte]([][]byte{{}}, ser, t)
 			})
 
-		t.Run("All MarshalByteSlice, UnmarshalByteSlice, SizeByteSlice, SkipByteSlice functions with default lenM, lenU, lenS and not empty slice must work correctly",
+		t.Run("ByteSlice serializer should work correctly with non-empty slice",
 			func(t *testing.T) {
-				var (
-					sl = []byte{0, 1, 1, 255, 100, 0, 1, 10}
-					m  = NewByteSliceMarshallerFn(nil)
-					u  = NewByteSliceUnmarshallerFn(nil)
-					s  = NewByteSliceSizerFn(nil)
-					sk = NewByteSliceSkipperFn(nil)
-				)
-				testdata.Test[[]byte]([][]byte{sl}, m, u, s, t)
-				testdata.TestSkip[[]byte]([][]byte{sl}, m, sk, s, t)
+				ser := ByteSlice
+				testdata.Test[[]byte]([][]byte{{0, 1, 1, 255, 100, 0, 1, 10}}, ser, t)
+				testdata.TestSkip[[]byte]([][]byte{{0, 1, 1, 255, 100, 0, 1, 10}}, ser, t)
 			})
 
-		t.Run("All MarshalVarintByteSlice, UnmarshalVarintByteSlice, SizeVarintByteSlice, SkipVarintByteSlice functions must work correctly with empty slice",
+		t.Run("Marshal should return ErrTooSmallByteSlice if there is no space in bs",
 			func(t *testing.T) {
 				var (
-					sl = []byte{}
-					m  = NewByteSliceMarshallerFn(mus.MarshallerFn[int](varint.MarshalInt))
-					u  = NewByteSliceUnmarshallerFn(mus.UnmarshallerFn[int](varint.UnmarshalInt))
-					s  = NewByteSliceSizerFn(mus.SizerFn[int](varint.SizeInt))
-					sk = NewByteSliceSkipperFn(mus.UnmarshallerFn[int](varint.UnmarshalInt))
+					s       = []byte{1, 2, 3, 4}
+					bs      = make([]byte, 2)
+					wantErr = mus.ErrTooSmallByteSlice
 				)
-				testdata.Test[[]byte]([][]byte{sl}, m, u, s, t)
-				testdata.TestSkip[[]byte]([][]byte{sl}, m, sk, s, t)
-			})
-
-		t.Run("All MarshalVarintByteSlice, UnmarshalVarintByteSlice, SizeVarintByteSlice, SkipVarintByteSlice functions must work correctly with not empty slice",
-			func(t *testing.T) {
-				var (
-					sl = []byte{0, 1, 1, 255, 100, 0, 1, 10}
-					m  = NewByteSliceMarshallerFn(mus.MarshallerFn[int](varint.MarshalInt))
-					u  = NewByteSliceUnmarshallerFn(mus.UnmarshallerFn[int](varint.UnmarshalInt))
-					s  = NewByteSliceSizerFn(mus.SizerFn[int](varint.SizeInt))
-					sk = NewByteSliceSkipperFn(mus.UnmarshallerFn[int](varint.UnmarshalInt))
-				)
-				testdata.Test[[]byte]([][]byte{sl}, m, u, s, t)
-				testdata.TestSkip[[]byte]([][]byte{sl}, m, sk, s, t)
-			})
-
-		t.Run("MarshalByteSlice should panic with ErrTooSmallByteSlice if there is no space in bs",
-			func(t *testing.T) {
-				wantErr := mus.ErrTooSmallByteSlice
 				defer func() {
 					if r := recover(); r != nil {
 						err := r.(error)
@@ -623,43 +508,124 @@ func TestUnsafe(t *testing.T) {
 						}
 					}
 				}()
-				MarshalByteSlice([]byte{1, 2, 3, 4}, nil, make([]byte, 2))
+				ByteSlice.Marshal(s, bs)
 			})
 
-		t.Run("UnmarshalByteSliceVarint should return ErrTooSmallByteSlice if there is no space in bs",
+		t.Run("If lenSer fails with an error, Unmarshal should return it",
 			func(t *testing.T) {
 				var (
-					wantV     []byte = nil
-					wantN            = 0
-					wantErr          = mus.ErrTooSmallByteSlice
-					v, n, err        = UnmarshalByteSlice(nil, []byte{})
+					wantV   []byte = nil
+					wantN          = 0
+					wantErr        = errors.New("lenSer error")
+					lenSer         = mock.NewSerializer[int]().RegisterUnmarshal(
+						func(bs []byte) (t int, n int, err error) {
+							return 0, 0, wantErr
+						},
+					)
+					mocks     = []*mok.Mock{lenSer.Mock}
+					v, n, err = NewByteSliceSerWith(lenSer).Unmarshal(nil)
 				)
-				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err,
+					mocks, t)
 			})
 
-		t.Run("UnmarshalByteSliceVarint should return ErrTooSmallByteSlice if bs is too small",
+		t.Run("Unmarshal should return ErrTooSmallByteSlice if bs is too small for slice content",
 			func(t *testing.T) {
 				var (
 					wantV     []byte = nil
 					wantN            = 1
 					wantErr          = mus.ErrTooSmallByteSlice
-					v, n, err        = UnmarshalByteSlice(nil, []byte{2, 1})
+					v, n, err        = ByteSlice.Unmarshal([]byte{2, 1}) // Length 2 but only 1 byte available
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
-		t.Run("UnmarshalByteSliceVarint should return ErrNegativeLength if meets a negative length",
+		t.Run("Unmarshal should return ErrNegativeLength if meets a negative length",
 			func(t *testing.T) {
 				var (
 					wantV     []byte = nil
-					wantN, bs        = MakeBsWithNegativeLength()
+					wantN, bs        = NegativeLengthBs()
 					wantErr          = com.ErrNegativeLength
-					v, n, err        = UnmarshalByteSlice(nil, bs)
+					v, n, err        = ByteSlice.Unmarshal(bs)
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
-		t.Run("If lenVl validator returns an error, UnmarshalValidByteSlice should return it",
+		t.Run("Skip should return ErrTooSmallByteSlice if there is no space in bs",
+			func(t *testing.T) {
+				var (
+					wantN   = 0
+					wantErr = mus.ErrTooSmallByteSlice
+					n, err  = ByteSlice.Skip([]byte{})
+				)
+				com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
+			})
+
+		t.Run("Skip should return ErrNegativeLength if meets a negative length",
+			func(t *testing.T) {
+				var (
+					wantN, bs = NegativeLengthBs()
+					wantErr   = com.ErrNegativeLength
+					n, err    = ByteSlice.Skip(bs)
+				)
+				com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
+			})
+
+		t.Run("Valid ByteSlice serializer should work correctly with empty slice",
+			func(t *testing.T) {
+				ser := NewValidByteSliceSer(nil)
+				testdata.Test[[]byte]([][]byte{{}}, ser, t)
+				testdata.TestSkip[[]byte]([][]byte{{}}, ser, t)
+			})
+
+		t.Run("Valid ByteSlice serializer should work correctly with non-empty slice",
+			func(t *testing.T) {
+				ser := NewValidByteSliceSer(nil)
+				testdata.Test[[]byte]([][]byte{{0, 1, 1, 255, 100, 0, 1, 10}}, ser, t)
+				testdata.TestSkip[[]byte]([][]byte{{0, 1, 1, 255, 100, 0, 1, 10}}, ser, t)
+			})
+
+		t.Run("If lenSer fails with an error, valid Unmarshal should return it",
+			func(t *testing.T) {
+				var (
+					wantV   []byte = nil
+					wantN          = 0
+					wantErr        = errors.New("lenSer error")
+					lenSer         = mock.NewSerializer[int]().RegisterUnmarshal(
+						func(bs []byte) (t int, n int, err error) {
+							return 0, 0, wantErr
+						},
+					)
+					mocks     = []*mok.Mock{lenSer.Mock}
+					v, n, err = NewValidByteSliceSerWith(lenSer, nil).Unmarshal(nil)
+				)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err,
+					mocks, t)
+			})
+
+		t.Run("Valid Unmarshal should return ErrTooSmallByteSlice if bs is too small for slice content",
+			func(t *testing.T) {
+				var (
+					wantV     []byte = nil
+					wantN            = 1
+					wantErr          = mus.ErrTooSmallByteSlice
+					v, n, err        = NewValidByteSliceSer(nil).Unmarshal([]byte{2, 1}) // Length 2 but only 1 byte available
+				)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			})
+
+		t.Run("Valid Unmarshal should return ErrNegativeLength if meets a negative length",
+			func(t *testing.T) {
+				var (
+					wantV     []byte = nil
+					wantN, bs        = NegativeLengthBs()
+					wantErr          = com.ErrNegativeLength
+					v, n, err        = NewValidByteSliceSer(nil).Unmarshal(bs)
+				)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			})
+
+		t.Run("If lenVl fails with an error, valid Unmarshal should return it",
 			func(t *testing.T) {
 				var (
 					wantV   []byte = nil
@@ -671,57 +637,18 @@ func TestUnsafe(t *testing.T) {
 							return wantErr
 						},
 					)
-					v, n, err = UnmarshalValidByteSlice(nil, lenVl, false, bs)
+					v, n, err = NewValidByteSliceSer(lenVl).Unmarshal(bs)
 				)
-				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil,
-					t)
-			})
-
-		t.Run("If skip == true and lenVl validator returns an error, UnmarshalValidByteSlice should return it and skip the rest of the slice",
-			func(t *testing.T) {
-				var (
-					wantV   []byte = nil
-					wantN          = 3
-					wantErr        = errors.New("too large slice")
-					bs             = []byte{2, 4, 1}
-					lenVl          = com_mock.NewValidator[int]().RegisterValidate(
-						func(v int) (err error) {
-							return wantErr
-						},
-					)
-					v, n, err = UnmarshalValidByteSlice(nil, lenVl, true, bs)
-				)
-				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil,
-					t)
-			})
-
-		t.Run("SkipByteSlice should return ErrTooSmallByteSlice if there is no space in bs",
-			func(t *testing.T) {
-				var (
-					wantN   = 0
-					wantErr = mus.ErrTooSmallByteSlice
-					n, err  = SkipByteSlice(nil, []byte{})
-				)
-				com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
-			})
-
-		t.Run("SkipByteSlice should return ErrNegativeLength if meets a negative length",
-			func(t *testing.T) {
-				var (
-					wantN, bs = MakeBsWithNegativeLength()
-					wantErr   = com.ErrNegativeLength
-					n, err    = SkipByteSlice(nil, bs)
-				)
-				com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
 	})
 
 }
 
-func MakeBsWithNegativeLength() (n int, bs []byte) {
-	n = varint.SizePositiveInt(-1)
+func NegativeLengthBs() (n int, bs []byte) {
+	n = varint.PositiveInt.Size(-1)
 	bs = make([]byte, n)
-	varint.MarshalPositiveInt(-1, bs)
+	varint.PositiveInt.Marshal(-1, bs)
 	return
 }

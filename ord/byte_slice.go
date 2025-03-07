@@ -6,96 +6,46 @@ import (
 	"github.com/mus-format/mus-go/varint"
 )
 
-// NewByteSliceMarshallerFn creates a []byte Marshaller.
-func NewByteSliceMarshallerFn(lenM mus.Marshaller[int]) mus.MarshallerFn[[]byte] {
-	return func(v []byte, bs []byte) (n int) {
-		return MarshalByteSlice(v, lenM, bs)
-	}
+// ByteSlice is the byte slice serializer.
+var ByteSlice = NewByteSliceSerWith(varint.PositiveInt)
+
+// NewByteSliceSerWith returns a new byte slice serializer with the given length
+// serializer.
+func NewByteSliceSerWith(lenSer mus.Serializer[int]) byteSliceSer {
+	return byteSliceSer{lenSer}
 }
 
-// NewByteSliceUnmarshallerFn creates a []byte Unmarshaller.
-func NewByteSliceUnmarshallerFn(lenU mus.Unmarshaller[int]) mus.UnmarshallerFn[[]byte] {
-	return func(bs []byte) (v []byte, n int, err error) {
-		return UnmarshalValidByteSlice(lenU, nil, false, bs)
-	}
+// NewValidByteSliceSer returns a new byte slice serializer with the given length
+// validator.
+func NewValidByteSliceSer(lenVl com.Validator[int]) validByteSliceSer {
+	return NewValidByteSliceSerWith(varint.PositiveInt, lenVl)
 }
 
-// NewByteValidSliceUnmarshallerFn creates a []byte Unmarshaller with validation.
-func NewValidByteSliceUnmarshallerFn(lenU mus.Unmarshaller[int],
-	lenVl com.Validator[int],
-	skip bool,
-) mus.UnmarshallerFn[[]byte] {
-	return func(bs []byte) (v []byte, n int, err error) {
-		return UnmarshalValidByteSlice(lenU, lenVl, skip, bs)
-	}
+// NewValidByteSliceSerWith returns a new byte slice serializer with the given
+// length serializer and length validator.
+func NewValidByteSliceSerWith(lenSer mus.Serializer[int],
+	lenVl com.Validator[int]) validByteSliceSer {
+	return validByteSliceSer{NewByteSliceSerWith(lenSer), lenVl}
 }
 
-// NewByteSliceSizerFn creates a []byte Sizer.
-func NewByteSliceSizerFn(lenS mus.Sizer[int]) mus.SizerFn[[]byte] {
-	return func(v []byte) (size int) {
-		return SizeByteSlice(v, lenS)
-	}
+type byteSliceSer struct {
+	lenSer mus.Serializer[int]
 }
 
-// NewByteSliceSkipperFn creates a []byte Skipper.
-func NewByteSliceSkipperFn(lenU mus.Unmarshaller[int]) mus.SkipperFn {
-	return func(bs []byte) (n int, err error) {
-		return SkipByteSlice(lenU, bs)
-	}
-}
-
-// MarshalByteSlice fills bs with an encoded slice value.
-//
-// The lenM argument specifies the Marshaller for the length of the slice, if
-// nil, varint.MarshalPositiveInt() is used.
+// Marshal fills bs with an encoded slice value.
 //
 // Returns the number of used bytes. It will panic if bs is too small.
-func MarshalByteSlice(v []byte, lenM mus.Marshaller[int], bs []byte) (n int) {
-	length := len(v)
-	if lenM == nil {
-		n = varint.MarshalPositiveInt(length, bs)
-	} else {
-		n = lenM.Marshal(length, bs)
-	}
-	if len(bs) < n+length {
-		panic(mus.ErrTooSmallByteSlice)
-	}
-	return n + copy(bs[n:], v)
+func (s byteSliceSer) Marshal(v []byte, bs []byte) (n int) {
+	return MarshalByteSlice(v, s.lenSer, bs)
 }
 
-// UnmarshalByteSlice parses an encoded slice value from bs.
-//
-// The lenU argument specifies the Unmarshaller for the length of the slice, if
-// nil, varint.UnmarshalPositiveInt() is used.
+// Unmarshal parses an encoded slice value from bs.
 //
 // In addition to the slice value and the number of used bytes, it may also
-// return mus.ErrTooSmallByteSlice, com.ErrOverflow or com.ErrNegativeLength.
-func UnmarshalByteSlice(lenU mus.Unmarshaller[int], bs []byte) (v []byte,
-	n int, err error) {
-	return UnmarshalValidByteSlice(lenU, nil, false, bs)
-}
-
-// UnmarshalValidByteSlice parses an encoded valid slice value from bs.
-//
-// The lenU argument specifies the Unmarshaller for the length of the slice, if
-// nil, varint.UnmarshalPositiveInt() is used.
-// The lenVl argument specifies the slice length Validator. If it returns
-// an error and skip == true, UnmarshalValidByteSlice skips the remaining bytes
-// of the slice.
-//
-// In addition to the slice value and the number of used bytes, it may also
-// return mus.ErrTooSmallByteSlice, com.ErrOverflow or com.ErrNegativeLength.
-func UnmarshalValidByteSlice(lenU mus.Unmarshaller[int],
-	lenVl com.Validator[int],
-	skip bool,
-	bs []byte,
-) (v []byte, n int, err error) {
-	var length int
-	if lenU == nil {
-		length, n, err = varint.UnmarshalPositiveInt(bs)
-	} else {
-		length, n, err = lenU.Unmarshal(bs)
-	}
+// return mus.ErrTooSmallByteSlice, com.ErrNegativeLength, or a length
+// unmarshalling error.
+func (s byteSliceSer) Unmarshal(bs []byte) (v []byte, n int, err error) {
+	length, n, err := s.lenSer.Unmarshal(bs)
 	if err != nil {
 		return
 	}
@@ -107,11 +57,84 @@ func UnmarshalValidByteSlice(lenU mus.Unmarshaller[int],
 		err = mus.ErrTooSmallByteSlice
 		return
 	}
-	if lenVl != nil {
-		if err = lenVl.Validate(length); err != nil {
-			if skip {
-				n += length
-			}
+	v = make([]byte, length)
+	n += copy(v, bs[n:])
+	return
+}
+
+// Size returns the size of an encoded slice value.
+func (s byteSliceSer) Size(v []byte) (size int) {
+	return SizeByteSlice(v, s.lenSer)
+}
+
+// Skip skips an encoded slice value.
+//
+// In addition to the number of skipped bytes, it may also return
+// mus.ErrTooSmallByteSlice, com.ErrNegativeLength, or a length unmarshaling
+// error.
+func (s byteSliceSer) Skip(bs []byte) (n int, err error) {
+	return SkipByteSlice(s.lenSer, bs)
+}
+
+func MarshalByteSlice(v []byte, lenSer mus.Serializer[int], bs []byte) (n int) {
+	length := len(v)
+	n = lenSer.Marshal(length, bs)
+	if len(bs) < n+length {
+		panic(mus.ErrTooSmallByteSlice)
+	}
+	return n + copy(bs[n:], v)
+}
+
+func SizeByteSlice(v []byte, lenSer mus.Serializer[int]) (size int) {
+	length := len(v)
+	return lenSer.Size(length) + length
+}
+
+func SkipByteSlice(lenSer mus.Serializer[int], bs []byte) (n int, err error) {
+	length, n, err := lenSer.Unmarshal(bs)
+	if err != nil {
+		return
+	}
+	if length < 0 {
+		err = com.ErrNegativeLength
+		return
+	}
+	l := n + length
+	if len(bs) < l {
+		err = mus.ErrTooSmallByteSlice
+		return
+	}
+	n = l
+	return
+}
+
+// -----------------------------------------------------------------------------
+
+type validByteSliceSer struct {
+	byteSliceSer
+	lenVl com.Validator[int]
+}
+
+// Unmarshal parses an encoded slice value from bs.
+//
+// In addition to the slice value and the number of used bytes, it may also
+// return mus.ErrTooSmallByteSlice, com.ErrNegativeLength, a length
+// unmarshalling error, or a length validation error.
+func (s validByteSliceSer) Unmarshal(bs []byte) (v []byte, n int, err error) {
+	length, n, err := s.lenSer.Unmarshal(bs)
+	if err != nil {
+		return
+	}
+	if length < 0 {
+		err = com.ErrNegativeLength
+		return
+	}
+	if len(bs) < n+length {
+		err = mus.ErrTooSmallByteSlice
+		return
+	}
+	if s.lenVl != nil {
+		if err = s.lenVl.Validate(length); err != nil {
 			return
 		}
 	}
@@ -120,44 +143,5 @@ func UnmarshalValidByteSlice(lenU mus.Unmarshaller[int],
 		return
 	}
 	n += copy(v, bs[n:])
-	return
-}
-
-// SizeByteSlice returns the size of an encoded slice value.
-//
-// The lenS argument specifies the Sizer for the length of the slice, if nil,
-// varint.SizePositiveInt() is used.
-func SizeByteSlice(v []byte, lenS mus.Sizer[int]) (size int) {
-	length := len(v)
-	if lenS == nil {
-		size = varint.SizePositiveInt(length)
-	} else {
-		size = lenS.Size(length)
-	}
-	return size + length
-}
-
-// SkipByteSlice skips an encoded slice value.
-//
-// The lenU argument specifies the Unmarshaller for the length of the slice, if
-// nil, varint.UnmarshalPositiveInt() is used.
-//
-// In addition to the number of skipped bytes, it may also return
-// mus.ErrTooSmallByteSlice, com.ErrOverflow or com.ErrNegativeLength.
-func SkipByteSlice(lenU mus.Unmarshaller[int], bs []byte) (n int, err error) {
-	var length int
-	if lenU == nil {
-		length, n, err = varint.UnmarshalPositiveInt(bs)
-	} else {
-		length, n, err = lenU.Unmarshal(bs)
-	}
-	if err != nil {
-		return
-	}
-	if length < 0 {
-		err = com.ErrNegativeLength
-		return
-	}
-	n += length
 	return
 }

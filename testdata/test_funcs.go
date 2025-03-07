@@ -7,22 +7,19 @@ import (
 	"github.com/mus-format/mus-go"
 )
 
-func Test[T any](cases []T, m mus.Marshaller[T], u mus.Unmarshaller[T],
-	s mus.Sizer[T],
-	t *testing.T,
-) {
+func Test[T any](cases []T, ser mus.Serializer[T], t *testing.T) {
 	for i := 0; i < len(cases); i++ {
 		var (
-			size = s.Size(cases[i])
+			size = ser.Size(cases[i])
 			bs   = make([]byte, size)
 			n    int
 			v    T
 		)
-		n = m.Marshal(cases[i], bs)
+		n = ser.Marshal(cases[i], bs)
 		if n != size {
 			t.Errorf("case '%v', unexpected n, want '%v' actual '%v'", i, size, n)
 		}
-		v, n, err := u.Unmarshal(bs)
+		v, n, err := ser.Unmarshal(bs)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -35,14 +32,14 @@ func Test[T any](cases []T, m mus.Marshaller[T], u mus.Unmarshaller[T],
 	}
 }
 
-func TestSkip[T any](cases []T, m mus.Marshaller[T], sk mus.Skipper,
-	s mus.Sizer[T],
-	t *testing.T,
-) {
+func TestSkip[T any](cases []T, ser mus.Serializer[T], t *testing.T) {
 	for i := 0; i < len(cases); i++ {
-		bs := make([]byte, s.Size(cases[i]))
-		m.Marshal(cases[i], bs)
-		n, err := sk.Skip(bs)
+		var (
+			size = ser.Size(cases[i])
+			bs   = make([]byte, size)
+		)
+		ser.Marshal(cases[i], bs)
+		n, err := ser.Skip(bs)
 		if err != nil {
 			t.Fatal(err)
 		}

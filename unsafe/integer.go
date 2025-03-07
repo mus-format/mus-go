@@ -19,7 +19,6 @@ func marshalInteger32[T com.Integer32](t T, bs []byte) (n int) {
 
 func marshalInteger16[T com.Integer16](t T, bs []byte) (n int) {
 	*(*T)(unsafe_mod.Pointer(&bs[0])) = t
-
 	return com.Num16RawSize
 }
 

@@ -8,67 +8,51 @@ import (
 	"github.com/mus-format/mus-go/varint"
 )
 
-// NewPtrMarshallerFn creates a pointer Marshaller.
-func NewPtrMarshallerFn[T any](m mus.Marshaller[T],
-	ptrMap *com.PtrMap) mus.MarshallerFn[*T] {
-	return func(v *T, bs []byte) (n int) {
-		return MarshalPtr(v, m, ptrMap, bs)
-	}
+// Wrap function wraps the serializer that uses one or more pm pointer
+// serializers (all created with the same pointer and reverse pointer maps), so
+// it can be used like a regular serializer.
+func Wrap[T any](ptrMap *com.PtrMap, revPtrMap *com.ReversePtrMap,
+	ser mus.Serializer[T]) wrapper[T] {
+	return wrapper[T]{ptrMap, revPtrMap, ser}
 }
 
-// NewPtrUnmarshallerFn creates a pointer Unmarshaller.
-func NewPtrUnmarshallerFn[T any](u mus.Unmarshaller[T],
-	ptrMap com.ReversePtrMap) mus.UnmarshallerFn[*T] {
-	return func(bs []byte) (v *T, n int, err error) {
-		return UnmarshalPtr(u, ptrMap, bs)
-	}
+// NewPtrSer returns a new pointer serializer with the given pointer map,
+// reverse pointer map and base type serializer.
+func NewPtrSer[T any](ptrMap *com.PtrMap, revPtrMap *com.ReversePtrMap,
+	baseSer mus.Serializer[T]) ptrSer[T] {
+	return ptrSer[T]{ptrMap, revPtrMap, baseSer}
 }
 
-// NewPtrSizerFn creates a pointer Sizer.
-func NewPtrSizerFn[T any](s mus.Sizer[T], ptrMap *com.PtrMap) mus.SizerFn[*T] {
-	return func(v *T) (size int) {
-		return SizePtr(v, s, ptrMap)
-	}
+type ptrSer[T any] struct {
+	ptrMap    *com.PtrMap
+	revPtrMap *com.ReversePtrMap
+	baseSer   mus.Serializer[T]
 }
 
-// NewPtrSkipperFn creates a pointer Skipper.
-func NewPtrSkipperFn(sk mus.Skipper, ptrMap com.ReversePtrMap) mus.SkipperFn {
-	return func(bs []byte) (n int, err error) {
-		return SkipPtr(sk, ptrMap, bs)
-	}
-}
-
-// MarshalPtr fills bs with an encoded pointer.
-//
-// The m argument specifies the Marshaller for the pointer base type.
+// Marshal fills bs with an encoded pointer.
 //
 // Returns the number of used bytes. It will panic if receives too small bs.
-func MarshalPtr[T any](v *T, m mus.Marshaller[T], mp *com.PtrMap,
-	bs []byte,
-) (n int) {
+func (s ptrSer[T]) Marshal(v *T, bs []byte) (n int) {
 	if v == nil {
 		bs[0] = byte(com.Nil)
 		return 1
 	}
 	bs[0] = byte(com.Mapping)
 	n = 1
-	id, newOne := maptr(unsafe.Pointer(v), mp)
-	n += varint.MarshalInt(id, bs[n:])
+	id, newOne := maptr(unsafe.Pointer(v), s.ptrMap)
+	n += varint.PositiveInt.Marshal(id, bs[n:])
 	if newOne {
-		n += m.Marshal(*v, bs[n:])
+		n += s.baseSer.Marshal(*v, bs[n:])
 	}
 	return
 }
 
-// UnmarshalPtr parses an encoded pointer from bs.
-//
-// The u argument specifies the Unmarshaller for the base pointer type.
+// Unmarshal parses an encoded pointer from bs.
 //
 // In addition to the pointer and the number of used bytes, it can
-// return mus.ErrTooSmallByteSlice, com.ErrWrongFormat or Unarshaller error.
-func UnmarshalPtr[T any](u mus.Unmarshaller[T], mp com.ReversePtrMap,
-	bs []byte,
-) (v *T, n int, err error) {
+// return mus.ErrTooSmallByteSlice, com.ErrWrongFormat, or a base type
+// unmarshalling error.
+func (s ptrSer[T]) Unmarshal(bs []byte) (v *T, n int, err error) {
 	if len(bs) < 1 {
 		err = mus.ErrTooSmallByteSlice
 		return
@@ -83,14 +67,14 @@ func UnmarshalPtr[T any](u mus.Unmarshaller[T], mp com.ReversePtrMap,
 			id int
 		)
 		n = 1
-		id, n1, err = varint.UnmarshalInt(bs[n:])
+		id, n1, err = varint.PositiveInt.Unmarshal(bs[n:])
 		n += n1
 		if err != nil {
 			return
 		}
-		ptr, _ := mp.Get(id)
+		ptr, _ := s.revPtrMap.Get(id)
 		if ptr == nil {
-			v, n1, err = unmarshalData[T](id, u, mp, bs[n:])
+			v, n1, err = unmarshalData[T](id, s.baseSer, s.revPtrMap, bs[n:])
 			n += n1
 		} else {
 			v = (*T)(ptr)
@@ -102,17 +86,13 @@ func UnmarshalPtr[T any](u mus.Unmarshaller[T], mp com.ReversePtrMap,
 }
 
 // SizePtr returns the size of an encoded pointer.
-//
-// The s argument specifies the Sizer for the pointer base type.
-func SizePtr[T any](v *T, s mus.Sizer[T], mp *com.PtrMap) (size int) {
+func (s ptrSer[T]) Size(v *T) (size int) {
 	size = 1
 	if v != nil {
-		id, newOne := maptr(unsafe.Pointer(v), mp)
-		size += varint.SizeInt(id)
+		id, newOne := maptr(unsafe.Pointer(v), s.ptrMap)
+		size += varint.PositiveInt.Size(id)
 		if newOne {
-			return size + s.Size(*v)
-		} else {
-			return
+			return size + s.baseSer.Size(*v)
 		}
 	}
 	return
@@ -120,11 +100,9 @@ func SizePtr[T any](v *T, s mus.Sizer[T], mp *com.PtrMap) (size int) {
 
 // SkipPtr skips an encoded pointer.
 //
-// The sk argument specifies the Skipper for the pointer base type.
-//
 // In addition to the number of skipped bytes, it can return
-// mus.ErrTooSmallByteSlice, com.ErrWrongFormat or Skipper error.
-func SkipPtr(sk mus.Skipper, mp com.ReversePtrMap, bs []byte) (n int, err error) {
+// mus.ErrTooSmallByteSlice, com.ErrWrongFormat, or a base type skipping error.
+func (s ptrSer[T]) Skip(bs []byte) (n int, err error) {
 	if len(bs) < 1 {
 		err = mus.ErrTooSmallByteSlice
 		return
@@ -138,19 +116,19 @@ func SkipPtr(sk mus.Skipper, mp com.ReversePtrMap, bs []byte) (n int, err error)
 			id int
 			n1 int
 		)
-		id, n1, err = varint.UnmarshalInt(bs[n:])
+		id, n1, err = varint.PositiveInt.Unmarshal(bs[n:])
 		n += n1
 		if err != nil {
 			return
 		}
-		_, pst := mp.Get(id)
+		_, pst := s.revPtrMap.Get(id)
 		if !pst {
-			n1, err = sk.Skip(bs[n:])
+			n1, err = s.baseSer.Skip(bs[n:])
 			n += n1
 			if err != nil {
 				return
 			}
-			mp.Put(id, nil)
+			s.revPtrMap.Put(id, nil)
 		}
 	default:
 		err = com.ErrWrongFormat
@@ -158,16 +136,16 @@ func SkipPtr(sk mus.Skipper, mp com.ReversePtrMap, bs []byte) (n int, err error)
 	return
 }
 
-func unmarshalData[T any](id int, u mus.Unmarshaller[T],
-	mp com.ReversePtrMap,
+func unmarshalData[T any](id int, ser mus.Serializer[T],
+	revPtrMap *com.ReversePtrMap,
 	bs []byte,
 ) (v *T, n int, err error) {
 	var (
 		k  T
 		n1 int
 	)
-	mp.Put(id, unsafe.Pointer(&k))
-	k, n1, err = u.Unmarshal(bs)
+	revPtrMap.Put(id, unsafe.Pointer(&k))
+	k, n1, err = ser.Unmarshal(bs)
 	n += n1
 	if err != nil {
 		return
@@ -176,10 +154,10 @@ func unmarshalData[T any](id int, u mus.Unmarshaller[T],
 	return
 }
 
-func maptr(ptr unsafe.Pointer, mp *com.PtrMap) (id int, newOne bool) {
-	id, pst := mp.Get(ptr)
+func maptr(ptr unsafe.Pointer, ptrMap *com.PtrMap) (id int, newOne bool) {
+	id, pst := ptrMap.Get(ptr)
 	if !pst {
-		id = mp.Put(ptr)
+		id = ptrMap.Put(ptr)
 		newOne = true
 	}
 	return

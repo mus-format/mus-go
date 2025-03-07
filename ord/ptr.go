@@ -5,57 +5,34 @@ import (
 	"github.com/mus-format/mus-go"
 )
 
-// NewPtrMarshallerFn creates a pointer Marshaller.
-func NewPtrMarshallerFn[T any](m mus.Marshaller[T]) mus.MarshallerFn[*T] {
-	return func(v *T, bs []byte) (n int) {
-		return MarshalPtr(v, m, bs)
-	}
+// NewPtrSer returns a new pointer serializer with the given base type serializer.
+func NewPtrSer[T any](baseSer mus.Serializer[T]) ptrSer[T] {
+	return ptrSer[T]{baseSer}
 }
 
-// NewPtrUnmarshallerFn creates a pointer Unmarshaller.
-func NewPtrUnmarshallerFn[T any](u mus.Unmarshaller[T]) mus.UnmarshallerFn[*T] {
-	return func(bs []byte) (v *T, n int, err error) {
-		return UnmarshalPtr(u, bs)
-	}
+type ptrSer[T any] struct {
+	baseSer mus.Serializer[T]
 }
 
-// NewPtrSizerFn creates a pointer Sizer.
-func NewPtrSizerFn[T any](s mus.Sizer[T]) mus.SizerFn[*T] {
-	return func(v *T) (size int) {
-		return SizePtr(v, s)
-	}
-}
-
-// NewPtrSkipperFn creates a pointer Skipper.
-func NewPtrSkipperFn(sk mus.Skipper) mus.SkipperFn {
-	return func(bs []byte) (n int, err error) {
-		return SkipPtr(sk, bs)
-	}
-}
-
-// MarshalPtr fills bs with the encoded pointer value.
-//
-// The m argument specifies the Marshaller for the pointer base type.
+// Marshal fills bs with an encoded pointer value.
 //
 // Returns the number of used bytes. It will panic if bs is too small.
-func MarshalPtr[T any](v *T, m mus.Marshaller[T], bs []byte) (n int) {
+func (s ptrSer[T]) Marshal(v *T, bs []byte) (n int) {
 	if v == nil {
 		bs[0] = byte(com.Nil)
 		n = 1
 		return
 	}
 	bs[0] = byte(com.NotNil)
-	return 1 + m.Marshal(*v, bs[1:])
+	return 1 + s.baseSer.Marshal(*v, bs[1:])
 }
 
-// UnmarshalPtr parses an encoded pointer value from bs.
-//
-// The u argument specifies the Unmarshaller for the base pointer type.
+// Unmarshal parses an encoded pointer value from bs.
 //
 // In addition to the pointer value and the number of used bytes, it can
-// return mus.ErrTooSmallByteSlice, com.ErrWrongFormat or Unarshaller error.
-func UnmarshalPtr[T any](u mus.Unmarshaller[T], bs []byte) (v *T, n int,
-	err error) {
+// return mus.ErrTooSmallByteSlice, com.ErrWrongFormat or a base type
+// unmarshalling error.
+func (s ptrSer[T]) Unmarshal(bs []byte) (v *T, n int, err error) {
 	if len(bs) < 1 {
 		err = mus.ErrTooSmallByteSlice
 		return
@@ -68,7 +45,7 @@ func UnmarshalPtr[T any](u mus.Unmarshaller[T], bs []byte) (v *T, n int,
 		err = com.ErrWrongFormat
 		return
 	}
-	k, n, err := u.Unmarshal(bs[1:])
+	k, n, err := s.baseSer.Unmarshal(bs[1:])
 	if err != nil {
 		n = 1 + n
 		return
@@ -76,23 +53,19 @@ func UnmarshalPtr[T any](u mus.Unmarshaller[T], bs []byte) (v *T, n int,
 	return &k, 1 + n, err
 }
 
-// SizePtr returns the size of an encoded pointer value.
-//
-// The s argument specifies the Sizer for the pointer base type.
-func SizePtr[T any](v *T, s mus.Sizer[T]) (size int) {
+// Size returns the size of an encoded pointer value.
+func (s ptrSer[T]) Size(v *T) (size int) {
 	if v != nil {
-		return 1 + s.Size(*v)
+		return 1 + s.baseSer.Size(*v)
 	}
 	return 1
 }
 
-// SkipPtr skips an encoded pointer value.
-//
-// The sk argument specifies the Skipper for the pointer base type.
+// Skip skips an encoded pointer value.
 //
 // In addition to the number of skipped bytes, it may also return
-// mus.ErrTooSmallByteSlice, com.ErrWrongFormat or Skipper error.
-func SkipPtr(sk mus.Skipper, bs []byte) (n int, err error) {
+// mus.ErrTooSmallByteSlice, com.ErrWrongFormat or a base type skipping error.
+func (s ptrSer[T]) Skip(bs []byte) (n int, err error) {
 	if len(bs) < 1 {
 		err = mus.ErrTooSmallByteSlice
 		return
@@ -105,6 +78,6 @@ func SkipPtr(sk mus.Skipper, bs []byte) (n int, err error) {
 		err = com.ErrWrongFormat
 		return
 	}
-	n, err = sk.Skip(bs[1:])
+	n, err = s.baseSer.Skip(bs[1:])
 	return 1 + n, err
 }

@@ -1,33 +1,39 @@
 package unsafe
 
 import (
+	com "github.com/mus-format/common-go"
 	"github.com/mus-format/mus-go/raw"
 )
 
-// MarshalByte fills bs with an encoded (Raw) byte value.
+// Byte is a byte serializer.
+var Byte = byteSer{}
+
+type byteSer struct{}
+
+// Marshal fills bs with an encoded (Raw) byte value.
 //
 // Returns the number of used bytes. It will panic if receives too small bs.
-func MarshalByte(v byte, bs []byte) (n int) {
-	return marshalInteger8(v, bs)
+func (s byteSer) Marshal(v byte, bs []byte) (n int) {
+	return marshalInteger8[byte](v, bs)
 }
 
-// UnmarshalByte parses an encoded (Raw) byte value from bs.
+// Unmarshal parses an encoded (Raw) byte value from bs.
 //
-// In addition to the byte value and the number of used bytes, it may also return
+// In addition to the byte value and the number of used bytes, it may also
 // return mus.ErrTooSmallByteSlice.
-func UnmarshalByte(bs []byte) (v byte, n int, err error) {
+func (s byteSer) Unmarshal(bs []byte) (v byte, n int, err error) {
 	return unmarshalInteger8[byte](bs)
 }
 
-// SizeByte returns the size of an encoded (Raw) byte value.
-func SizeByte(v byte) (n int) {
-	return raw.SizeByte(v)
+// Size returns the size of an encoded (Raw) byte value.
+func (s byteSer) Size(v byte) (size int) {
+	return com.Num8RawSize
 }
 
-// SkipByte skips an encoded (Raw) byte value.
+// Skip skips an encoded (Raw) byte value.
 //
 // In addition to the number of skipped bytes, it may also return
 // mus.ErrTooSmallByteSlice.
-func SkipByte(bs []byte) (n int, err error) {
-	return raw.SkipByte(bs)
+func (s byteSer) Skip(bs []byte) (n int, err error) {
+	return raw.SkipInteger8(bs)
 }

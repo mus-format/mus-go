@@ -6,155 +6,182 @@ import (
 	"golang.org/x/exp/constraints"
 )
 
-// MarshalUint64 fills bs with an encoded (Varint) uint64 value.
+var (
+	// Uint64 is a uint64 serializer.
+	Uint64 = uint64Ser{}
+	// Uint32 is a uint32 serializer.
+	Uint32 = uint32Ser{}
+	// Uint16 is a uint16 serializer.
+	Uint16 = uint16Ser{}
+	// Uint8 is a uint8 serializer.
+	Uint8 = uint8Ser{}
+	// Uint is a uint serializer.
+	Uint = uintSer{}
+)
+
+type uint64Ser struct{}
+
+// Marshal fills bs with an encoded (Varint) uint64 value.
 //
 // Returns the number of used bytes. It will panic if receives too small bs.
-func MarshalUint64(v uint64, bs []byte) (n int) {
+func (s uint64Ser) Marshal(v uint64, bs []byte) (n int) {
 	return marshalUint(v, bs)
 }
 
-// MarshalUint32 fills bs with an encoded (Varint) uint32 value.
-//
-// Returns the number of used bytes. It will panic if receives too small bs.
-func MarshalUint32(v uint32, bs []byte) (n int) {
-	return marshalUint(v, bs)
-}
-
-// MarshalUint16 fills bs with an encoded (Varint) uint16 value.
-//
-// Returns the number of used bytes. It will panic if receives too small bs.
-func MarshalUint16(v uint16, bs []byte) (n int) {
-	return marshalUint(v, bs)
-}
-
-// MarshalUint8 fills bs with an encoded (Varint) uint8 value.
-//
-// Returns the number of used bytes. It will panic if receives too small bs.
-func MarshalUint8(v uint8, bs []byte) (n int) {
-	return marshalUint(v, bs)
-}
-
-// MarshalUint fills bs with an encoded (Varint) uint value.
-//
-// Returns the number of used bytes. It will panic if receives too small bs.
-func MarshalUint(v uint, bs []byte) (n int) {
-	return marshalUint(v, bs)
-}
-
-// UnmarshalUint64 parses an encoded (Varint) uint64 value from bs.
+// Unmarshal parses an encoded (Varint) uint64 value from bs.
 //
 // In addition to the uint64 value and the number of used bytes, it may also
 // return mus.ErrTooSmallByteSlice or com.ErrOverflow.
-func UnmarshalUint64(bs []byte) (v uint64, n int, err error) {
-	return unmarshalUint[uint64](com.Uint64MaxVarintLen,
-		com.Uint64MaxLastByte,
+func (s uint64Ser) Unmarshal(bs []byte) (v uint64, n int, err error) {
+	return unmarshalUint[uint64](com.Uint64MaxVarintLen, com.Uint64MaxLastByte,
 		bs)
 }
 
-// UnmarshalUint32 parses an encoded (Varint) uint32 value from bs.
-//
-// In addition to the uint32 value and the number of used bytes, it may also
-// return mus.ErrTooSmallByteSlice or com.ErrOverflow.
-func UnmarshalUint32(bs []byte) (v uint32, n int, err error) {
-	return unmarshalUint[uint32](com.Uint32MaxVarintLen,
-		com.Uint32MaxLastByte,
-		bs)
-}
-
-// UnmarshalUint16 parses an encoded (Varint) uint16 value from bs.
-//
-// In addition to the uint16 value and the number of used bytes, it may also
-// return mus.ErrTooSmallByteSlice or com.ErrOverflow.
-func UnmarshalUint16(bs []byte) (v uint16, n int, err error) {
-	return unmarshalUint[uint16](com.Uint16MaxVarintLen,
-		com.Uint16MaxLastByte,
-		bs)
-}
-
-// UnmarshalUint8 parses an encoded (Varint) uint8 value from bs.
-//
-// In addition to the uint8 value and the number of used bytes, it may also
-// return mus.ErrTooSmallByteSlice or com.ErrOverflow.
-func UnmarshalUint8(bs []byte) (v uint8, n int, err error) {
-	return unmarshalUint[uint8](com.Uint8MaxVarintLen,
-		com.Uint8MaxLastByte,
-		bs)
-}
-
-// UnmarshalUint parses an encoded (Varint) uint value from bs.
-//
-// In addition to the uint value and the number of used bytes, it may also
-// return mus.ErrTooSmallByteSlice or com.ErrOverflow.
-func UnmarshalUint(bs []byte) (v uint, n int, err error) {
-	return unmarshalUint[uint](com.UintMaxVarintLen(),
-		com.UintMaxLastByte(),
-		bs)
-}
-
-// SizeUint64 returns the size of an encoded uint64 value.
-func SizeUint64(v uint64) (size int) {
+// Size returns the size of an encoded (Varint) uint64 value.
+func (s uint64Ser) Size(v uint64) (size int) {
 	return sizeUint(v)
 }
 
-// SizeUint32 returns the size of an encoded uint32 value.
-func SizeUint32(v uint32) (size int) {
-	return sizeUint(v)
-}
-
-// SizeUint16 returns the size of an encoded uint16 value.
-func SizeUint16(v uint16) (size int) {
-	return sizeUint(v)
-}
-
-// SizeUint8 returns the size of an encoded uint8 value.
-func SizeUint8(v uint8) (size int) {
-	return sizeUint(v)
-}
-
-// SizeUint returns the size of an encoded uint value.
-func SizeUint(v uint) (size int) {
-	return sizeUint(v)
-}
-
-// SkipUint64 skips an encoded uint64.
+// Skip skips the next encoded (Varint) uint64 value.
 //
 // In addition to the number of skipped bytes, it may also return
 // mus.ErrTooSmallByteSlice or com.ErrOverflow.
-func SkipUint64(bs []byte) (n int, err error) {
+func (s uint64Ser) Skip(bs []byte) (n int, err error) {
 	return skipUint(com.Uint64MaxVarintLen, com.Uint64MaxLastByte, bs)
 }
 
-// SkipUint32 skips an encoded uint32.
+// -----------------------------------------------------------------------------
+
+type uint32Ser struct{}
+
+// Marshal fills bs with an encoded (Varint) uint32 value.
+//
+// Returns the number of used bytes. It will panic if receives too small bs.
+func (s uint32Ser) Marshal(v uint32, bs []byte) (n int) {
+	return marshalUint(v, bs)
+}
+
+// Unmarshal parses an encoded (Varint) uint32 value from bs.
+//
+// In addition to the uint32 value and the number of used bytes, it may also
+// return mus.ErrTooSmallByteSlice or com.ErrOverflow.
+func (s uint32Ser) Unmarshal(bs []byte) (v uint32, n int, err error) {
+	return unmarshalUint[uint32](com.Uint32MaxVarintLen, com.Uint32MaxLastByte,
+		bs)
+}
+
+// Size returns the size of an encoded (Varint) uint32 value.
+func (s uint32Ser) Size(v uint32) (size int) {
+	return sizeUint(v)
+}
+
+// Skip skips the next encoded (Varint) uint32 value.
 //
 // In addition to the number of skipped bytes, it may also return
 // mus.ErrTooSmallByteSlice or com.ErrOverflow.
-func SkipUint32(bs []byte) (n int, err error) {
+func (s uint32Ser) Skip(bs []byte) (n int, err error) {
 	return skipUint(com.Uint32MaxVarintLen, com.Uint32MaxLastByte, bs)
 }
 
-// SkipUint16 skips an encoded uint16.
+// -----------------------------------------------------------------------------
+
+type uint16Ser struct{}
+
+// Marshal fills bs with an encoded (Varint) uint16 value.
+//
+// Returns the number of used bytes. It will panic if receives too small bs.
+func (s uint16Ser) Marshal(v uint16, bs []byte) (n int) {
+	return marshalUint(v, bs)
+}
+
+// Unmarshal parses an encoded (Varint) uint16 value from bs.
+//
+// In addition to the uint16 value and the number of used bytes, it may also
+// return mus.ErrTooSmallByteSlice or com.ErrOverflow.
+func (s uint16Ser) Unmarshal(bs []byte) (v uint16, n int, err error) {
+	return unmarshalUint[uint16](com.Uint16MaxVarintLen, com.Uint16MaxLastByte,
+		bs)
+}
+
+// Size returns the size of an encoded (Varint) uint16 value.
+func (s uint16Ser) Size(v uint16) (size int) {
+	return sizeUint(v)
+}
+
+// Skip skips the next encoded (Varint) uint16 value.
 //
 // In addition to the number of skipped bytes, it may also return
 // mus.ErrTooSmallByteSlice or com.ErrOverflow.
-func SkipUint16(bs []byte) (n int, err error) {
+func (s uint16Ser) Skip(bs []byte) (n int, err error) {
 	return skipUint(com.Uint16MaxVarintLen, com.Uint16MaxLastByte, bs)
 }
 
-// SkipUint8 skips an encoded uint8.
+// -----------------------------------------------------------------------------
+
+type uint8Ser struct{}
+
+// Marshal fills bs with an encoded (Varint) uint8 value.
+//
+// Returns the number of used bytes. It will panic if receives too small bs.
+func (s uint8Ser) Marshal(v uint8, bs []byte) (n int) {
+	return marshalUint(v, bs)
+}
+
+// Unmarshal parses an encoded (Varint) uint8 value from bs.
+//
+// In addition to the uint8 value and the number of used bytes, it may also
+// return mus.ErrTooSmallByteSlice or com.ErrOverflow.
+func (s uint8Ser) Unmarshal(bs []byte) (v uint8, n int, err error) {
+	return unmarshalUint[uint8](com.Uint8MaxVarintLen, com.Uint8MaxLastByte,
+		bs)
+}
+
+// Size returns the size of an encoded (Varint) uint8 value.
+func (s uint8Ser) Size(v uint8) (size int) {
+	return sizeUint(v)
+}
+
+// Skip skips the next encoded (Varint) uint8 value.
 //
 // In addition to the number of skipped bytes, it may also return
 // mus.ErrTooSmallByteSlice or com.ErrOverflow.
-func SkipUint8(bs []byte) (n int, err error) {
+func (s uint8Ser) Skip(bs []byte) (n int, err error) {
 	return skipUint(com.Uint8MaxVarintLen, com.Uint8MaxLastByte, bs)
 }
 
-// SkipUint skips an encoded uint.
+// -----------------------------------------------------------------------------
+
+type uintSer struct{}
+
+// Marshal fills bs with an encoded (Varint) uint value.
+//
+// Returns the number of used bytes. It will panic if receives too small bs.
+func (s uintSer) Marshal(v uint, bs []byte) (n int) {
+	return marshalUint(v, bs)
+}
+
+// Unmarshal parses an encoded (Varint) uint value from bs.
+//
+// In addition to the uint value and the number of used bytes, it may also
+// return mus.ErrTooSmallByteSlice or com.ErrOverflow.
+func (s uintSer) Unmarshal(bs []byte) (v uint, n int, err error) {
+	return unmarshalUint[uint](com.UintMaxVarintLen(), com.UintMaxLastByte(), bs)
+}
+
+// Size returns the size of an encoded (Varint) uint value.
+func (s uintSer) Size(v uint) (size int) {
+	return sizeUint(v)
+}
+
+// Skip skips the next encoded (Varint) uint value.
 //
 // In addition to the number of skipped bytes, it may also return
 // mus.ErrTooSmallByteSlice or com.ErrOverflow.
-func SkipUint(bs []byte) (n int, err error) {
+func (s uintSer) Skip(bs []byte) (n int, err error) {
 	return skipUint(com.UintMaxVarintLen(), com.UintMaxLastByte(), bs)
 }
+
+// -----------------------------------------------------------------------------
 
 func marshalUint[T constraints.Unsigned](t T, bs []byte) (n int) {
 	for t >= 0x80 {

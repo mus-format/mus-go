@@ -88,28 +88,28 @@ func unmarshalInteger8[T com.Integer8](bs []byte) (T, int, error) {
 	return T(bs[0]), com.Num8RawSize, nil
 }
 
-func skipInteger64(bs []byte) (int, error) {
+func SkipInteger64(bs []byte) (int, error) {
 	if len(bs) < com.Num64RawSize {
 		return 0, mus.ErrTooSmallByteSlice
 	}
 	return com.Num64RawSize, nil
 }
 
-func skipInteger32(bs []byte) (int, error) {
+func SkipInteger32(bs []byte) (int, error) {
 	if len(bs) < com.Num32RawSize {
 		return 0, mus.ErrTooSmallByteSlice
 	}
 	return com.Num32RawSize, nil
 }
 
-func skipInteger16(bs []byte) (int, error) {
+func SkipInteger16(bs []byte) (int, error) {
 	if len(bs) < com.Num16RawSize {
 		return 0, mus.ErrTooSmallByteSlice
 	}
 	return com.Num16RawSize, nil
 }
 
-func skipInteger8(bs []byte) (int, error) {
+func SkipInteger8(bs []byte) (int, error) {
 	if len(bs) < com.Num8RawSize {
 		return 0, mus.ErrTooSmallByteSlice
 	}

@@ -6,124 +6,46 @@ import (
 	"github.com/mus-format/mus-go/varint"
 )
 
-// NewStringMarshallerFn creates a string Marshaller.
-func NewStringMarshallerFn(lenM mus.Marshaller[int]) mus.MarshallerFn[string] {
-	return func(v string, bs []byte) (n int) {
-		return MarshalString(v, lenM, bs)
-	}
+// String is a string serializer.
+var String = NewStringSerWith(varint.PositiveInt)
+
+// NewStringSerWith returns a new string serializer with the given length
+// serializer.
+func NewStringSerWith(lenSer mus.Serializer[int]) stringSer {
+	return stringSer{lenSer}
 }
 
-// NewStringUnmarshallerFn creates a string Unmarshaller.
-func NewStringUnmarshallerFn(lenU mus.Unmarshaller[int]) mus.UnmarshallerFn[string] {
-	return func(bs []byte) (v string, n int, err error) {
-		return UnmarshalValidString(lenU, nil, false, bs)
-	}
+// NewValidStringSer returns a new string serializer with the given length
+// validator.
+func NewValidStringSer(lenVl com.Validator[int]) validStringSer {
+	return NewValidStringSerWith(varint.PositiveInt, lenVl)
 }
 
-// NewValidStringUnmarshallerFn creates a string Unmarshaller with validation.
-func NewValidStringUnmarshallerFn(lenU mus.Unmarshaller[int],
-	lenVl com.Validator[int], skip bool) mus.UnmarshallerFn[string] {
-	return func(bs []byte) (v string, n int, err error) {
-		return UnmarshalValidString(lenU, lenVl, skip, bs)
-	}
+// NewValidStringSerWith returns a new string serializer with the given length
+// serializer and length validator.
+func NewValidStringSerWith(lenSer mus.Serializer[int],
+	lenVl com.Validator[int]) validStringSer {
+	return validStringSer{NewStringSerWith(lenSer), lenVl}
 }
 
-// NewStringSizerFn creates a string Sizer.
-func NewStringSizerFn(lenS mus.Sizer[int]) mus.SizerFn[string] {
-	return func(v string) (size int) {
-		return SizeString(v, lenS)
-	}
+type stringSer struct {
+	lenSer mus.Serializer[int]
 }
 
-// NewStringSkipperFn creates a string Skipper.
-func NewStringSkipperFn(lenU mus.Unmarshaller[int]) mus.SkipperFn {
-	return func(bs []byte) (n int, err error) {
-		return SkipString(lenU, bs)
-	}
-}
-
-// MarshalStr fills bs with an encoded string value.
+// Marshal fills bs with an encoded string value.
 //
-// Provides an implementation of the Marshaller interface for the string type.
-// See MarshalString for details.
-func MarshalStr(v string, bs []byte) (n int) {
-	return MarshalString(v, nil, bs)
+// Returns the number of used bytes. It will panic if bs is too small.
+func (s stringSer) Marshal(v string, bs []byte) (n int) {
+	return MarshalString(v, s.lenSer, bs)
 }
 
-// UnmarshalStr parses an encoded string value from bs.
+// Unmarshal parses an encoded string value from bs.
 //
-// Provides an implementation of the Unmarshaller interface for the string type.
-// See UnmarshalString for details.
-func UnmarshalStr(bs []byte) (v string, n int, err error) {
-	return UnmarshalValidString(nil, nil, false, bs)
-}
-
-// SizeStr returns the size of an encoded string value.
-//
-// Provides an implementation of the Sizer interface for the string type.
-// See SizeString for details.
-func SizeStr(v string) (n int) {
-	return SizeString(v, nil)
-}
-
-// SkipStr skips an encoded string value.
-//
-// Provides an implementation of the Skipper interface for the string type.
-// See SkipString for details.
-func SkipStr(bs []byte) (n int, err error) {
-	return SkipString(nil, bs)
-}
-
-// MarshalString fills bs with an encoded string value.
-//
-// The lenM argument specifies the Marshaller for the string length, if nil,
-// varint.MarshalPositiveInt() is used.
-//
-// Returns the number of used bytes. It will panic if receives too small bs.
-func MarshalString(v string, lenM mus.Marshaller[int], bs []byte) (n int) {
-	length := len(v)
-	if lenM == nil {
-		n = varint.MarshalPositiveInt(length, bs)
-	} else {
-		n = lenM.Marshal(length, bs)
-	}
-	if len(bs) < n+length {
-		panic(mus.ErrTooSmallByteSlice)
-	}
-	return n + copy(bs[n:], v)
-}
-
-// UnmarshalString parses an encoded string value from bs.
-//
-// The lenU argument specifies the Unmarshaller for the string length, if nil,
-// varint.UnmarshalPositiveInt() is used.
-//
-// In addition to the string value and the number of used bytes, it can
-// return mus.ErrTooSmallByteSlice, com.ErrOverflow or com.ErrNegativeLength.
-func UnmarshalString(lenU mus.Unmarshaller[int], bs []byte) (v string,
-	n int, err error) {
-	return UnmarshalValidString(lenU, nil, false, bs)
-}
-
-// UnmarshalValidString parses an encoded valid string value from bs.
-//
-// The lenU argument specifies the Unmarshaller for the string length, if nil,
-// varint.UnmarshalPositiveInt() is used.
-// The lenVl argument specifies the string length Validator. If it returns
-// an error and skip == true, UnmarshalValidString skips the remaining bytes of
-// the string.
-//
-// In addition to the string value and the number of used bytes, it can
-// return mus.ErrTooSmallByteSlice, com.ErrOverflow, com.ErrNegativeLength or
-// Validator error.
-func UnmarshalValidString(lenU mus.Unmarshaller[int],
-	lenVl com.Validator[int], skip bool, bs []byte) (v string, n int, err error) {
-	var length int
-	if lenU == nil {
-		length, n, err = varint.UnmarshalPositiveInt(bs)
-	} else {
-		length, n, err = lenU.Unmarshal(bs)
-	}
+// In addition to the string value and the number of used bytes, it may also
+// return mus.ErrTooSmallByteSlice, com.ErrNegativeLength, or a length
+// unmarshalling error.
+func (s stringSer) Unmarshal(bs []byte) (v string, n int, err error) {
+	length, n, err := s.lenSer.Unmarshal(bs)
 	if err != nil {
 		return
 	}
@@ -136,11 +58,54 @@ func UnmarshalValidString(lenU mus.Unmarshaller[int],
 		err = mus.ErrTooSmallByteSlice
 		return
 	}
-	if lenVl != nil {
-		if err = lenVl.Validate(length); err != nil {
-			if skip {
-				n += length
-			}
+	if length == 0 {
+		return
+	}
+	return string(bs[n:l]), l, nil
+}
+
+// Size returns the size of an encoded string value.
+func (s stringSer) Size(v string) (size int) {
+	return SizeString(v, s.lenSer)
+}
+
+// Skip skips an encoded string value.
+//
+// In addition to the number of skipped bytes, it may also return
+// mus.ErrTooSmallByteSlice, mus.ErrNegativeLength, or a length unmarshalling
+// error.
+func (s stringSer) Skip(bs []byte) (n int, err error) {
+	return SkipString(s.lenSer, bs)
+}
+
+// -----------------------------------------------------------------------------
+
+type validStringSer struct {
+	stringSer
+	lenVl com.Validator[int]
+}
+
+// Unmarshal parses an encoded string value from bs.
+//
+// In addition to the string value and the number of used bytes, it may also
+// return mus.ErrTooSmallByteSlice, com.ErrNegativeLength, or a length
+// unmarshalling error, or a length validation error.
+func (s validStringSer) Unmarshal(bs []byte) (v string, n int, err error) {
+	length, n, err := s.lenSer.Unmarshal(bs)
+	if err != nil {
+		return
+	}
+	if length < 0 {
+		err = com.ErrNegativeLength
+		return
+	}
+	l := n + length
+	if len(bs) < l {
+		err = mus.ErrTooSmallByteSlice
+		return
+	}
+	if s.lenVl != nil {
+		if err = s.lenVl.Validate(length); err != nil {
 			return
 		}
 	}
@@ -150,33 +115,24 @@ func UnmarshalValidString(lenU mus.Unmarshaller[int],
 	return string(bs[n:l]), l, nil
 }
 
-// SizeString returns the size of an encoded string value.
-//
-// The lenS argument specifies the Sizer for the string length, if nil,
-// varint.SizePositiveInt() is used.
-func SizeString(v string, lenS mus.Sizer[int]) (n int) {
+// -----------------------------------------------------------------------------
+
+func MarshalString(v string, lenSer mus.Serializer[int], bs []byte) (n int) {
 	length := len(v)
-	if lenS == nil {
-		return varint.SizePositiveInt(length) + length
-	} else {
-		return lenS.Size(length) + length
+	n = lenSer.Marshal(length, bs)
+	if len(bs) < n+length {
+		panic(mus.ErrTooSmallByteSlice)
 	}
+	return n + copy(bs[n:], v)
 }
 
-// SkipString skips an encoded string value.
-//
-// The lenU argument specifies the Unmarshaller for the string length, if nil,
-// varint.UnmarshalPositiveInt() is used.
-//
-// In addition to the number of skipped bytes, it may also return
-// mus.ErrTooSmallByteSlice, com.ErrOverflow or mus.ErrNegativeLength.
-func SkipString(lenU mus.Unmarshaller[int], bs []byte) (n int, err error) {
-	var length int
-	if lenU == nil {
-		length, n, err = varint.UnmarshalPositiveInt(bs)
-	} else {
-		length, n, err = lenU.Unmarshal(bs)
-	}
+func SizeString(v string, lenSer mus.Serializer[int]) (size int) {
+	length := len(v)
+	return lenSer.Size(length) + length
+}
+
+func SkipString(lenSer mus.Serializer[int], bs []byte) (n int, err error) {
+	length, n, err := lenSer.Unmarshal(bs)
 	if err != nil {
 		return
 	}

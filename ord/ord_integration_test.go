@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	com_testdata "github.com/mus-format/common-go/testdata"
-	"github.com/mus-format/mus-go"
 	"github.com/mus-format/mus-go/testdata"
 	"github.com/mus-format/mus-go/varint"
 )
@@ -12,49 +11,45 @@ import (
 func TestIntegrationOrd(t *testing.T) {
 
 	t.Run("pointer", func(t *testing.T) {
-		var (
-			m  = NewPtrMarshallerFn[string](mus.MarshallerFn[string](MarshalStr))
-			u  = NewPtrUnmarshallerFn[string](mus.UnmarshallerFn[string](UnmarshalStr))
-			s  = NewPtrSizerFn[string](mus.SizerFn[string](SizeStr))
-			sk = NewPtrSkipperFn(mus.SkipperFn(SkipStr))
-		)
-		testdata.Test[*string](com_testdata.PointerTestCases, m, u, s, t)
-		testdata.TestSkip[*string](com_testdata.PointerTestCases, m, sk, s, t)
+		ser := NewPtrSer[string](String)
+		testdata.Test[*string](com_testdata.PointerTestCases, ser, t)
+		testdata.TestSkip[*string](com_testdata.PointerTestCases, ser, t)
+	})
+
+	t.Run("array", func(t *testing.T) {
+		ser := NewArraySer[[3]int, int](3, varint.Int)
+		testdata.Test[[3]int](com_testdata.ArrayTestCases, ser, t)
+		testdata.TestSkip[[3]int](com_testdata.ArrayTestCases, ser, t)
+	})
+
+	t.Run("valid array", func(t *testing.T) {
+		ser := NewValidArraySer[[3]int, int](3, varint.Int, nil)
+		testdata.Test[[3]int](com_testdata.ArrayTestCases, ser, t)
+		testdata.TestSkip[[3]int](com_testdata.ArrayTestCases, ser, t)
 	})
 
 	t.Run("slice", func(t *testing.T) {
-		var (
-			m = NewSliceMarshallerFn[int](nil,
-				mus.MarshallerFn[int](varint.MarshalInt))
-			u = NewSliceUnmarshallerFn[int](nil,
-				mus.UnmarshallerFn[int](varint.UnmarshalInt))
-			s  = NewSliceSizerFn[int](nil, mus.SizerFn[int](varint.SizeInt))
-			sk = NewSliceSkipperFn(nil, mus.SkipperFn(varint.SkipInt))
-		)
-		testdata.Test[[]int](com_testdata.SliceTestCases, m, u, s, t)
-		testdata.TestSkip[[]int](com_testdata.SliceTestCases, m, sk, s, t)
+		ser := NewSliceSer[int](varint.Int)
+		testdata.Test[[]int](com_testdata.SliceTestCases, ser, t)
+		testdata.TestSkip[[]int](com_testdata.SliceTestCases, ser, t)
+	})
+
+	t.Run("valid slice", func(t *testing.T) {
+		ser := NewValidSliceSer[int](varint.Int, nil, nil)
+		testdata.Test[[]int](com_testdata.SliceTestCases, ser, t)
+		testdata.TestSkip[[]int](com_testdata.SliceTestCases, ser, t)
 	})
 
 	t.Run("map", func(t *testing.T) {
-		var (
-			m = NewMapMarshallerFn[float32, uint8](nil,
-				mus.MarshallerFn[float32](varint.MarshalFloat32),
-				mus.MarshallerFn[uint8](varint.MarshalUint8))
+		ser := NewMapSer[float32, uint8](varint.Float32, varint.Uint8)
+		testdata.Test[map[float32]uint8](com_testdata.MapTestCases, ser, t)
+		testdata.TestSkip[map[float32]uint8](com_testdata.MapTestCases, ser, t)
+	})
 
-			u = NewMapUnmarshallerFn[float32, uint8](nil,
-				mus.UnmarshallerFn[float32](varint.UnmarshalFloat32),
-				mus.UnmarshallerFn[uint8](varint.UnmarshalUint8))
-
-			s = NewMapSizerFn[float32, uint8](nil,
-				mus.SizerFn[float32](varint.SizeFloat32),
-				mus.SizerFn[uint8](varint.SizeUint8))
-
-			sk = NewMapSkipperFn[float32, uint8](nil,
-				mus.SkipperFn(varint.SkipFloat32),
-				mus.SkipperFn(varint.SkipUint8))
-		)
-		testdata.Test[map[float32]uint8](com_testdata.MapTestCases, m, u, s, t)
-		testdata.TestSkip[map[float32]uint8](com_testdata.MapTestCases, m, sk, s, t)
+	t.Run("valid map", func(t *testing.T) {
+		ser := NewValidMapSer[float32, uint8](varint.Float32, varint.Uint8, nil, nil, nil)
+		testdata.Test[map[float32]uint8](com_testdata.MapTestCases, ser, t)
+		testdata.TestSkip[map[float32]uint8](com_testdata.MapTestCases, ser, t)
 	})
 
 }

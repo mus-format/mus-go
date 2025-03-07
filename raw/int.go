@@ -11,149 +11,182 @@ func init() {
 }
 
 var (
+	// Int64 is an int64 serializer.
+	Int64 = int64Ser{}
+	// Int32 is an int32 serializer.
+	Int32 = int32Ser{}
+	// Int16 is an int16 serializer.
+	Int16 = int16Ser{}
+	// Int8 is an int8 serializer.
+	Int8 = int8Ser{}
+	// Int is an int serializer.
+	Int = intSer{}
+)
+
+var (
 	marshalInt   func(v int, bs []byte) int
 	unmarshalInt func(bs []byte) (int, int, error)
 	sizeInt      int
 	skipInt      func(bs []byte) (int, error)
 )
 
-// MarshalInt64 fills bs with an encoded (Raw) int64 value.
+// -----------------------------------------------------------------------------
+
+type int64Ser struct{}
+
+// Marshal fills bs with an encoded (Raw) int64 value.
 //
 // Returns the number of used bytes. It will panic if receives too small bs.
-func MarshalInt64(v int64, bs []byte) (n int) {
-	return marshalInteger64(v, bs)
+func (s int64Ser) Marshal(v int64, bs []byte) (n int) {
+	return marshalInteger64[int64](v, bs)
 }
 
-// MarshalInt32 fills bs with an encoded (Raw) int32 value.
+// Unmarshal parses an encoded (Raw) int64 value from bs.
 //
-// Returns the number of used bytes. It will panic if receives too small bs.
-func MarshalInt32(v int32, bs []byte) (n int) {
-	return marshalInteger32(v, bs)
-}
-
-// MarshalInt16 fills bs with an encoded (Raw) int16 value.
-//
-// Returns the number of used bytes. It will panic if receives too small bs.
-func MarshalInt16(v int16, bs []byte) (n int) {
-	return marshalInteger16(v, bs)
-}
-
-// MarshalInt8 fills bs with an encoded (Raw) int8 value.
-//
-// Returns the number of used bytes. It will panic if receives too small bs.
-func MarshalInt8(v int8, bs []byte) (n int) {
-	return marshalInteger8(v, bs)
-}
-
-// MarshalInt fills bs with an encoded (Raw) int value.
-//
-// Returns the number of used bytes. It will panic if receives too small bs.
-func MarshalInt(v int, bs []byte) (n int) {
-	return marshalInt(v, bs)
-}
-
-// UnmarshalInt64 parses an encoded (Raw) int64 value from bs.
-//
-// In addition to the int64 value and the number of used bytes, it can
+// In addition to the int64 value and the number of used bytes, it may also
 // return mus.ErrTooSmallByteSlice.
-func UnmarshalInt64(bs []byte) (v int64, n int, err error) {
+func (s int64Ser) Unmarshal(bs []byte) (v int64, n int, err error) {
 	return unmarshalInteger64[int64](bs)
 }
 
-// UnmarshalInt32 parses an encoded (Raw) int32 value from bs.
-//
-// In addition to the int32 value and the number of used bytes, it can
-// return mus.ErrTooSmallByteSlice.
-func UnmarshalInt32(bs []byte) (v int32, n int, err error) {
-	return unmarshalInteger32[int32](bs)
-}
-
-// UnmarshalInt16 parses an encoded (Raw) int16 value from bs.
-//
-// In addition to the int16 value and the number of used bytes, it can
-// return mus.ErrTooSmallByteSlice.
-func UnmarshalInt16(bs []byte) (v int16, n int, err error) {
-	return unmarshalInteger16[int16](bs)
-}
-
-// UnmarshalInt8 parses an encoded (Raw) int8 value from bs.
-//
-// In addition to the int8 value and the number of used bytes, it can
-// return mus.ErrTooSmallByteSlice.
-func UnmarshalInt8(bs []byte) (v int8, n int, err error) {
-	return unmarshalInteger8[int8](bs)
-}
-
-// UnmarshalInt parses an encoded (Raw) int value from bs.
-//
-// In addition to the int value and the number of used bytes, it can
-// return mus.ErrTooSmallByteSlice.
-func UnmarshalInt(bs []byte) (v int, n int, err error) {
-	return unmarshalInt(bs)
-}
-
-// SizeInt64 returns the size of an encoded (Raw) int64 value.
-func SizeInt64(v int64) (n int) {
+// Size returns the size of an encoded (Raw) int64 value.
+func (s int64Ser) Size(v int64) (size int) {
 	return com.Num64RawSize
 }
 
-// SizeInt32 returns the size of an encoded (Raw) int32 value.
-func SizeInt32(v int32) (n int) {
+// Skip skips an encoded (Raw) int64 value.
+//
+// In addition to the number of skipped bytes, it may also return
+// mus.ErrTooSmallByteSlice.
+func (s int64Ser) Skip(bs []byte) (n int, err error) {
+	return SkipInteger64(bs)
+}
+
+// -----------------------------------------------------------------------------
+
+type int32Ser struct{}
+
+// Marshal fills bs with an encoded (Raw) int32 value.
+//
+// Returns the number of used bytes. It will panic if receives too small bs.
+func (s int32Ser) Marshal(v int32, bs []byte) (n int) {
+	return marshalInteger32[int32](v, bs)
+}
+
+// Unmarshal parses an encoded (Raw) int32 value from bs.
+//
+// In addition to the int32 value and the number of used bytes, it may also
+// return mus.ErrTooSmallByteSlice.
+func (s int32Ser) Unmarshal(bs []byte) (v int32, n int, err error) {
+	return unmarshalInteger32[int32](bs)
+}
+
+// Size returns the size of an encoded (Raw) int32 value.
+func (s int32Ser) Size(v int32) (size int) {
 	return com.Num32RawSize
 }
 
-// SizeInt16 returns the size of an encoded (Raw) int16 value.
-func SizeInt16(v int16) (n int) {
+// Skip skips an encoded (Raw) int32 value.
+//
+// In addition to the number of skipped bytes, it may also return
+// mus.ErrTooSmallByteSlice.
+func (s int32Ser) Skip(bs []byte) (n int, err error) {
+	return SkipInteger32(bs)
+}
+
+// -----------------------------------------------------------------------------
+
+type int16Ser struct{}
+
+// Marshal fills bs with an encoded (Raw) int16 value.
+//
+// Returns the number of used bytes. It will panic if receives too small bs.
+func (s int16Ser) Marshal(v int16, bs []byte) (n int) {
+	return marshalInteger16[int16](v, bs)
+}
+
+// Unmarshal parses an encoded (Raw) int16 value from bs.
+//
+// In addition to the int16 value and the number of used bytes, it may also
+// return mus.ErrTooSmallByteSlice.
+func (s int16Ser) Unmarshal(bs []byte) (v int16, n int, err error) {
+	return unmarshalInteger16[int16](bs)
+}
+
+// Size returns the size of an encoded (Raw) int16 value.
+func (s int16Ser) Size(v int16) (size int) {
 	return com.Num16RawSize
 }
 
-// SizeInt8 returns the size of an encoded (Raw) int8 value.
-func SizeInt8(v int8) (n int) {
+// Skip skips an encoded (Raw) int16 value.
+//
+// In addition to the number of skipped bytes, it may also return
+// mus.ErrTooSmallByteSlice.
+func (s int16Ser) Skip(bs []byte) (n int, err error) {
+	return SkipInteger16(bs)
+}
+
+// -----------------------------------------------------------------------------
+
+type int8Ser struct{}
+
+// Marshal fills bs with an encoded (Raw) int8 value.
+//
+// Returns the number of used bytes. It will panic if receives too small bs.
+func (s int8Ser) Marshal(v int8, bs []byte) (n int) {
+	return marshalInteger8[int8](v, bs)
+}
+
+// Unmarshal parses an encoded (Raw) int8 value from bs.
+//
+// In addition to the int8 value and the number of used bytes, it may also
+// return mus.ErrTooSmallByteSlice.
+func (s int8Ser) Unmarshal(bs []byte) (v int8, n int, err error) {
+	return unmarshalInteger8[int8](bs)
+}
+
+// Size returns the size of an encoded (Raw) int8 value.
+func (s int8Ser) Size(v int8) (size int) {
 	return com.Num8RawSize
 }
 
-// SizeInt returns the size of an encoded (Raw) int value.
-func SizeInt(v int) (n int) {
+// Skip skips an encoded (Raw) int8 value.
+//
+// In addition to the number of skipped bytes, it may also return
+// mus.ErrTooSmallByteSlice.
+func (s int8Ser) Skip(bs []byte) (n int, err error) {
+	return SkipInteger8(bs)
+}
+
+// -----------------------------------------------------------------------------
+
+type intSer struct{}
+
+// Marshal fills bs with an encoded (Raw) int value.
+//
+// Returns the number of used bytes. It will panic if receives too small bs.
+func (s intSer) Marshal(v int, bs []byte) (n int) {
+	return marshalInt(v, bs)
+}
+
+// Unmarshal parses an encoded (Raw) int value from bs.
+//
+// In addition to the int value and the number of used bytes, it may also
+// return mus.ErrTooSmallByteSlice.
+func (s intSer) Unmarshal(bs []byte) (v int, n int, err error) {
+	return unmarshalInt(bs)
+}
+
+// Size returns the size of an encoded (Raw) int value.
+func (s intSer) Size(v int) (size int) {
 	return sizeInt
 }
 
-// SkipInt64 skips an encoded (Raw) int64 value.
+// Skip skips an encoded (Raw) int value.
 //
-// In addition to the number of skipped bytes, it can return
+// In addition to the number of skipped bytes, it may also return
 // mus.ErrTooSmallByteSlice.
-func SkipInt64(bs []byte) (n int, err error) {
-	return skipInteger64(bs)
-}
-
-// SkipInt32 skips an encoded (Raw) int32 value.
-//
-// In addition to the number of skipped bytes, it can return
-// mus.ErrTooSmallByteSlice.
-func SkipInt32(bs []byte) (n int, err error) {
-	return skipInteger32(bs)
-}
-
-// SkipInt16 skips an encoded (Raw) int16 value.
-//
-// In addition to the number of skipped bytes, it can return
-// mus.ErrTooSmallByteSlice.
-func SkipInt16(bs []byte) (n int, err error) {
-	return skipInteger16(bs)
-}
-
-// SkipInt8 skips an encoded (Raw) int8 value.
-//
-// In addition to the number of skipped bytes, it can return
-// mus.ErrTooSmallByteSlice.
-func SkipInt8(bs []byte) (n int, err error) {
-	return skipInteger8(bs)
-}
-
-// SkipInt skips an encoded (Raw) int value.
-//
-// In addition to the number of skipped bytes, it can return
-// mus.ErrTooSmallByteSlice.
-func SkipInt(bs []byte) (n int, err error) {
+func (s intSer) Skip(bs []byte) (n int, err error) {
 	return skipInt(bs)
 }
 
@@ -163,12 +196,12 @@ func setUpIntFuncs(intSize int) {
 		marshalInt = marshalInteger64[int]
 		unmarshalInt = unmarshalInteger64[int]
 		sizeInt = com.Num64RawSize
-		skipInt = skipInteger64
+		skipInt = SkipInteger64
 	case 32:
 		marshalInt = marshalInteger32[int]
 		unmarshalInt = unmarshalInteger32[int]
 		sizeInt = com.Num32RawSize
-		skipInt = skipInteger32
+		skipInt = SkipInteger32
 	default:
 		panic(com.ErrUnsupportedIntSize)
 	}
