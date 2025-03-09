@@ -105,19 +105,17 @@ func (s yourTypeMUS) Skip(bs []byte) (n int, err error)                  {...}
 And than use it like:
 ```go
 var (
-  ser mus.Serializer[YourType] = ...
-
   value YourType = ...
-  size = ser.Size(value) // The number of bytes required to serialize the value.
+  size = YourTypeMUS.Size(value) // The number of bytes required to serialize the value.
   bs = make([]byte, size)
 )
 
-n := ser.Marshal(value, bs) // Returns the number of used bytes.
-value, n, err := ser.Unmarshal(bs) // Returns the value, the number of used 
-// bytes and any error encountered.
+n := YourTypeMUS.Marshal(value, bs) // Returns the number of used bytes.
+value, n, err := YourTypeMUS.Unmarshal(bs) // Returns the value, the number of 
+// used bytes and any error encountered.
 
 // Instead of unmarshalling the value can be skipped:
-n, err := ser.Skip(bs)
+n, err := YourTypeMUS.Skip(bs)
 ```
 
 ## Packages
