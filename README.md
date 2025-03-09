@@ -192,29 +192,29 @@ as a result, the array serializer constructor looks like:
 package main
 
 import (
-	"github.com/mus-format/mus-go/ord"
-	"github.com/mus-format/mus-go/varint"
+  "github.com/mus-format/mus-go/ord"
+  "github.com/mus-format/mus-go/varint"
 )
 
 func main() {
- 	var (
-		// The first type parameter of the NewArraySer function represents the array
-		// type, and the second - the type of the array’s elements.
-		//
-		// As for the function parameters, the number 3 specifies the length of the
-		// array, and varint.Int - the serializer for the array’s elements.
-		ser = ord.NewArraySer[[3]int, int](3, varint.Int)
+   var (
+    // The first type parameter of the NewArraySer function represents the array
+    // type, and the second - the type of the array’s elements.
+    //
+    // As for the function parameters, the number 3 specifies the length of the
+    // array, and varint.Int - the serializer for the array’s elements.
+    ser = ord.NewArraySer[[3]int, int](3, varint.Int)
 
-		// To create an array serializer with the specific length serializer use:
-		// ser = ord.NewArraySerWith[[3]int, int](3, raw.Int, varint.Int)
+    // To create an array serializer with the specific length serializer use:
+    // ser = ord.NewArraySerWith[[3]int, int](3, raw.Int, varint.Int)
 
-		arr  = [3]int{1, 2, 3}
-		size = ser.Size(arr)
-		bs   = make([]byte, size)
-	)
-	n := ser.Marshal(arr, bs)
-	arr, n, err := ser.Unmarshal(bs)
-	// ...
+    arr  = [3]int{1, 2, 3}
+    size = ser.Size(arr)
+    bs   = make([]byte, size)
+  )
+  n := ser.Marshal(arr, bs)
+  arr, n, err := ser.Unmarshal(bs)
+  // ...
 }
 ```
 
@@ -223,8 +223,8 @@ func main() {
 package main
 
 import (
-	"github.com/mus-format/mus-go/ord"
-	"github.com/mus-format/mus-go/varint"
+  "github.com/mus-format/mus-go/ord"
+  "github.com/mus-format/mus-go/varint"
 )
 
 func main() {
@@ -250,25 +250,25 @@ func main() {
 package main
 
 import (
-	"github.com/mus-format/mus-go/ord"
-	"github.com/mus-format/mus-go/varint"
+  "github.com/mus-format/mus-go/ord"
+  "github.com/mus-format/mus-go/varint"
 )
 func main() {
-	var (
-		// varint.Int specifies the serializer for the map’s keys, and ord.String -
-		// the serializer for the map’s values.
-		ser = ord.NewMapSer[int, string](varint.Int, ord.String)
+  var (
+    // varint.Int specifies the serializer for the map’s keys, and ord.String -
+    // the serializer for the map’s values.
+    ser = ord.NewMapSer[int, string](varint.Int, ord.String)
 
-		// To create a map serializer with the specific length serializer use:
-		// ser = ord.NewMapSerWith[int, string](raw.Int, varint.Int, ord.String)
+    // To create a map serializer with the specific length serializer use:
+    // ser = ord.NewMapSerWith[int, string](raw.Int, varint.Int, ord.String)
 
-		m    = map[int]string{1: "one", 2: "two", 3: "three"}
-		size = ser.Size(m)
-		bs   = make([]byte, size)
-	)
-	n := ser.Marshal(m, bs)
-	m, n, err := ser.Unmarshal(bs)
-	// ...
+    m    = map[int]string{1: "one", 2: "two", 3: "three"}
+    size = ser.Size(m)
+    bs   = make([]byte, size)
+  )
+  n := ser.Marshal(m, bs)
+  m, n, err := ser.Unmarshal(bs)
+  // ...
 }
 ```
 
@@ -304,57 +304,57 @@ difficult at all. For example:
 package main
 
 import (
-	"github.com/mus-format/mus-go/ord"
-	"github.com/mus-format/mus-go/varint"
+  "github.com/mus-format/mus-go/ord"
+  "github.com/mus-format/mus-go/varint"
 )
 
 // We will implement the FooMUS serializer for this struct.
 type Foo struct {
-	str string
-	sl  []int
+  str string
+  sl  []int
 }
 
 // Serializers.
 var (
-	// IntSliceMUS is used by the FooMUS serializer.
-	IntSliceMUS = ord.NewSliceSer[int](varint.Int)
+  // IntSliceMUS is used by the FooMUS serializer.
+  IntSliceMUS = ord.NewSliceSer[int](varint.Int)
 
-	FooMUS = fooMUS{}
+  FooMUS = fooMUS{}
 )
 
 // fooMUS implements the mus.Serializer interface.
 type fooMUS struct{}
 
 func (s fooMUS) Marshal(v Foo, bs []byte) (n int) {
-	n = ord.String.Marshal(v.str, bs)
-	return n + IntSliceMUS.Marshal(v.sl, bs[n:])
+  n = ord.String.Marshal(v.str, bs)
+  return n + IntSliceMUS.Marshal(v.sl, bs[n:])
 }
 
 func (s fooMUS) Unmarshal(bs []byte) (v Foo, n int, err error) {
-	v.str, n, err = ord.String.Unmarshal(bs)
-	if err != nil {
-		return
-	}
-	var n1 int
-	v.sl, n1, err = IntSliceMUS.Unmarshal(bs[n:])
-	n += n1
-	return
+  v.str, n, err = ord.String.Unmarshal(bs)
+  if err != nil {
+    return
+  }
+  var n1 int
+  v.sl, n1, err = IntSliceMUS.Unmarshal(bs[n:])
+  n += n1
+  return
 }
 
 func (s fooMUS) Size(v Foo) (size int) {
-	size += ord.String.Size(v.str)
-	return size + IntSliceMUS.Size(v.sl)
+  size += ord.String.Size(v.str)
+  return size + IntSliceMUS.Size(v.sl)
 }
 
 func (s fooMUS) Skip(bs []byte) (n int, err error) {
-	n, err = ord.String.Skip(bs)
-	if err != nil {
-		return
-	}
-	var n1 int
-	n1, err = IntSliceMUS.Skip(bs[n:])
-	n += n1
-	return
+  n, err = ord.String.Skip(bs)
+  if err != nil {
+    return
+  }
+  var n1 int
+  n1, err = IntSliceMUS.Skip(bs[n:])
+  n += n1
+  return
 }
 ```
 
@@ -504,33 +504,33 @@ validator.
 package main
 
 import (
-	com "github.com/mus-format/common-go"
-	"github.com/mus-format/mus-go/ord"
+  com "github.com/mus-format/common-go"
+  "github.com/mus-format/mus-go/ord"
 )
 
 func main() {
-	var (
-		// Length validator.
-		lenVl = func(length int) (err error) {
-			if length > 3 {
-				err = com.ErrTooLargeLength
-			}
-			return
-		}
-		ser = ord.NewValidStringSer(com.ValidatorFn[int](lenVl))
+  var (
+    // Length validator.
+    lenVl = func(length int) (err error) {
+      if length > 3 {
+        err = com.ErrTooLargeLength
+      }
+      return
+    }
+    ser = ord.NewValidStringSer(com.ValidatorFn[int](lenVl))
 
-		// To create a valid string serializer with the specific length serializer
-		// use:
-		// ser = ord.NewValidStringSerWith(raw.Int, com.ValidatorFn[int](lenVl))
+    // To create a valid string serializer with the specific length serializer
+    // use:
+    // ser = ord.NewValidStringSerWith(raw.Int, com.ValidatorFn[int](lenVl))
 
-		value = "hello world"
-		size  = ser.Size(value)
-		bs    = make([]byte, size)
-	)
-	n := ser.Marshal(value, bs)
-	// Unmarshalling stops when a validator returns an error. As a result, in
-	// this case, we will receive a length validation error.
-	value, n, err := ser.Unmarshal(bs)
+    value = "hello world"
+    size  = ser.Size(value)
+    bs    = make([]byte, size)
+  )
+  n := ser.Marshal(value, bs)
+  // Unmarshalling stops when a validator returns an error. As a result, in
+  // this case, we will receive a length validation error.
+  value, n, err := ser.Unmarshal(bs)
   // ...
 }
 
@@ -543,43 +543,43 @@ length and element validators.
 package main
 
 import (
-	com "github.com/mus-format/common-go"
-	"github.com/mus-format/mus-go/ord"
+  com "github.com/mus-format/common-go"
+  "github.com/mus-format/mus-go/ord"
 )
 
 func main() {
-	var (
-		// Length validator.
-		lenVl = func(length int) (err error) {
-			if length > 3 {
-				err = com.ErrTooLargeLength
-			}
-			return
-		}
-		// Element validator.
-		elemVl = func(elem string) (err error) {
-			if elem == "hello" {
-				err = ErrBadElement
-			}
-		}
-		// Each of the validators could be nil.
-		ser = ord.NewValidSliceSer[string](ord.String, com.ValidatorFn[int](lenVl),
-			com.ValidatorFn[string](elemVl))
+  var (
+    // Length validator.
+    lenVl = func(length int) (err error) {
+      if length > 3 {
+        err = com.ErrTooLargeLength
+      }
+      return
+    }
+    // Element validator.
+    elemVl = func(elem string) (err error) {
+      if elem == "hello" {
+        err = ErrBadElement
+      }
+    }
+    // Each of the validators could be nil.
+    ser = ord.NewValidSliceSer[string](ord.String, com.ValidatorFn[int](lenVl),
+      com.ValidatorFn[string](elemVl))
 
-		// To create a valid slice serializer with the specific length serializer
-		// use:
-		// ser = ord.NewValidSliceSerWith[string](raw.Int, ord.String,
-		// 	com.ValidatorFn[int](lenVl),
-		// 	com.ValidatorFn[string](elemVl))
+    // To create a valid slice serializer with the specific length serializer
+    // use:
+    // ser = ord.NewValidSliceSerWith[string](raw.Int, ord.String,
+    // 	com.ValidatorFn[int](lenVl),
+    // 	com.ValidatorFn[string](elemVl))
 
-		value = []string{"hello", "world"}
-		size  = ser.Size(value)
-		bs    = make([]byte, size)
-	)
-	n := ser.Marshal(value, bs)
-	// Unmarshalling stops when any of the validators return an error. As a
-	// result, in this case, we will receive an element validation error.
-	value, n, err := ser.Unmarshal(bs)
+    value = []string{"hello", "world"}
+    size  = ser.Size(value)
+    bs    = make([]byte, size)
+  )
+  n := ser.Marshal(value, bs)
+  // Unmarshalling stops when any of the validators return an error. As a
+  // result, in this case, we will receive an element validation error.
+  value, n, err := ser.Unmarshal(bs)
   // ...
 }
 
@@ -592,53 +592,53 @@ length, key and value validators.
 package main
 
 import (
-	com "github.com/mus-format/common-go"
-	"github.com/mus-format/mus-go/ord"
-	"github.com/mus-format/mus-go/varint"
+  com "github.com/mus-format/common-go"
+  "github.com/mus-format/mus-go/ord"
+  "github.com/mus-format/mus-go/varint"
 )
 
 func main() {
-	var (
-		// Length validator.
-		lenVl = func(length int) (err error) {
-			if length > 3 {
-				err = com.ErrTooLargeLength
-			}
-			return
-		}
+  var (
+    // Length validator.
+    lenVl = func(length int) (err error) {
+      if length > 3 {
+        err = com.ErrTooLargeLength
+      }
+      return
+    }
     // Key validator.
-		keyVl = func(key int) (err error) {
-			if key == 1 {
-				err = ErrBadKey
-			}
-		}
-		// Value validator.
-		valVl = func(val string) (err error) {
-			if val == "hello" {
-				err = ErrBadValue
-			}
-		}
-		// Each of the validators could be nil.
-		ser = ord.NewValidMapSer[int, string](varint.Int, ord.String,
-			com.ValidatorFn[int](lenVl),
-			com.ValidatorFn[int](keyVl),
-			com.ValidatorFn[string](valVl))
+    keyVl = func(key int) (err error) {
+      if key == 1 {
+        err = ErrBadKey
+      }
+    }
+    // Value validator.
+    valVl = func(val string) (err error) {
+      if val == "hello" {
+        err = ErrBadValue
+      }
+    }
+    // Each of the validators could be nil.
+    ser = ord.NewValidMapSer[int, string](varint.Int, ord.String,
+      com.ValidatorFn[int](lenVl),
+      com.ValidatorFn[int](keyVl),
+      com.ValidatorFn[string](valVl))
 
-		// To create a valid map serializer with the specific length serializer
-		// use:
-		// ser = ord.NewValidMapSerWith[int, string](raw.Int, varint.Int, ord.String,
-		// 	com.ValidatorFn[int](lenVl),
-		// 	com.ValidatorFn[int](keyVl),
-		// 	com.ValidatorFn[string](valVl))
+    // To create a valid map serializer with the specific length serializer
+    // use:
+    // ser = ord.NewValidMapSerWith[int, string](raw.Int, varint.Int, ord.String,
+    // 	com.ValidatorFn[int](lenVl),
+    // 	com.ValidatorFn[int](keyVl),
+    // 	com.ValidatorFn[string](valVl))
 
-		value = map[int]string{1: "hello", 2: "world"}
-		size  = ser.Size(value)
-		bs    = make([]byte, size)
-	)
-	n := ser.Marshal(value, bs)
-	// Unmarshalling stops when any of the validators return an error. As a
-	// result, in this case, we will receive a key validation error.
-	value, n, err := ser.Unmarshal(bs)
+    value = map[int]string{1: "hello", 2: "world"}
+    size  = ser.Size(value)
+    bs    = make([]byte, size)
+  )
+  n := ser.Marshal(value, bs)
+  // Unmarshalling stops when any of the validators return an error. As a
+  // result, in this case, we will receive a key validation error.
+  value, n, err := ser.Unmarshal(bs)
   // ...
 }
 ```
