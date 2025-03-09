@@ -6,8 +6,8 @@ package mus
 // Marshal fills bs with an encoded value, returning the number of used bytes.
 // It should panic if receives too small byte slice.
 //
-// Unmarshal parses an encoded value from bs, returning the number of used bytes
-// and any error encountered.
+// Unmarshal parses an encoded value from bs, returning the value, the number of
+// used bytes and any error encountered.
 //
 // Size method returns the number of bytes needed to encode the value.
 //

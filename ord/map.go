@@ -6,21 +6,22 @@ import (
 	"github.com/mus-format/mus-go/varint"
 )
 
-// NewMapSer returns a new map serializer with the given key and value serializers.
+// NewMapSer returns a new map serializer with the given key and value
+// serializers.
 func NewMapSer[T comparable, V any](keySer mus.Serializer[T],
 	valueSer mus.Serializer[V]) mapSer[T, V] {
 	return NewMapSerWith(varint.PositiveInt, keySer, valueSer)
 }
 
-// NewMapSerWith returns a new map serializer with the given length serializer,
-// key serializer, and value serializer.
+// NewMapSerWith returns a new map serializer with the given length, key, and
+// value serializers.
 func NewMapSerWith[T comparable, V any](lenSer mus.Serializer[int],
 	keySer mus.Serializer[T], valueSer mus.Serializer[V]) mapSer[T, V] {
 	return mapSer[T, V]{lenSer, keySer, valueSer}
 }
 
-// NewValidMapSer returns a new map serializer with the given key, value
-// serializers and length, key, value validators.
+// NewValidMapSer returns a new map serializer with the given key serializer,
+// value serializer, length, key, and value validators.
 func NewValidMapSer[T comparable, V any](keySer mus.Serializer[T],
 	valueSer mus.Serializer[V],
 	lenVl com.Validator[int],
@@ -31,8 +32,9 @@ func NewValidMapSer[T comparable, V any](keySer mus.Serializer[T],
 		valueVl)
 }
 
-// NewValidMapSerWith returns a new map serializer with the given length, key,
-// value serializers and length, key, value validators.
+// NewValidMapSerWith returns a new map serializer with the given length
+// serializer, key serializer, value serializer, length, key, and value
+// validators.
 func NewValidMapSerWith[T comparable, V any](lenSer mus.Serializer[int],
 	keySer mus.Serializer[T],
 	valueSer mus.Serializer[V],

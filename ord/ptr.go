@@ -5,7 +5,8 @@ import (
 	"github.com/mus-format/mus-go"
 )
 
-// NewPtrSer returns a new pointer serializer with the given base type serializer.
+// NewPtrSer returns a new pointer serializer with the given base type
+// serializer.
 func NewPtrSer[T any](baseSer mus.Serializer[T]) ptrSer[T] {
 	return ptrSer[T]{baseSer}
 }

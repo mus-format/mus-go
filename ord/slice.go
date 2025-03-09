@@ -19,14 +19,14 @@ func NewSliceSerWith[T any](lenSer mus.Serializer[int],
 }
 
 // NewValidSliceSer returns a new slice serializer with the given element
-// serializer and length, element validators.
+// serializer, length, and element validators.
 func NewValidSliceSer[T any](elemSer mus.Serializer[T],
 	lenVl com.Validator[int], elemVl com.Validator[T]) validSliceSer[T] {
 	return NewValidSliceSerWith(varint.PositiveInt, elemSer, lenVl, elemVl)
 }
 
-// NewValidSliceSerWith returns a new slice serializer with the given length,
-// element serializers and length, element validators.
+// NewValidSliceSerWith returns a new slice serializer with the given length
+// serializer, element serializer, length and element validators.
 func NewValidSliceSerWith[T any](lenSer mus.Serializer[int],
 	elemSer mus.Serializer[T],
 	lenVl com.Validator[int],
