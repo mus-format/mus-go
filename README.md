@@ -18,8 +18,9 @@ It is lightning fast, space efficient and well tested.
 ## Description
 - Has a [streaming version](https://github.com/mus-format/mus-stream-go).
 - Can run on both 32 and 64-bit systems.
-- Variable-length data types (like `string`, `slice`, or `map`) are encoded as: 
-  `length + data`. You can choose binary representation for both of these parts. 
+- Variable-length data types (like `string`, `array`, `slice`, or `map`) are 
+  encoded as: `length + data`. You can choose binary representation for both of 
+  these parts. 
 - Supports data versioning.
 - Deserialization may fail with one of the following errors: `ErrOverflow`, 
   `ErrNegativeLength`, `ErrTooSmallByteSlice`, `ErrWrongFormat`.
@@ -39,58 +40,92 @@ It is lightning fast, space efficient and well tested.
 - [cmd-stream-go](#cmd-stream-go)
 - [musgen-go](#musgen-go)
 - [Benchmarks](#benchmarks)
-- [How To Use](#how-to-use)
-  - [varint Package](#varint-package)
-  - [raw Package](#raw-package)
-  - [ord (ordinary) Package](#ord-ordinary-package)
-  - [unsafe Package](#unsafe-package)
-  - [pm (pointer mapping) Package](#pm-pointer-mapping-package)
-- [Structs Support](#structs-support)
-- [Arrays Support](#arrays-support)
-- [MarshallerMUS Interface](#marshallermus-interface)
-- [Generic MarshalMUS Function](#generic-marshalmus-function)
-- [DTM (Data Type Metadata) Support](#dtm-data-type-metadata-support)
-- [Data Versioning](#data-versioning)
-- [Marshal/Unmarshal Interfaces (or oneof feature)](#marshalunmarshal-interfaces-or-oneof-feature)
-- [Validation](#validation)
-  - [String](#string)
-  - [Slice](#slice)
-  - [Map](#map)
-  - [Struct](#struct)
+- [How To](#how-to)
+  - [Packages](#packages)
+    - [varint](#varint)
+    - [raw](#raw)
+    - [ord (ordinary)](#ord-ordinary)
+      - [Array](#array)
+      - [Slice](#slice)
+      - [Map](#map)
+    - [unsafe](#unsafe)
+    - [pm (pointer mapping)](#pm-pointer-mapping)
+  - [Structs Support](#structs-support)
+  - [MarshallerMUS Interface](#marshallermus-interface)
+  - [Generic MarshalMUS Function](#generic-marshalmus-function)
+  - [DTM (Data Type Metadata) Support](#dtm-data-type-metadata-support)
+  - [Data Versioning](#data-versioning)
+  - [Interface Serialization (oneof feature)](#interface-serialization-oneof-feature)
+  - [Validation](#validation)
+    - [String](#string)
+    - [Slice](#slice-1)
+    - [Map](#map-1)
+    - [Struct](#struct)
 - [Out of Order Deserialization](#out-of-order-deserialization)
 - [Zero Allocation Deserialization](#zero-allocation-deserialization)
 
 # cmd-stream-go
-[cmd-stream-go](https://github.com/cmd-stream/cmd-stream-go) allows you to 
-execute commands on the server. cmd-stream-go/MUS is about [3 times faster](https://github.com/ymz-ncnk/go-client-server-communication-benchmarks) 
+[cmd-stream-go](https://github.com/cmd-stream/cmd-stream-go) allows to execute 
+commands on the server. cmd-stream-go/MUS is about [3 times faster](https://github.com/ymz-ncnk/go-client-server-communication-benchmarks) 
 than gRPC/Protobuf.
 
 # musgen-go
-Writing mus-go code manually can be tedious and error-prone. Instead, it’s much 
-better to use a [code generator](https://github.com/mus-format/musgen-go) that 
-automatically produces `Marshal`, `Unmarshal`, `Size`, and `Skip` functions for 
-you. It’s also incredibly easy to use - simply provide a type and call 
-`Generate()`.
+Writing mus-go code manually can be tedious and error-prone. A better approach 
+is to use a [code generator](https://github.com/mus-format/musgen-go), it's also
+incredibly easy to use - just provide a type and call `Generate()`.
 
 # Benchmarks
-- [github.com/ymz-ncnk/go-serialization-benchmarks](https://github.com/ymz-ncnk/go-serialization-benchmarks) - 
-  contains the results of running serializers in different modes.
+- [github.com/ymz-ncnk/go-serialization-benchmarks](https://github.com/ymz-ncnk/go-serialization-benchmarks)
 - [github.com/alecthomas/go_serialization_benchmarks](https://github.com/alecthomas/go_serialization_benchmarks)
 
 Why did I create another [benchmarks](https://github.com/ymz-ncnk/go-serialization-benchmarks)?  
 The existing [benchmarks](https://github.com/alecthomas/go_serialization_benchmarks) 
-have some notable issues - try running them several times, and you’ll likely get
+have some notable issues - try running them several times, and you'll likely get
 inconsistent results, making it difficult to determine which serializer is truly 
 faster. That was one of the reasons, and basically I made them for my own use.
 
-# How To Use
-Don't forget to visit [mus-examples-go](https://github.com/mus-format/mus-examples-go).
+# How To
+With mus-go, to make a type serializable, you need to implement the [Serializer](./mus.go) 
+interface:
+```go
 
+import "github.com/mus-format/mus-go"
+
+var YourTypeMUS = yourTypeMUS{}
+
+// yourTypeMUS implements the mus.Serializer interface.
+type yourTypeMUS struct{}
+
+func (s yourTypeMUS) Marshal(v YourType, bs []byte) (n int)              {...}
+func (s yourTypeMUS) Unmarshal(bs []byte) (v YourType, n int, err error) {...}
+func (s yourTypeMUS) Size(v YourType) (size int)                         {...}
+func (s yourTypeMUS) Skip(bs []byte) (n int, err error)                  {...}
+```
+
+And than use it like:
+```go
+var (
+  ser mus.Serializer[YourType] = ...
+
+  value YourType = ...
+  size = ser.Size(value) // The number of bytes required to serialize the value.
+  bs = make([]byte, size)
+)
+
+n := ser.Marshal(value, bs) // Returns the number of used bytes.
+value, n, err := ser.Unmarshal(bs) // Returns the value, the number of used 
+// bytes and any error encountered.
+
+// Instead of unmarshalling the value can be skipped:
+n, err := ser.Skip(bs)
+```
+
+## Packages
 mus-go offers several encoding options, each of which is in a separate package.
 
-## varint Package
-Serializes all `uint` (`uint64`, `uint32`, `uint16`, `uint8`, `uint`), `int`, 
-`float`, `byte` data types using Varint encoding. For example:
+### varint
+Contains Varint serialzers for all `uint` (`uint64`, `uint32`, `uint16`, 
+`uint8`, `uint`), `int`, `float`, `byte` data types. Example:
 ```go
 package main
 
@@ -98,20 +133,22 @@ import "github.com/mus-format/mus-go/varint"
 
 func main() {
   var (
-    num  = 1000
-    size = varint.SizeInt(num) // The number of bytes required to serialize num.
+    num  = 100
+    size = varint.Int.Size(num)
     bs = make([]byte, size)
   )
-  n := varint.MarshalInt(num, bs)        // Returns the number of used bytes.
-  num, n, err := varint.UnmarshalInt(bs) // In addition to the int value and the
-  // number of used bytes, it may also return an error.
+  n := varint.Int.Marshal(num, bs)
+  num, n, err := varint.Int.Unmarshal(bs)
   // ...
 }
 ```
 
-## raw Package
-Serializes the same `uint`, `int`, `float`, `byte` data types using Raw 
-encoding. For example:
+Also includes the `PositiveInt` serializer (Varint without ZigZag) for positive 
+`int` values. It can handle negative values as well, but with lower performance.
+
+### raw
+Contains Raw serializers for the same `uint`, `int`, `float`, `byte` data types.
+Example:
 ```go
 package main
 
@@ -119,169 +156,215 @@ import "github.com/mus-format/mus-go/raw"
 
 func main() {
   var (
-    num = 1000
-    size = raw.SizeInt(num)
+    num = 100
+    size = raw.Int.Size(num)
     bs  = make([]byte, size)
   )
-  n := raw.MarshalInt(num, bs)
-  num, n, err := raw.UnmarshalInt(bs)
+  n := raw.Int.Marshal(num, bs)
+  num, n, err := raw.Int.Unmarshal(bs)
   // ...
 }
 ```
+
 More details about Varint and Raw encodings can be found in the 
 [MUS format specification](https://github.com/mus-format/specification).
 If in doubt, use Varint.
 
-## ord (ordinary) Package
-Supports the following data types: `bool`, `string`, `slice`, `byte slice`, 
-`map`, and pointers.
+### ord (ordinary)
+Contains serializers/constructors for `bool`, `string`, `array`, `byte slice`,
+`slice`, `map`, and pointer types.
 
-Variable-length data types (such as `string`, `slice`, or `map`) are encoded as 
-`length + data`. You can select the binary representation for both these parts. 
-By default, the length is encoded using Varint without ZigZag (`...PositiveInt()` 
-functions from the varint package). In this case the maximum length is limited 
-by the maximum value of the `int` type on your system. This is ok for different 
-architectures - an attempt to unmarshal, for example, too long string on a 
-32-bit system, will result in `ErrOverflow`.
+Variable-length data types (such as `string`, `array`, `slice`, or `map`) are 
+encoded as `length + data`. You can choose the binary representation for both 
+parts. By default, the length is encoded using a Varint without ZigZag 
+(`varint.PositiveInt`). In this case, the maximum length is limited by the 
+maximum value of the `int` type on your system. This works well across different 
+architectures - for example, an attempt to unmarshal a string that is too long 
+on a 32-bit system will result in an `ErrOverflow`.
 
-Let's examine how the slice type is serialized:
+For `array`, `slice`, and `map` types, there are only constructors available to 
+create a concrete serializer.
+
+#### Array
+Unfortunately, Go does not support generic parameterization of array sizes,
+as a result, the array serializer constructor looks like:
 ```go
 package main
 
 import (
-  "github.com/mus-format/mus-go"
-  "github.com/mus-format/mus-go/ord"
-  "github.com/mus-format/mus-go/varint"
+	"github.com/mus-format/mus-go/ord"
+	"github.com/mus-format/mus-go/varint"
+)
+
+func main() {
+ 	var (
+		// The first type parameter of the NewArraySer function represents the array
+		// type, and the second - the type of the array’s elements.
+		//
+		// As for the function parameters, the number 3 specifies the length of the
+		// array, and varint.Int - the serializer for the array’s elements.
+		ser = ord.NewArraySer[[3]int, int](3, varint.Int)
+
+		// To create an array serializer with the specific length serializer use:
+		// ser = ord.NewArraySerWith[[3]int, int](3, raw.Int, varint.Int)
+
+		arr  = [3]int{1, 2, 3}
+		size = ser.Size(arr)
+		bs   = make([]byte, size)
+	)
+	n := ser.Marshal(arr, bs)
+	arr, n, err := ser.Unmarshal(bs)
+	// ...
+}
+```
+
+#### Slice
+```go
+package main
+
+import (
+	"github.com/mus-format/mus-go/ord"
+	"github.com/mus-format/mus-go/varint"
 )
 
 func main() {
   var (
-    sl = []int{1, 2, 3, 4, 5}
-    
-    lenM mus.Marshaller // Length marshaller, if nil varint.MarshalPositiveInt() is used.
-    lenU mus.Unmarshaller // Length unmarshaller, if nil varint.UnmarshalPositiveInt() is used.
+    // varint.Int specifies the serializer for the slice's elements.
+    ser = ord.NewSliceSer[int](varint.Int)
 
-    m mus.MarshallerFn[int] = varint.MarshalInt // Implementation of the 
-    // mus.Marshaller interface for slice elements.
-    u mus.UnmarshallerFn[int] = varint.UnmarshalInt // Implementation of the
-    // mus.Unmarshaller interface for slice elements.
-    s mus.SizerFn[int] = varint.SizeInt // Implementation of the mus.Sizer
-    // interface for slice elements.
+    // To create a slice serializer with the specific length serializer use:
+    // ser = ord.NewSliceSerWith[int](raw.Int, varint.Int)
 
-    size = ord.SizeSlice[int](sl, s)
-    bs   = make([]byte, size)
+    sl = []int{1, 2, 3}
+    size = ser.Size(sl)
+    bs = make([]byte, size)
   )
-  n := ord.MarshalSlice[int](sl, lenM, m, bs)
-  sl, n, err := ord.UnmarshalSlice[int](lenU, u, bs)
+  n := ser.Marshal(sl, bs)
+  sl, n, err := ser.Unmarshal(bs)
   // ...
 }
 ```
-Maps are serialized in the same way.
 
-## unsafe Package
-unsafe package provides maximum performance, but be careful it uses an unsafe 
-type conversion.
-
-This warning largely applies to the string type - modifying the byte slice after 
-unmarshalling will also change the string’s contents. Here is an 
-[example](https://github.com/mus-format/mus-examples-go/blob/main/unasafe/main.go) 
-that demonstrates this behavior more clearly.
-
-Supports the following data types: `bool`, `string`, `byte slice`, `byte`, and 
-all `uint`, `int`, `float`.
-
-## pm (pointer mapping) Package
-Let's consider the following struct:
-```go
-type TwoPtr struct {
-  ptr1 *string
-  ptr2 *string
-}
-```
-With the `ord` package after unmarshal `twoPtr.ptr1 != twoPtr.ptr2`, and with 
-the `pm` package, they will be equal. This feature allows to serialize data 
-structures such as graphs or linked lists. Corresponding examples can be found 
-at [mus-examples-go](https://github.com/mus-format/mus-examples-go/tree/main/pm).
-
-# Structs Support
-In fact, mus-go does not support structural data types, which means that you will
-have to implement the `mus.Marshaller`, `mus.Unmarshaller`, `mus.Sizer` and
-`mus.Skipper` interfaces yourself. But it's not difficult at all, for example:
+#### Map
 ```go
 package main
 
 import (
-  "github.com/mus-format/mus-go/ord"
-  "github.com/mus-format/mus-go/varint"
+	"github.com/mus-format/mus-go/ord"
+	"github.com/mus-format/mus-go/varint"
 )
-  
-type Foo struct {
-  a int
-  b bool
-  c string
-}
+func main() {
+	var (
+		// varint.Int specifies the serializer for the map’s keys, and ord.String -
+		// the serializer for the map’s values.
+		ser = ord.NewMapSer[int, string](varint.Int, ord.String)
 
-// MarshalFoo implements the mus.Marshaller interface.
-func MarshalFoo(v Foo, bs []byte) (n int) {
-  n = varint.MarshalInt(v.a, bs)
-  n += ord.MarshalBool(v.b, bs[n:])
-  return n + ord.MarshalString(v.c, nil, bs[n:])
-}
+		// To create a map serializer with the specific length serializer use:
+		// ser = ord.NewMapSerWith[int, string](raw.Int, varint.Int, ord.String)
 
-// UnmarshalFoo implements the mus.Unmarshaller interface.
-func UnmarshalFoo(bs []byte) (v Foo, n int, err error) {
-  v.a, n, err = varint.UnmarshalInt(bs)
-  if err != nil {
-    return
-  }
-  var n1 int
-  v.b, n1, err = ord.UnmarshalBool(bs[n:])
-  n += n1
-  if err != nil {
-    return
-  }
-  v.c, n1, err = ord.UnmarshalString(nil, bs[n:])
-  n += n1
-  return
-}
-
-// SizeFoo implements the mus.Sizer interface.
-func SizeFoo(v Foo) (size int) {
-  size += varint.SizeInt(v.a)
-  size += ord.SizeBool(v.b)
-  return size + ord.SizeString(v.c, nil)
-}
-
-// SkipFoo implements the mus.Skipper interface.
-func SkipFoo(bs []byte) (n int, err error) {
-  n, err = varint.SkipInt(bs)
-  if err != nil {
-    return
-  }
-  var n1 int
-  n1, err = ord.SkipBool(bs[n:])
-  n += n1
-  if err != nil {
-    return
-  }
-  n1, err = ord.SkipString(nil, bs[n:])
-  n += n1
-  return
+		m    = map[int]string{1: "one", 2: "two", 3: "three"}
+		size = ser.Size(m)
+		bs   = make([]byte, size)
+	)
+	n := ser.Marshal(m, bs)
+	m, n, err := ser.Unmarshal(bs)
+	// ...
 }
 ```
+
+### unsafe
+The unsafe package provides maximum performance, but be careful - it uses an 
+unsafe type conversion. This warning largely applies to the string type because 
+modifying the byte slice after unmarshalling will also change the string’s 
+contents. Here is an [example](https://github.com/mus-format/mus-examples-go/blob/main/unasafe/main.go) 
+that demonstrates this behavior more clearly.
+
+Provides serializers for the following data types: `bool`, `string`, 
+`byte slice`, `byte`, and all `uint`, `int`, `float`.
+
+### pm (pointer mapping)
+Let's consider two pointers:
+```go
+var (
+  ptr1 *string
+  ptr2 *string
+)
+```
+
+If they’re initialized with the same value, then after unmarshalling with the 
+`ord` package, `ptr1 != ptr2`. In contrast, when using the `pm` package, they 
+will be equal. This behavior makes it possible to serialize data structures like
+graphs or linked lists. You can find corresponding examples in [mus-examples-go](https://github.com/mus-format/mus-examples-go/tree/main/pm).
+
+## Structs Support
+mus-go doesn’t support structural data types out of the box, which means you’ll 
+need to implement the `mus.Serializer` interface yourself. But that’s not 
+difficult at all. For example:
+```go
+package main
+
+import (
+	"github.com/mus-format/mus-go/ord"
+	"github.com/mus-format/mus-go/varint"
+)
+
+// We will implement the FooMUS serializer for this struct.
+type Foo struct {
+	str string
+	sl  []int
+}
+
+// Serializers.
+var (
+	// IntSliceMUS is used by the FooMUS serializer.
+	IntSliceMUS = ord.NewSliceSer[int](varint.Int)
+
+	FooMUS = fooMUS{}
+)
+
+// fooMUS implements the mus.Serializer interface.
+type fooMUS struct{}
+
+func (s fooMUS) Marshal(v Foo, bs []byte) (n int) {
+	n = ord.String.Marshal(v.str, bs)
+	return n + IntSliceMUS.Marshal(v.sl, bs[n:])
+}
+
+func (s fooMUS) Unmarshal(bs []byte) (v Foo, n int, err error) {
+	v.str, n, err = ord.String.Unmarshal(bs)
+	if err != nil {
+		return
+	}
+	var n1 int
+	v.sl, n1, err = IntSliceMUS.Unmarshal(bs[n:])
+	n += n1
+	return
+}
+
+func (s fooMUS) Size(v Foo) (size int) {
+	size += ord.String.Size(v.str)
+	return size + IntSliceMUS.Size(v.sl)
+}
+
+func (s fooMUS) Skip(bs []byte) (n int, err error) {
+	n, err = ord.String.Skip(bs)
+	if err != nil {
+		return
+	}
+	var n1 int
+	n1, err = IntSliceMUS.Skip(bs[n:])
+	n += n1
+	return
+}
+```
+
 All you have to do is deconstruct the structure into simpler data types and 
 choose the desired encoding for each. Of course, this requires some effort.
-But, firstly, this code can be generated, secondly, this approach provides 
-more flexibility, and thirdly, mus-go remains quite simple, which makes it easy 
-to implement for other programming languages.
+But, firstly, the code can be generated, secondly, this approach provides 
+greater flexibility, and thirdly, mus-go stays quite simple, making it easy to 
+implement in other programming languages.
 
-# Arrays Support
-Unfortunately, Golang does not support generic parameterization of array sizes. 
-Therefore, to serialize an array - make a slice of it and use the `ord` package. 
-Or, for better performance, implement the necessary `Marshal`, `Unmarshal`, ... 
-functions, as done in the [ord/slice.go](ord/slice.go) file.
-
-# MarshallerMUS Interface
+## MarshallerMUS Interface
 It is often convenient to define the `MarshallerMUS` interface:
 ```go
 type MarshallerMUS interface {
@@ -293,21 +376,20 @@ type MarshallerMUS interface {
 type Foo struct {...}
 
 func (f Foo) MarshalMUS(bs []byte) (n int) {
-  return MarshalFooMUS(f, bs) // or FooDTS.Marshal(f, bs)
+  return FooMUS.Marshal(f, bs) // or FooDTS.Marshal(f, bs)
 }
 
 func (f Foo) SizeMUS() (size int) {
-  return SizeFooMUS(f) // or FooDTS.Size(f)
+  return FooMUS.Size(f) // or FooDTS.Size(f)
 }
-...
 ```
 
-# Generic MarshalMUS Function
+## Generic MarshalMUS Function
 To define generic `MarshalMUS` function:
 ```go
-package main 
+package main
 
-// Define MarshallerMUS interface ...
+// Define the MarshallerMUS interface ...
 type MarshallerMUS interface {
   MarshalMUS(bs []byte) (n int)
   SizeMUS() (size int)
@@ -333,41 +415,59 @@ func main() {
 
 The full code can be found [here](https://github.com/mus-format/mus-examples-go/tree/main/generic_marshal).
 
-# DTM (Data Type Metadata) Support
-[mus-dts-go](https://github.com/mus-format/mus-dts-go) provides [DTM](https://medium.com/p/21d7be309e8d) support.
+## DTM (Data Type Metadata) Support
+[mus-dts-go](https://github.com/mus-format/mus-dts-go) provides [DTM](https://medium.com/p/21d7be309e8d) 
+support.
 
-# Data Versioning
-mus-dts-go can be used to implement data versioning. [Here](https://github.com/mus-format/mus-examples-go/tree/main/versionings) is an example.
+## Data Versioning
+mus-dts-go can be used to implement data versioning. [Here](https://github.com/mus-format/mus-examples-go/tree/main/versioning) is an example.
 
-# Marshal/Unmarshal Interfaces (or oneof feature)
-You should read the [mus-dts-go](https://github.com/mus-format/mus-dts-go)
-documentation first.
-
-A simple example:
+## Interface Serialization (oneof feature)
+mus-dts-go will also help to create a serializer for an interface. Example:
 ```go
-// Interface to Marshal/Unmarshal.
+import dts "github.com/mus-format/mus-dts-go"
+
+// Interface to serializer.
 type Instruction interface {...}
 
 // Copy implements the Instruction and MarshallerMUS interfaces.
 type Copy struct {...}
 
+// MarshalMUS uses CopyDTS.
+func (c Copy) MarshalMUS(bs []byte) (n int) {
+  return CopyDTS.Marshal(c, bs)
+}
+
+// SizeMUS uses CopyDTS.
+func (c Copy) SizeMUS() (size int) {
+  return CopyDTS.Size(c, bs)
+}
+
 // Insert implements the Instruction and MarshallerMUS interfaces.
 type Insert struct {...}
 
-var (
-  CopyDTS = ...
-  InsertDTS = ...
-)
-
-func MarshalInstruction(instr Instruction, bs []byte) (n int) {
-  if m, ok := instr.(MarshallerMUS); ok {
-    return m.MarshalMUS(bs)
-  }
-  panic("instr doesn't implement the MarshallerMUS interface")
+// MarshalMUS uses InsertDTS.
+func (i Insert) MarshalMUS(bs []byte) (n int) {
+  return InsertDTS.Marshal(c, bs)
 }
 
-func UnmarshalInstruction(bs []byte) (instr Instruction, n int, err error) {
-  dtm, n, err := dts.UnmarshalDTM(bs)
+// SizeMUS uses InsertDTS.
+func (i Insert) SizeMUS() (size int) {
+  return InsertDTS.Size(c, bs)
+}
+
+// instructionMUS implements the mus.Serializer interface.
+type instructionMUS struct {}
+
+func (s instructionMUS) Marshal(i Instruction, bs []byte) (n int) {
+  if m, ok := i.(MarshallerMUS); ok {
+    return m.MarshalMUS(bs)
+  }
+  panic("i doesn't implement the MarshallerMUS interface")
+}
+
+func (s instructionMUS) Unmarshal(bs []byte) (i Instruction, n int, err error) {
+  dtm, n, err := dts.DTMSer.Unmarshal(bs)
   if err != nil {
     return
   }
@@ -382,172 +482,196 @@ func UnmarshalInstruction(bs []byte) (instr Instruction, n int, err error) {
   }
 }
 
-func SizeInstruction(instr Instruction) (size int) {
-  if s, ok := instr.(MarshallerMUS); ok {
+func (s instructionMUS) Size(i Instruction) (size int) {
+  if s, ok := i.(MarshallerMUS); ok {
     return s.SizeMUS()
   }
-  panic("instr doesn't implement the MarshallerMUS interface")
+  panic("i doesn't implement the MarshallerMUS interface")
 }
 ```
+
 A full example can be found at [mus-examples-go](https://github.com/mus-format/mus-examples-go/tree/main/oneof).
-Take a note, nothing will stop us to Marshal/Unmarshal, for example, a slice of 
-interfaces.
 
-# Validation
-Validation is performed during deserialization.
+## Validation
+Validation is performed during unmarshalling. Validator is just a function 
+with the following signature `func (value Type) error`, where `Type` is a type 
+of the value to which the validator is applied.
 
-## String
-With the `ord.UnmarshalValidString()` function, you can validate the length of
-a string.
+### String
+`ord.NewValidStringSer` constructor creates a string serializer with the length
+validator. 
 ```go
 package main
 
 import (
-  "errors"
-
-  com "github.com/mus-format/common-go"
-  "github.com/mus-format/mus-go/ord"
+	com "github.com/mus-format/common-go"
+	"github.com/mus-format/mus-go/ord"
 )
 
 func main() {
-  var (
-    ErrTooLongString                         = errors.New("too long string")
-    lenU mus.Unmarshaller // Length unmarshaller, if nil varint.UnmarshalPositiveInt() is used.
-    lenVl        com.ValidatorFn[int] = func(length int) (err error) {  // Length validator.
-      if length > 10 {
-        err = ErrTooLongString
-      }
-      return
-    }
-    skip = true // If true and the encoded string does not meet the requirements
-    // of the validator, all bytes belonging to it will be skipped - n will be 
-    // equal to SizeString(str).
-  )
+	var (
+		// Length validator.
+		lenVl = func(length int) (err error) {
+			if length > 3 {
+				err = com.ErrTooLargeLength
+			}
+			return
+		}
+		ser = ord.NewValidStringSer(com.ValidatorFn[int](lenVl))
+
+		// To create a valid string serializer with the specific length serializer
+		// use:
+		// ser = ord.NewValidStringSerWith(raw.Int, com.ValidatorFn[int](lenVl))
+
+		value = "hello world"
+		size  = ser.Size(value)
+		bs    = make([]byte, size)
+	)
+	n := ser.Marshal(value, bs)
+	// Unmarshalling stops when a validator returns an error. As a result, in
+	// this case, we will receive a length validation error.
+	value, n, err := ser.Unmarshal(bs)
   // ...
-  str, n, err := ord.UnmarshalValidString(lenU, lenVl, skip, bs)
+}
+
+```
+
+### Slice
+`ord.NewValidSliceSer` constructor creates a valid slice serializer with the 
+length and element validators.
+```go
+package main
+
+import (
+	com "github.com/mus-format/common-go"
+	"github.com/mus-format/mus-go/ord"
+)
+
+func main() {
+	var (
+		// Length validator.
+		lenVl = func(length int) (err error) {
+			if length > 3 {
+				err = com.ErrTooLargeLength
+			}
+			return
+		}
+		// Element validator.
+		elemVl = func(elem string) (err error) {
+			if elem == "hello" {
+				err = ErrBadElement
+			}
+		}
+		// Each of the validators could be nil.
+		ser = ord.NewValidSliceSer[string](ord.String, com.ValidatorFn[int](lenVl),
+			com.ValidatorFn[string](elemVl))
+
+		// To create a valid slice serializer with the specific length serializer
+		// use:
+		// ser = ord.NewValidSliceSerWith[string](raw.Int, ord.String,
+		// 	com.ValidatorFn[int](lenVl),
+		// 	com.ValidatorFn[string](elemVl))
+
+		value = []string{"hello", "world"}
+		size  = ser.Size(value)
+		bs    = make([]byte, size)
+	)
+	n := ser.Marshal(value, bs)
+	// Unmarshalling stops when any of the validators return an error. As a
+	// result, in this case, we will receive an element validation error.
+	value, n, err := ser.Unmarshal(bs)
+  // ...
+}
+
+```
+
+### Map
+`ord.NewValidMapSer` constructor creates a valid map serializer with the 
+length, key and value validators.
+```go
+package main
+
+import (
+	com "github.com/mus-format/common-go"
+	"github.com/mus-format/mus-go/ord"
+	"github.com/mus-format/mus-go/varint"
+)
+
+func main() {
+	var (
+		// Length validator.
+		lenVl = func(length int) (err error) {
+			if length > 3 {
+				err = com.ErrTooLargeLength
+			}
+			return
+		}
+    // Key validator.
+		keyVl = func(key int) (err error) {
+			if key == 1 {
+				err = ErrBadKey
+			}
+		}
+		// Value validator.
+		valVl = func(val string) (err error) {
+			if val == "hello" {
+				err = ErrBadValue
+			}
+		}
+		// Each of the validators could be nil.
+		ser = ord.NewValidMapSer[int, string](varint.Int, ord.String,
+			com.ValidatorFn[int](lenVl),
+			com.ValidatorFn[int](keyVl),
+			com.ValidatorFn[string](valVl))
+
+		// To create a valid map serializer with the specific length serializer
+		// use:
+		// ser = ord.NewValidMapSerWith[int, string](raw.Int, varint.Int, ord.String,
+		// 	com.ValidatorFn[int](lenVl),
+		// 	com.ValidatorFn[int](keyVl),
+		// 	com.ValidatorFn[string](valVl))
+
+		value = map[int]string{1: "hello", 2: "world"}
+		size  = ser.Size(value)
+		bs    = make([]byte, size)
+	)
+	n := ser.Marshal(value, bs)
+	// Unmarshalling stops when any of the validators return an error. As a
+	// result, in this case, we will receive a key validation error.
+	value, n, err := ser.Unmarshal(bs)
   // ...
 }
 ```
 
-## Slice
-With the `ord.UnmarshalValidSlice()` function, you can validate the length and
-elements of a slice. Also it provides an option to skip the rest of the data
-if one of the validators returns an error.
+### Struct
+Unmarshalling an invalid structure may stop at the first invalid field, 
+returning a validation error.
 ```go
 package main
 
-import (
-  "errors"
+import "github.com/mus-format/mus-go/varint"
 
-  com "github.com/mus-format/common-go"
-  "github.com/mus-format/mus-go"
-  "github.com/mus-format/mus-go/ord"
-  "github.com/mus-format/mus-go/varint"
-)
+type fooMUS struct{}
 
-func main() {
-  var (
-    ErrTooLongSlice    = errors.New("too long slice")
-    ErrTooBigSliceElem = errors.New("too big slice elem")
+// ...
 
-    lenU mus.Unmarshaller // Length unmarshaller, if nil varint.UnmarshalPositiveInt() is used.
-    lenVl com.ValidatorFn[int] = func(length int) (err error) { // Length validator.
-      if length > 5 {
-        err = ErrTooLongSlice
-      }
-      return
-    }
-    u                  = mus.UnmarshallerFn[int](varint.UnmarshalInt)
-    vl com.ValidatorFn[int] = func(e int) (err error) { // Elements validator.
-      if e > 10 {
-        err = ErrTooBigSliceElem
-      }
-      return
-    }
-    sk                 = mus.SkipperFn(varint.SkipInt) // If nil, a validation 
-    // error will be returned immediately. If != nil and one of the validators 
-    // returns an error, will be used to skip the rest of the slice.
-  )
-  // ...
-  sl, n, err := ord.UnmarshalValidSlice[int](lenU, lenVl, u, vl, sk, bs)
-  // ...
-}
-```
-
-## Map
-Validation works in the same way as for the slice type.
-
-## Struct
-Unmarshalling an invalid structure can stop at the first invalid field with a 
-validation error.
-```go
-package main
-
-import (
-  "errors"
-
-  com "github.com/mus-format/common-go"
-  "github.com/mus-format/mus-go/ord"
-  "github.com/mus-format/mus-go/varint"
-)
-
-func UnmarshalValidFoo(vl com.Validator[int], bs []byte) (v Foo, n int, err error) {
+func (s fooMUS) Unmarshal(bs []byte) (v Foo, n int, err error) {
   // Unmarshal the first field.
-  v.a, n, err = varint.UnmarshalInt(bs)
+  v.a, n, err = varint.Int.Unmarshal(bs)
   if err != nil {
     return
   }
-  // Validate the first field. There is no need to deserialize the entire 
-  // structure to find out that it is invalid.
-  if err = vl.Validate(v.a); err != nil {
-    err = fmt.Errorf("incorrect field 'a': %w", err)
-    return // The rest of the structure remains unmarshaled.
+  // Validate the first field.
+  if err = ValidateFieldA(v.a); err != nil {
+    // The rest of the structure remains unmarshaled.
+    return 
   }
   // ...
-}
-
-// vl can be used to check Foo.a field.
-var vl com.ValidatorFn[int] = func(n int) (err error) {
-  if n > 10 {
-    return errors.New("bigger than 10")
-  }
-  return
 }
 ```
 
 # Out of Order Deserialization
-A simple example:
-```go
-package main
-
-import (
-  "fmt"
-
-  "github.com/mus-format/mus-go/varint"
-)
-
-func main() {
-  // Encode three numbers in turn - 5, 10, 15.
-  bs := make([]byte, varint.SizeInt(5)+varint.SizeInt(10)+varint.SizeInt(15))
-  n1 := varint.MarshalInt(5, bs)
-  n2 := varint.MarshalInt(10, bs[n1:])
-  varint.MarshalInt(15, bs[n1+n2:])
-
-  // Get them back in the opposite direction. Errors are omitted for simplicity.
-  n1, _ = varint.SkipInt(bs)
-  n2, _ = varint.SkipInt(bs)
-  num, _, _ := varint.UnmarshalInt(bs[n1+n2:])
-  fmt.Println(num)
-  num, _, _ = varint.UnmarshalInt(bs[n1:])
-  fmt.Println(num)
-  num, _, _ = varint.UnmarshalInt(bs)
-  fmt.Println(num)
-  // The output will be:
-  // 15
-  // 10
-  // 5
-}
-```
+A simple example can be found [here](https://github.com/mus-format/mus-examples-go/tree/main/out_of_order).
 
 # Zero Allocation Deserialization
-Can be achieved using the unsafe package.
+Can be achieved using the `unsafe` package.
