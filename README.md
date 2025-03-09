@@ -281,18 +281,24 @@ Provides serializers for the following data types: `bool`, `string`,
 `byte slice`, `byte`, and all `uint`, `int`, `float`.
 
 ### pm (pointer mapping)
-Let's consider two pointers:
+Let's consider two pointers initialized with the same value:
 ```go
 var (
-  ptr1 *string
-  ptr2 *string
+  str = "hello world"
+  ptr = &str
+
+  ptr1 *string = ptr
+  ptr2 *string = ptr
 )
 ```
 
-If they’re initialized with the same value, then after unmarshalling with the 
-`ord` package, `ptr1 != ptr2`. In contrast, when using the `pm` package, they 
-will be equal. This behavior makes it possible to serialize data structures like
-graphs or linked lists. You can find corresponding examples in [mus-examples-go](https://github.com/mus-format/mus-examples-go/tree/main/pm).
+The `pm` package ensures that these pointers are serialized in such a way that 
+after unmarshalling, they remain equal - `ptr1 == ptr2`. This behavior differs 
+from the `ord` package, where the pointers would no longer be equal after 
+unmarshalling.
+
+The `pm` package enables the serialization of data structures like graphs or 
+linked lists. You can find corresponding examples in [mus-examples-go](https://github.com/mus-format/mus-examples-go/tree/main/pm).
 
 ## Structs Support
 mus-go doesn’t support structural data types out of the box, which means you’ll 
