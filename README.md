@@ -91,6 +91,7 @@ interface:
 
 import "github.com/mus-format/mus-go"
 
+// YourTypeMUS is a MUS serializer for YourType.
 var YourTypeMUS = yourTypeMUS{}
 
 // yourTypeMUS implements the mus.Serializer interface.
@@ -424,7 +425,8 @@ The full code can be found [here](https://github.com/mus-format/mus-examples-go/
 support.
 
 ## Data Versioning
-mus-dts-go can be used to implement data versioning. [Here](https://github.com/mus-format/mus-examples-go/tree/main/versioning) is an example.
+mus-dts-go can be used to implement data versioning. [Here](https://github.com/mus-format/mus-examples-go/tree/main/versioning)
+is an example.
 
 ## Interface Serialization (oneof feature)
 mus-dts-go will also help to create a serializer for an interface. Example:
@@ -661,7 +663,7 @@ type fooMUS struct{}
 
 func (s fooMUS) Unmarshal(bs []byte) (v Foo, n int, err error) {
   // Unmarshal the first field.
-  v.a, n, err = varint.Int.Unmarshal(bs)
+  v.str, n, err = ord.String.Unmarshal(bs)
   if err != nil {
     return
   }
