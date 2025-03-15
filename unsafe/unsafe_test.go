@@ -8,6 +8,8 @@ import (
 	com_testdata "github.com/mus-format/common-go/testdata"
 	com_mock "github.com/mus-format/common-go/testdata/mock"
 	"github.com/mus-format/mus-go"
+	bslops "github.com/mus-format/mus-go/options/byte_slice"
+	strops "github.com/mus-format/mus-go/options/string"
 	"github.com/mus-format/mus-go/raw"
 	"github.com/mus-format/mus-go/testdata"
 	"github.com/mus-format/mus-go/testdata/mock"
@@ -177,6 +179,16 @@ func TestUnsafe(t *testing.T) {
 				testdata.TestSkip[string](com_testdata.StringTestCases, ser, t)
 			})
 
+		t.Run("We should be able to set a length serializer",
+			func(t *testing.T) {
+				var (
+					str, lenSer = testdata.StringLenSerData(t)
+					ser         = NewStringSer(strops.WithLenSer(lenSer))
+				)
+				testdata.Test[string]([]string{str}, ser, t)
+				testdata.TestSkip[string]([]string{str}, ser, t)
+			})
+
 		t.Run("Marshal should return ErrTooSmallByteSlice if there is no space in bs",
 			func(t *testing.T) {
 				var (
@@ -196,20 +208,16 @@ func TestUnsafe(t *testing.T) {
 				String.Marshal(s, bs)
 			})
 
-		t.Run("If lenSer fails to unmarshal length, Unmarshal should return an error",
+		t.Run("If the length serializer fails with an error, Unmarshal should return it",
 			func(t *testing.T) {
 				var (
-					wantV   = ""
-					wantN   = 0
-					wantErr = mus.ErrTooSmallByteSlice
-					lenSer  = mock.NewSerializer[int]().RegisterUnmarshal(
-						func(bs []byte) (t int, n int, err error) {
-							return 0, 0, wantErr
-						},
-					)
-					v, n, err = NewStringSerWith(lenSer).Unmarshal(nil)
+					wantV     = ""
+					wantN     = 0
+					wantErr   = mus.ErrTooSmallByteSlice
+					v, n, err = String.Unmarshal(nil)
 				)
-				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil,
+					t)
 			})
 
 		t.Run("Unmarshal should return ErrNegativeLength if meets a negative length",
@@ -253,7 +261,7 @@ func TestUnsafe(t *testing.T) {
 							return 0, 0, wantErr
 						},
 					)
-					v, n, err = NewValidStringSerWith(lenSer, nil).Unmarshal(nil)
+					v, n, err = NewValidStringSer(strops.WithLenSer(lenSer)).Unmarshal(nil)
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
@@ -297,7 +305,7 @@ func TestUnsafe(t *testing.T) {
 						},
 					)
 					bs        = []byte{3, 1, 1, 1}
-					v, n, err = NewValidStringSer(lenVl).Unmarshal(bs)
+					v, n, err = NewValidStringSer(strops.WithLenValidator(lenVl)).Unmarshal(bs)
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
@@ -311,7 +319,7 @@ func TestUnsafe(t *testing.T) {
 				lenVl   com.ValidatorFn[int] = func(t int) (err error) {
 					return wantErr
 				}
-				v, n, err = NewValidStringSer(lenVl).Unmarshal(bs)
+				v, n, err = NewValidStringSer(strops.WithLenValidator(lenVl)).Unmarshal(bs)
 			)
 			com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 		})
@@ -493,6 +501,15 @@ func TestUnsafe(t *testing.T) {
 				testdata.TestSkip[[]byte]([][]byte{{0, 1, 1, 255, 100, 0, 1, 10}}, ser, t)
 			})
 
+		t.Run("We should be able to set a length serializer", func(t *testing.T) {
+			var (
+				sl, lenSer = testdata.ByteSliceLenSerData(t)
+				ser        = NewByteSliceSer(bslops.WithLenSer(lenSer))
+			)
+			testdata.Test[[]byte]([][]byte{sl}, ser, t)
+			testdata.TestSkip[[]byte]([][]byte{sl}, ser, t)
+		})
+
 		t.Run("Marshal should return ErrTooSmallByteSlice if there is no space in bs",
 			func(t *testing.T) {
 				var (
@@ -511,22 +528,16 @@ func TestUnsafe(t *testing.T) {
 				ByteSlice.Marshal(s, bs)
 			})
 
-		t.Run("If lenSer fails with an error, Unmarshal should return it",
+		t.Run("If the length serializer fails with an error, Unmarshal should return it",
 			func(t *testing.T) {
 				var (
-					wantV   []byte = nil
-					wantN          = 0
-					wantErr        = errors.New("lenSer error")
-					lenSer         = mock.NewSerializer[int]().RegisterUnmarshal(
-						func(bs []byte) (t int, n int, err error) {
-							return 0, 0, wantErr
-						},
-					)
-					mocks     = []*mok.Mock{lenSer.Mock}
-					v, n, err = NewByteSliceSerWith(lenSer).Unmarshal(nil)
+					wantV     []byte = nil
+					wantN            = 0
+					wantErr          = mus.ErrTooSmallByteSlice
+					v, n, err        = ByteSlice.Unmarshal(nil)
 				)
-				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err,
-					mocks, t)
+				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil,
+					t)
 			})
 
 		t.Run("Unmarshal should return ErrTooSmallByteSlice if bs is too small for slice content",
@@ -597,7 +608,7 @@ func TestUnsafe(t *testing.T) {
 						},
 					)
 					mocks     = []*mok.Mock{lenSer.Mock}
-					v, n, err = NewValidByteSliceSerWith(lenSer, nil).Unmarshal(nil)
+					v, n, err = NewValidByteSliceSer(bslops.WithLenSer(lenSer)).Unmarshal(nil)
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err,
 					mocks, t)
@@ -637,7 +648,7 @@ func TestUnsafe(t *testing.T) {
 							return wantErr
 						},
 					)
-					v, n, err = NewValidByteSliceSer(lenVl).Unmarshal(bs)
+					v, n, err = NewValidByteSliceSer(bslops.WithLenValidator(lenVl)).Unmarshal(bs)
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})

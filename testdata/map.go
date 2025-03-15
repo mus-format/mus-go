@@ -120,3 +120,23 @@ func MapSerData(t *testing.T) (mp map[string]int, keySer mock.Serializer[string]
 	})
 	return
 }
+
+func MapLenSerData(t *testing.T) (mp map[string]int, lenSer mock.Serializer[int],
+	keySer mock.Serializer[string], valueSer mock.Serializer[int]) {
+	mp, keySer, valueSer = MapSerData(t)
+	var (
+		l    = len(mp)
+		lBs  = []byte{byte(l * 2)}
+		size = 1
+	)
+	lenSer = mock.NewSerializer[int]().
+		// unmarshal
+		RegisterMarshal(m(l, lBs, t)).
+		RegisterUnmarshal(u(lBs, l, t)).
+		RegisterSize(s(l, size, t)).
+		// skip
+		RegisterMarshal(m(l, lBs, t)).
+		RegisterUnmarshal(u(lBs, l, t)).
+		RegisterSize(s(l, size, t))
+	return
+}

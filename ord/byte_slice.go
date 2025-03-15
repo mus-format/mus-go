@@ -3,29 +3,40 @@ package ord
 import (
 	com "github.com/mus-format/common-go"
 	"github.com/mus-format/mus-go"
+	bslops "github.com/mus-format/mus-go/options/byte_slice"
 	"github.com/mus-format/mus-go/varint"
 )
 
 // ByteSlice is the byte slice serializer.
-var ByteSlice = NewByteSliceSerWith(varint.PositiveInt)
+var ByteSlice = NewByteSliceSer()
 
-// NewByteSliceSerWith returns a new byte slice serializer with the given length
-// serializer.
-func NewByteSliceSerWith(lenSer mus.Serializer[int]) byteSliceSer {
+// NewByteSliceSer returns a new byte slice serializer. To specify a length
+// validator, use NewValidByteSliceSer instead.
+func NewByteSliceSer(ops ...bslops.SetOption) byteSliceSer {
+	o := bslops.Options{}
+	bslops.Apply(ops, &o)
+
+	return newByteSliceSer(o)
+}
+
+// NewValidByteSliceSer returns a new valid byte slice serializer.
+func NewValidByteSliceSer(ops ...bslops.SetOption) validByteSliceSer {
+	o := bslops.Options{}
+	bslops.Apply(ops, &o)
+
+	var lenVl com.Validator[int]
+	if o.LenVl != nil {
+		lenVl = o.LenVl
+	}
+	return validByteSliceSer{newByteSliceSer(o), lenVl}
+}
+
+func newByteSliceSer(o bslops.Options) byteSliceSer {
+	var lenSer mus.Serializer[int] = varint.PositiveInt
+	if o.LenSer != nil {
+		lenSer = o.LenSer
+	}
 	return byteSliceSer{lenSer}
-}
-
-// NewValidByteSliceSer returns a new byte slice serializer with the given length
-// validator.
-func NewValidByteSliceSer(lenVl com.Validator[int]) validByteSliceSer {
-	return NewValidByteSliceSerWith(varint.PositiveInt, lenVl)
-}
-
-// NewValidByteSliceSerWith returns a new byte slice serializer with the given
-// length serializer and length validator.
-func NewValidByteSliceSerWith(lenSer mus.Serializer[int],
-	lenVl com.Validator[int]) validByteSliceSer {
-	return validByteSliceSer{NewByteSliceSerWith(lenSer), lenVl}
 }
 
 type byteSliceSer struct {

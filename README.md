@@ -193,6 +193,7 @@ package main
 import (
   "github.com/mus-format/mus-go/ord"
   "github.com/mus-format/mus-go/varint"
+  arrops "github.com/mus-format/mus-go/options/array"
 )
 
 func main() {
@@ -205,7 +206,7 @@ func main() {
     ser = ord.NewArraySer[[3]int, int](3, varint.Int)
 
     // To create an array serializer with the specific length serializer use:
-    // ser = ord.NewArraySerWith[[3]int, int](3, raw.Int, varint.Int)
+    // ser = ord.NewArraySer[[3]int, int](3, varint.Int, arrops.WithLenSer(lenSer))
 
     arr  = [3]int{1, 2, 3}
     size = ser.Size(arr)
@@ -224,6 +225,7 @@ package main
 import (
   "github.com/mus-format/mus-go/ord"
   "github.com/mus-format/mus-go/varint"
+  slops "github.com/mus-format/mus-go/options/slice"
 )
 
 func main() {
@@ -232,7 +234,7 @@ func main() {
     ser = ord.NewSliceSer[int](varint.Int)
 
     // To create a slice serializer with the specific length serializer use:
-    // ser = ord.NewSliceSerWith[int](raw.Int, varint.Int)
+    // ser = ord.NewSliceSer[int](varint.Int, slops.WithLenSer(lenSer))
 
     sl = []int{1, 2, 3}
     size = ser.Size(sl)
@@ -251,6 +253,7 @@ package main
 import (
   "github.com/mus-format/mus-go/ord"
   "github.com/mus-format/mus-go/varint"
+  mapops "github.com/mus-format/mus-go/options/map"
 )
 func main() {
   var (
@@ -259,7 +262,7 @@ func main() {
     ser = ord.NewMapSer[int, string](varint.Int, ord.String)
 
     // To create a map serializer with the specific length serializer use:
-    // ser = ord.NewMapSerWith[int, string](raw.Int, varint.Int, ord.String)
+    // ser = ord.NewMapSer[int, string](varint.Int, ord.String, mapops.WithLenSer(lenSer))
 
     m    = map[int]string{1: "one", 2: "two", 3: "three"}
     size = ser.Size(m)
@@ -295,8 +298,7 @@ var (
 
 The `pm` package ensures that these pointers are serialized in such a way that 
 after unmarshalling, they remain equal - `ptr1 == ptr2`. This behavior differs 
-from the `ord` package, where the pointers would no longer be equal after 
-unmarshalling.
+from the `ord` package, where the pointers would no longer be equal.
 
 The `pm` package enables the serialization of data structures like graphs or 
 linked lists. You can find corresponding examples in [mus-examples-go](https://github.com/mus-format/mus-examples-go/tree/main/pm).
@@ -321,10 +323,10 @@ type Foo struct {
 
 // Serializers.
 var (
+  FooMUS = fooMUS{}
+
   // IntSliceMUS is used by the FooMUS serializer.
   IntSliceMUS = ord.NewSliceSer[int](varint.Int)
-
-  FooMUS = fooMUS{}
 )
 
 // fooMUS implements the mus.Serializer interface.
@@ -512,6 +514,7 @@ package main
 import (
   com "github.com/mus-format/common-go"
   "github.com/mus-format/mus-go/ord"
+  strops "github.com/mus-format/mus-go/options/string"
 )
 
 func main() {
@@ -523,11 +526,11 @@ func main() {
       }
       return
     }
-    ser = ord.NewValidStringSer(com.ValidatorFn[int](lenVl))
+    ser = ord.NewValidStringSer(strops.WithLenValidator(com.ValidatorFn[int](lenVl)))
 
     // To create a valid string serializer with the specific length serializer
     // use:
-    // ser = ord.NewValidStringSerWith(raw.Int, com.ValidatorFn[int](lenVl))
+    // ser = ord.NewValidStringSer(strops.WithLenSer(lenSer), ...)
 
     value = "hello world"
     size  = ser.Size(value)
@@ -551,6 +554,7 @@ package main
 import (
   com "github.com/mus-format/common-go"
   "github.com/mus-format/mus-go/ord"
+  slops "github.com/mus-format/mus-go/options/slice"
 )
 
 func main() {
@@ -567,16 +571,17 @@ func main() {
       if elem == "hello" {
         err = ErrBadElement
       }
+      return
     }
     // Each of the validators could be nil.
-    ser = ord.NewValidSliceSer[string](ord.String, com.ValidatorFn[int](lenVl),
-      com.ValidatorFn[string](elemVl))
+    ser = ord.NewValidSliceSer[string](ord.String,
+      slops.WithLenValidator[string](com.ValidatorFn[int](lenVl)),
+      slops.WithElemValidator[string](com.ValidatorFn[string](elemVl)))
 
     // To create a valid slice serializer with the specific length serializer
     // use:
-    // ser = ord.NewValidSliceSerWith[string](raw.Int, ord.String,
-    // 	com.ValidatorFn[int](lenVl),
-    // 	com.ValidatorFn[string](elemVl))
+    // ser = ord.NewValidSliceSer[string](ord.String,
+    //   slops.WithLenSer[string](lenSer), ...)
 
     value = []string{"hello", "world"}
     size  = ser.Size(value)
@@ -601,6 +606,7 @@ import (
   com "github.com/mus-format/common-go"
   "github.com/mus-format/mus-go/ord"
   "github.com/mus-format/mus-go/varint"
+  mapops "github.com/mus-format/mus-go/options/map"
 )
 
 func main() {
@@ -617,25 +623,25 @@ func main() {
       if key == 1 {
         err = ErrBadKey
       }
+      return
     }
     // Value validator.
-    valVl = func(val string) (err error) {
+    valueVl = func(val string) (err error) {
       if val == "hello" {
         err = ErrBadValue
       }
+      return
     }
     // Each of the validators could be nil.
     ser = ord.NewValidMapSer[int, string](varint.Int, ord.String,
-      com.ValidatorFn[int](lenVl),
-      com.ValidatorFn[int](keyVl),
-      com.ValidatorFn[string](valVl))
+      mapops.WithLenValidator[int, string](com.ValidatorFn[int](lenVl)),
+      mapops.WithKeyValidator[int, string](com.ValidatorFn[int](keyVl)),
+      mapops.WithValueValidator[int, string](com.ValidatorFn[string](valueVl)))
 
     // To create a valid map serializer with the specific length serializer
     // use:
-    // ser = ord.NewValidMapSerWith[int, string](raw.Int, varint.Int, ord.String,
-    // 	com.ValidatorFn[int](lenVl),
-    // 	com.ValidatorFn[int](keyVl),
-    // 	com.ValidatorFn[string](valVl))
+    // ser = ord.NewValidMapSer[int, string](varint.Int, ord.String,
+    //   mapops.WithLenSer[int, string](lenSer), ...)
 
     value = map[int]string{1: "hello", 2: "world"}
     size  = ser.Size(value)
@@ -670,7 +676,7 @@ func (s fooMUS) Unmarshal(bs []byte) (v Foo, n int, err error) {
   // Validate the first field.
   if err = ValidateFieldA(v.a); err != nil {
     // The rest of the structure remains unmarshaled.
-    return 
+    return
   }
   // ...
 }

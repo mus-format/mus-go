@@ -3,36 +3,53 @@ package ord
 import (
 	com "github.com/mus-format/common-go"
 	"github.com/mus-format/mus-go"
+	slops "github.com/mus-format/mus-go/options/slice"
 	"github.com/mus-format/mus-go/varint"
 )
 
 // NewSliceSer returns a new slice serializer with the given element serializer.
-func NewSliceSer[T any](elemSer mus.Serializer[T]) sliceSer[T] {
-	return NewSliceSerWith(varint.PositiveInt, elemSer)
+// To specify a length or element validator, use NewValidStringSer instead.
+func NewSliceSer[T any](elemSer mus.Serializer[T], ops ...slops.SetOption[T]) (
+	s sliceSer[T]) {
+	o := slops.Options[T]{}
+	slops.Apply(ops, &o)
+
+	return newSliceSer(elemSer, o)
 }
 
-// NewSliceSerWith returns a new slice serializer with the given length
-// and element serializers.
-func NewSliceSerWith[T any](lenSer mus.Serializer[int],
-	elemSer mus.Serializer[T]) sliceSer[T] {
-	return sliceSer[T]{lenSer, elemSer}
-}
-
-// NewValidSliceSer returns a new slice serializer with the given element
-// serializer, length, and element validators.
+// NewValidSliceSer returns a new valid slice serializer.
 func NewValidSliceSer[T any](elemSer mus.Serializer[T],
-	lenVl com.Validator[int], elemVl com.Validator[T]) validSliceSer[T] {
-	return NewValidSliceSerWith(varint.PositiveInt, elemSer, lenVl, elemVl)
+	ops ...slops.SetOption[T]) validSliceSer[T] {
+	o := slops.Options[T]{}
+	slops.Apply(ops, &o)
+
+	var (
+		lenVl  com.Validator[int]
+		elemVl com.Validator[T]
+	)
+	if o.LenVl != nil {
+		lenVl = o.LenVl
+	}
+	if o.ElemVl != nil {
+		elemVl = o.ElemVl
+	}
+	return validSliceSer[T]{
+		sliceSer: newSliceSer(elemSer, o),
+		lenVl:    lenVl,
+		elemVl:   elemVl,
+	}
 }
 
-// NewValidSliceSerWith returns a new slice serializer with the given length
-// serializer, element serializer, length and element validators.
-func NewValidSliceSerWith[T any](lenSer mus.Serializer[int],
-	elemSer mus.Serializer[T],
-	lenVl com.Validator[int],
-	elemVl com.Validator[T],
-) validSliceSer[T] {
-	return validSliceSer[T]{NewSliceSerWith(lenSer, elemSer), lenVl, elemVl}
+func newSliceSer[T any](elemSer mus.Serializer[T], o slops.Options[T]) (
+	s sliceSer[T]) {
+	var lenSer mus.Serializer[int] = varint.PositiveInt
+	if o.LenSer != nil {
+		lenSer = o.LenSer
+	}
+	return sliceSer[T]{
+		elemSer: elemSer,
+		lenSer:  lenSer,
+	}
 }
 
 type sliceSer[T any] struct {

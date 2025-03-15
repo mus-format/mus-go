@@ -5,40 +5,36 @@ import (
 
 	com "github.com/mus-format/common-go"
 	"github.com/mus-format/mus-go"
-	"github.com/mus-format/mus-go/varint"
+	arrops "github.com/mus-format/mus-go/options/array"
+	slops "github.com/mus-format/mus-go/options/slice"
 )
 
 // NewArraySer returns a new array serializer with the given array length and
-// element serializer.
-func NewArraySer[T, V any](length int, elemSer mus.Serializer[V]) arraySer[T, V] {
-	return NewArraySerWith[T, V](length, varint.PositiveInt, elemSer)
-}
+// element serializer. To specify a length or element validator, use
+// NewValidArraySer instead.
+func NewArraySer[T, V any](length int, elemSer mus.Serializer[V],
+	ops ...arrops.SetOption[V]) (s arraySer[T, V]) {
+	o := arrops.Options[V]{}
+	arrops.Apply(ops, &o)
 
-// NewArraySerWith returns a new array serializer with the given array length,
-// length and element serializers.
-func NewArraySerWith[T, V any](length int, lenSer mus.Serializer[int],
-	elemSer mus.Serializer[V]) arraySer[T, V] {
 	var (
 		lenVl    = newLenVl(length)
-		sliceSer = NewValidSliceSerWith[V](lenSer, elemSer, lenVl, nil)
+		sliceSer = NewValidSliceSer[V](elemSer, slops.WithLenSer[V](o.LenSer),
+			slops.WithLenValidator[V](lenVl))
 	)
 	return arraySer[T, V]{length, sliceSer}
 }
 
-// NewValidArraySer returns a new array serializer with the given array length,
-// element serializer and element validator.
+// NewValidArraySer returns a new valid array serializer.
 func NewValidArraySer[T, V any](length int, elemSer mus.Serializer[V],
-	elemVl com.Validator[V]) arraySer[T, V] {
-	return NewValidArraySerWith[T, V](length, varint.PositiveInt, elemSer, elemVl)
-}
+	ops ...arrops.SetOption[V]) arraySer[T, V] {
+	o := arrops.Options[V]{}
+	arrops.Apply(ops, &o)
 
-// NewValidArraySerWith returns a new array serializer with the given array length,
-// length serializer, element serializer, and element validator.
-func NewValidArraySerWith[T, V any](length int, lenSer mus.Serializer[int],
-	elemSer mus.Serializer[V], elemVl com.Validator[V]) arraySer[T, V] {
 	var (
 		lenVl    = newLenVl(length)
-		sliceSer = NewValidSliceSerWith[V](lenSer, elemSer, lenVl, elemVl)
+		sliceSer = NewValidSliceSer[V](elemSer, slops.WithLenSer[V](o.LenSer),
+			slops.WithLenValidator[V](lenVl), slops.WithElemValidator(o.ElemVl))
 	)
 	return arraySer[T, V]{length, sliceSer}
 }
