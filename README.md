@@ -146,8 +146,8 @@ Also includes the `PositiveInt` serializer (Varint without ZigZag) for positive
 `int` values. It can handle negative values as well, but with lower performance.
 
 ### raw
-Contains Raw serializers for the same `uint`, `int`, `float`, `byte` data types.
-Example:
+Contains Raw serializers for the same `byte`, `uint`, `int`, `float`, `time.Time` 
+data types. Example:
 ```go
 package main
 
@@ -168,6 +168,15 @@ func main() {
 More details about Varint and Raw encodings can be found in the 
 [MUS format specification](https://github.com/mus-format/specification).
 If in doubt, use Varint.
+
+For `time.Time`, there are several serializers:
+- `TimeUnix` – encodes a value as a Unix timestamp in seconds.
+- `TimeUnixMilli` – encodes a value as a Unix timestamp in milliseconds.
+- `TimeUnixMicro` – encodes a value as a Unix timestamp in microseconds.
+- `TimeUnixNano` – encodes a value as a Unix timestamp in nanoseconds.
+
+Each of these has a corresponding UTC version (e.g., `TimeUnixUTC`, 
+`TimeUnixMilliUTC`, etc.), which always deserializes the value in UTC.
 
 ### ord (ordinary)
 Contains serializers/constructors for `bool`, `string`, `array`, `byte slice`,
@@ -281,8 +290,8 @@ modifying the byte slice after unmarshalling will also change the string’s
 contents. Here is an [example](https://github.com/mus-format/mus-examples-go/blob/main/unasafe/main.go) 
 that demonstrates this behavior more clearly.
 
-Provides serializers for the following data types: `bool`, `string`, 
-`byte slice`, `byte`, and all `uint`, `int`, `float`.
+Provides serializers for the following data types: `byte`, `bool`, `string`, 
+`byte slice`, `time.Time` and all `uint`, `int`, `float`.
 
 ### pm (pointer mapping)
 Let's consider two pointers initialized with the same value:

@@ -2,7 +2,9 @@ package unsafe
 
 import (
 	"errors"
+	"os"
 	"testing"
+	"time"
 
 	com "github.com/mus-format/common-go"
 	com_testdata "github.com/mus-format/common-go/testdata"
@@ -652,6 +654,137 @@ func TestUnsafe(t *testing.T) {
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
+
+	})
+
+	t.Run("time", func(t *testing.T) {
+		os.Setenv("TZ", "")
+
+		t.Run("time_unix_utc", func(t *testing.T) {
+
+			t.Run("TimeUnixUTC serializer should work correctly",
+				func(t *testing.T) {
+					var (
+						sec = time.Now().Unix()
+						tm  = time.Unix(sec, 0)
+					)
+					testdata.Test[time.Time]([]time.Time{tm}, TimeUnixUTC, t)
+					testdata.TestSkip[time.Time]([]time.Time{tm}, TimeUnix, t)
+				})
+
+			t.Run("We should be able to serializer the zero Time",
+				func(t *testing.T) {
+					testdata.Test[time.Time]([]time.Time{time.Time{}}, TimeUnixUTC, t)
+					testdata.TestSkip[time.Time]([]time.Time{time.Time{}}, TimeUnixUTC, t)
+				})
+
+			t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
+				func(t *testing.T) {
+					var (
+						wantV     = time.Time{}
+						wantN     = 0
+						wantErr   = mus.ErrTooSmallByteSlice
+						bs        = []byte{}
+						v, n, err = TimeUnixUTC.Unmarshal(bs)
+					)
+					com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err,
+						nil, t)
+				})
+
+		})
+
+		t.Run("time_unix_milli_UTC", func(t *testing.T) {
+
+			t.Run("TimeUnixMilliUTC serializer should work correctly",
+				func(t *testing.T) {
+					var (
+						milli = time.Now().UnixMilli()
+						tm    = time.UnixMilli(milli)
+					)
+					testdata.Test[time.Time]([]time.Time{tm}, TimeUnixMilliUTC, t)
+					testdata.TestSkip[time.Time]([]time.Time{tm}, TimeUnixMilliUTC, t)
+				})
+
+			t.Run("We should be able to serializer the zero Time",
+				func(t *testing.T) {
+					testdata.Test[time.Time]([]time.Time{time.Time{}}, TimeUnixMilliUTC, t)
+					testdata.TestSkip[time.Time]([]time.Time{time.Time{}}, TimeUnixMilliUTC, t)
+				})
+
+			t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
+				func(t *testing.T) {
+					var (
+						wantV     = time.Time{}
+						wantN     = 0
+						wantErr   = mus.ErrTooSmallByteSlice
+						bs        = []byte{}
+						v, n, err = TimeUnixMilliUTC.Unmarshal(bs)
+					)
+					com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err,
+						nil, t)
+				})
+
+		})
+
+		t.Run("time_unix_micro_utc", func(t *testing.T) {
+
+			t.Run("TimeUnixMicroUTC serializer should work correctly",
+				func(t *testing.T) {
+					var (
+						milli = time.Now().UnixMicro()
+						tm    = time.UnixMicro(milli)
+					)
+					testdata.Test[time.Time]([]time.Time{tm}, TimeUnixMicroUTC, t)
+					testdata.TestSkip[time.Time]([]time.Time{tm}, TimeUnixMicroUTC, t)
+				})
+
+			t.Run("We should be able to serializer the zero Time",
+				func(t *testing.T) {
+					testdata.Test[time.Time]([]time.Time{time.Time{}}, TimeUnixMicroUTC, t)
+					testdata.TestSkip[time.Time]([]time.Time{time.Time{}}, TimeUnixMicroUTC, t)
+				})
+
+			t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
+				func(t *testing.T) {
+					var (
+						wantV     = time.Time{}
+						wantN     = 0
+						wantErr   = mus.ErrTooSmallByteSlice
+						bs        = []byte{}
+						v, n, err = TimeUnixMicroUTC.Unmarshal(bs)
+					)
+					com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err,
+						nil, t)
+				})
+
+		})
+
+		t.Run("time_unix_nano_utc", func(t *testing.T) {
+
+			t.Run("TimeUnixNanoUTC serializer should work correctly",
+				func(t *testing.T) {
+					var (
+						nano = time.Now().UnixNano()
+						tm   = time.Unix(0, nano)
+					)
+					testdata.Test[time.Time]([]time.Time{tm}, TimeUnixNanoUTC, t)
+					testdata.TestSkip[time.Time]([]time.Time{tm}, TimeUnixNanoUTC, t)
+				})
+
+			t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
+				func(t *testing.T) {
+					var (
+						wantV     = time.Time{}
+						wantN     = 0
+						wantErr   = mus.ErrTooSmallByteSlice
+						bs        = []byte{}
+						v, n, err = TimeUnixNanoUTC.Unmarshal(bs)
+					)
+					com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err,
+						nil, t)
+				})
+
+		})
 
 	})
 

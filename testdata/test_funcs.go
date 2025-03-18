@@ -3,6 +3,7 @@ package testdata
 import (
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/mus-format/mus-go"
 )
@@ -26,7 +27,12 @@ func Test[T any](cases []T, ser mus.Serializer[T], t *testing.T) {
 		if n != size {
 			t.Errorf("case '%v', unexpected n, want '%v' actual '%v'", i, size, n)
 		}
-		if !reflect.DeepEqual(v, cases[i]) {
+		if tm, ok := any(v).(time.Time); ok {
+			tm1 := any(cases[i]).(time.Time)
+			if !tm.Equal(tm1) {
+				t.Errorf("case '%v', unexpected v, want '%v' actual '%v'", i, cases[i], v)
+			}
+		} else if !reflect.DeepEqual(v, cases[i]) {
 			t.Errorf("case '%v', unexpected v, want '%v' actual '%v'", i, cases[i], v)
 		}
 	}
