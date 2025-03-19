@@ -175,8 +175,14 @@ For `time.Time`, there are several serializers:
 - `TimeUnixMicro` – encodes a value as a Unix timestamp in microseconds.
 - `TimeUnixNano` – encodes a value as a Unix timestamp in nanoseconds.
 
-Each of these has a corresponding UTC version (e.g., `TimeUnixUTC`, 
-`TimeUnixMilliUTC`, etc.), which always deserializes the value in UTC.
+To ensure the deserialized value is in UTC, make sure your TZ environment 
+variable is set to UTC. This can be done as follows:
+```go
+os.Setenv("TZ", "")
+```
+
+Alternatively, you can use one of the corresponding UTC serializers, e.g., 
+`TimeUnixUTC`, `TimeUnixMilliUTC`, etc.
 
 ### ord (ordinary)
 Contains serializers/constructors for `bool`, `string`, `array`, `byte slice`,

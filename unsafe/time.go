@@ -2,6 +2,8 @@ package unsafe
 
 import (
 	"time"
+
+	com "github.com/mus-format/common-go"
 )
 
 var (
@@ -58,7 +60,7 @@ func (s timeUnixSer) Unmarshal(bs []byte) (v time.Time, n int, err error) {
 
 // Size returns the size of an encoded time.Time value.
 func (s timeUnixSer) Size(v time.Time) (size int) {
-	return Int64.Size(v.Unix())
+	return com.Num64RawSize
 }
 
 // Skip skips an encoded time.Time value.
@@ -95,7 +97,7 @@ func (s timeUnixMilliSer) Unmarshal(bs []byte) (v time.Time, n int, err error) {
 
 // Size returns the size of an encoded time.Time value.
 func (s timeUnixMilliSer) Size(v time.Time) (size int) {
-	return Int64.Size(v.UnixMilli())
+	return com.Num64RawSize
 }
 
 // Skip skips an encoded time.Time value.
@@ -132,7 +134,7 @@ func (s timeUnixMicroSer) Unmarshal(bs []byte) (v time.Time, n int, err error) {
 
 // Size returns the size of an encoded time.Time value.
 func (s timeUnixMicroSer) Size(v time.Time) (size int) {
-	return Int64.Size(v.UnixMicro())
+	return com.Num64RawSize
 }
 
 // Skip skips an encoded time.Time value.
@@ -168,10 +170,9 @@ func (s timeUnixNanoSer) Unmarshal(bs []byte) (v time.Time, n int, err error) {
 	return
 }
 
-// Size returns the size of an encoded time.Time value. The result will be
-// unpredictable if v is the zero Time.
+// Size returns the size of an encoded time.Time value.
 func (s timeUnixNanoSer) Size(v time.Time) (size int) {
-	return Int64.Size(v.UnixNano())
+	return com.Num64RawSize
 }
 
 // Skip skips an encoded time.Time value.
