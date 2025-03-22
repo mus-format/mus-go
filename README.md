@@ -78,7 +78,7 @@ incredibly easy to use - just provide a type and call `Generate()`.
 - [github.com/ymz-ncnk/go-serialization-benchmarks](https://github.com/ymz-ncnk/go-serialization-benchmarks)
 - [github.com/alecthomas/go_serialization_benchmarks](https://github.com/alecthomas/go_serialization_benchmarks)
 
-Why did I create another [benchmarks](https://github.com/ymz-ncnk/go-serialization-benchmarks)?  
+Why did I create another [benchmarks](https://github.com/ymz-ncnk/go-serialization-benchmarks)?
 The existing [benchmarks](https://github.com/alecthomas/go_serialization_benchmarks) 
 have some notable issues - try running them several times, and you'll likely get
 inconsistent results, making it difficult to determine which serializer is truly 
