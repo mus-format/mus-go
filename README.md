@@ -217,10 +217,10 @@ func main() {
     //
     // As for the function parameters, the number 3 specifies the length of the
     // array, and varint.Int - the serializer for the array’s elements.
-    ser = ord.NewArraySer[[3]int, int](3, varint.Int)
+    ser = ord.NewArraySer[[3]int, int](varint.Int)
 
     // To create an array serializer with the specific length serializer use:
-    // ser = ord.NewArraySer[[3]int, int](3, varint.Int, arrops.WithLenSer(lenSer))
+    // ser = ord.NewArraySer[[3]int, int](varint.Int, arrops.WithLenSer(lenSer))
 
     arr  = [3]int{1, 2, 3}
     size = ser.Size(arr)
