@@ -27,11 +27,10 @@ func (s positiveInt64Ser) Marshal(v int64, bs []byte) (n int) {
 // In addition to the int64 value and the number of used bytes, it may also
 // return mus.ErrTooSmallByteSlice or com.ErrOverflow.
 func (s positiveInt64Ser) Unmarshal(bs []byte) (v int64, n int, err error) {
-	uv, n, err := Uint64.Unmarshal(bs)
-	if err != nil {
-		return
-	}
-	return int64(uv), n, nil
+	var uv uint64
+	uv, n, err = Uint64.Unmarshal(bs)
+	v = int64(uv)
+	return
 }
 
 // Size returns the size of an encoded (Varint) int64 value.
@@ -63,11 +62,10 @@ func (s positiveInt32Ser) Marshal(v int32, bs []byte) (n int) {
 // In addition to the int32 value and the number of used bytes, it may also
 // return mus.ErrTooSmallByteSlice or com.ErrOverflow.
 func (s positiveInt32Ser) Unmarshal(bs []byte) (v int32, n int, err error) {
-	uv, n, err := Uint32.Unmarshal(bs)
-	if err != nil {
-		return
-	}
-	return int32(uv), n, nil
+	var uv uint32
+	uv, n, err = Uint32.Unmarshal(bs)
+	v = int32(uv)
+	return
 }
 
 // Size returns the size of an encoded (Varint) int32 value.
@@ -99,11 +97,10 @@ func (s positiveInt16Ser) Marshal(v int16, bs []byte) (n int) {
 // In addition to the int16 value and the number of used bytes, it may also
 // return mus.ErrTooSmallByteSlice or com.ErrOverflow.
 func (s positiveInt16Ser) Unmarshal(bs []byte) (v int16, n int, err error) {
-	uv, n, err := Uint16.Unmarshal(bs)
-	if err != nil {
-		return
-	}
-	return int16(uv), n, nil
+	var uv uint16
+	uv, n, err = Uint16.Unmarshal(bs)
+	v = int16(uv)
+	return
 }
 
 // Size returns the size of an encoded (Varint) int16 value.
@@ -135,11 +132,10 @@ func (s positiveInt8Ser) Marshal(v int8, bs []byte) (n int) {
 // In addition to the int8 value and the number of used bytes, it may also
 // return mus.ErrTooSmallByteSlice or com.ErrOverflow.
 func (s positiveInt8Ser) Unmarshal(bs []byte) (v int8, n int, err error) {
-	uv, n, err := Uint8.Unmarshal(bs)
-	if err != nil {
-		return
-	}
-	return int8(uv), n, nil
+	var uv uint8
+	uv, n, err = Uint8.Unmarshal(bs)
+	v = int8(uv)
+	return
 }
 
 // Size returns the size of an encoded (Varint) int8 value.
