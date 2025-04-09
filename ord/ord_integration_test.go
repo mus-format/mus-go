@@ -17,13 +17,13 @@ func TestIntegrationOrd(t *testing.T) {
 	})
 
 	t.Run("array", func(t *testing.T) {
-		ser := NewArraySer[[3]int, int](3, varint.Int)
+		ser := NewArraySer[[3]int, int](varint.Int)
 		testdata.Test[[3]int](com_testdata.ArrayTestCases, ser, t)
 		testdata.TestSkip[[3]int](com_testdata.ArrayTestCases, ser, t)
 	})
 
 	t.Run("valid array", func(t *testing.T) {
-		ser := NewValidArraySer[[3]int, int](3, varint.Int, nil)
+		ser := NewValidArraySer[[3]int, int](varint.Int, nil)
 		testdata.Test[[3]int](com_testdata.ArrayTestCases, ser, t)
 		testdata.TestSkip[[3]int](com_testdata.ArrayTestCases, ser, t)
 	})

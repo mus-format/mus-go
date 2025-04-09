@@ -623,7 +623,7 @@ func TestOrd(t *testing.T) {
 		t.Run("Array serializer should work correctly", func(t *testing.T) {
 			var (
 				arr, elemSer = testdata.ArraySerData(t)
-				ser          = NewArraySer[[3]int, int](3, elemSer)
+				ser          = NewArraySer[[3]int, int](elemSer)
 			)
 			testdata.Test[[3]int]([][3]int{arr}, ser, t)
 			testdata.TestSkip[[3]int]([][3]int{arr}, ser, t)
@@ -637,7 +637,7 @@ func TestOrd(t *testing.T) {
 					wantErr        = com.ErrTooLargeLength
 					bs             = []byte{4, 0, 0}
 				)
-				v, n, err := NewArraySer[[3]int, int](3, nil).Unmarshal(bs)
+				v, n, err := NewArraySer[[3]int, int](nil).Unmarshal(bs)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil,
 					t)
 			})
@@ -645,7 +645,7 @@ func TestOrd(t *testing.T) {
 		t.Run("Valid array serializer should work correctly", func(t *testing.T) {
 			var (
 				arr, elemSer = testdata.ArraySerData(t)
-				ser          = NewValidArraySer[[3]int, int](3, elemSer, nil)
+				ser          = NewValidArraySer[[3]int, int](elemSer, nil)
 			)
 			testdata.Test[[3]int]([][3]int{arr}, ser, t)
 			testdata.TestSkip[[3]int]([][3]int{arr}, ser, t)
@@ -659,7 +659,7 @@ func TestOrd(t *testing.T) {
 					wantErr        = com.ErrTooLargeLength
 					bs             = []byte{4, 0, 0}
 				)
-				v, n, err := NewValidArraySer[[3]int, int](3, nil, nil).Unmarshal(bs)
+				v, n, err := NewValidArraySer[[3]int, int](nil, nil).Unmarshal(bs)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil,
 					t)
 			})
@@ -686,7 +686,7 @@ func TestOrd(t *testing.T) {
 						},
 					)
 					// ser   = NewValidArraySer[[3]int, int](3, elemSer, elemVl)
-					ser = NewValidArraySer[[3]int, int](3, elemSer,
+					ser = NewValidArraySer[[3]int, int](elemSer,
 						arrops.WithElemValidator[int](elemVl))
 					mocks = []*mok.Mock{elemSer.Mock, elemVl.Mock}
 				)
