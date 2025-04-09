@@ -215,8 +215,8 @@ func main() {
     // The first type parameter of the NewArraySer function represents the array
     // type, and the second - the type of the array’s elements.
     //
-    // As for the function parameters, the number 3 specifies the length of the
-    // array, and varint.Int - the serializer for the array’s elements.
+    // As for the function parameters, varint.Int specifies the serializer for 
+    // the array’s elements.
     ser = ord.NewArraySer[[3]int, int](varint.Int)
 
     // To create an array serializer with the specific length serializer use:
