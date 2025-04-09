@@ -51,10 +51,9 @@ It is lightning fast, space efficient and well tested.
     - [unsafe](#unsafe)
     - [pm (pointer mapping)](#pm-pointer-mapping)
   - [Structs Support](#structs-support)
-  - [MarshallerMUS Interface](#marshallermus-interface)
-  - [Generic MarshalMUS Function](#generic-marshalmus-function)
-  - [DTM (Data Type Metadata) Support](#dtm-data-type-metadata-support)
+  - [DTS (Data Type metadata Support)](#dts-data-type-metadata-support)
   - [Data Versioning](#data-versioning)
+  - [MarshallerMUS Interface and MarshalMUS Function](#marshallermus-interface-and-marshalmus-function)
   - [Interface Serialization (oneof feature)](#interface-serialization-oneof-feature)
   - [Validation](#validation)
     - [String](#string)
@@ -311,12 +310,10 @@ var (
 )
 ```
 
-The `pm` package ensures that these pointers are serialized in such a way that 
-after unmarshalling, they remain equal - `ptr1 == ptr2`. This behavior differs 
-from the `ord` package, where the pointers would no longer be equal.
-
-The `pm` package enables the serialization of data structures like graphs or 
-linked lists. You can find corresponding examples in [mus-examples-go](https://github.com/mus-format/mus-examples-go/tree/main/pm).
+The `pm` package preserves pointer equality after unmarshalling `ptr1 == ptr2`, 
+while the `ord` package does not. This capability enables the serialization of 
+data structures like graphs or linked lists. You can find corresponding examples 
+in [mus-examples-go](https://github.com/mus-format/mus-examples-go/tree/main/pm).
 
 ## Structs Support
 mus-go doesn’t support structural data types out of the box, which means you’ll 
@@ -386,107 +383,85 @@ But, firstly, the code can be generated, secondly, this approach provides
 greater flexibility, and thirdly, mus-go stays quite simple, making it easy to 
 implement in other programming languages.
 
-## MarshallerMUS Interface
-It is often convenient to define the `MarshallerMUS` interface:
+## DTS (Data Type metadata Support)
+[mus-dts-go](https://github.com/mus-format/mus-dts-go) enables typed data 
+serialization using [DTM](https://medium.com/p/21d7be309e8d).
+
+## Data Versioning
+mus-dts-go can be used to implement data versioning. [Here](https://github.com/mus-format/mus-examples-go/tree/main/versioning) is an example.
+
+## MarshallerMUS Interface and MarshalMUS Function
+It is often convenient to use the `MarshallerMUS` interface:
 ```go
 type MarshallerMUS interface {
   MarshalMUS(bs []byte) (n int)
   SizeMUS() (size int)
-}
-
-// Foo implements the MarshallerMUS interface.
-type Foo struct {...}
-
-func (f Foo) MarshalMUS(bs []byte) (n int) {
-  return FooMUS.Marshal(f, bs) // or FooDTS.Marshal(f, bs)
-}
-
-func (f Foo) SizeMUS() (size int) {
-  return FooMUS.Size(f) // or FooDTS.Size(f)
 }
 ```
 
-## Generic MarshalMUS Function
-To define generic `MarshalMUS` function:
+and `MarshalMUS` function:
 ```go
-package main
-
-// Define the MarshallerMUS interface ...
-type MarshallerMUS interface {
-  MarshalMUS(bs []byte) (n int)
-  SizeMUS() (size int)
-}
-
-// ... and the function itself.
 func MarshalMUS(v MarshallerMUS) (bs []byte) {
   bs = make([]byte, v.SizeMUS())
   v.MarshalMUS(bs)
   return
 }
 
-// Define a structure that implements the MarshallerMUS interface.
+// Foo implements the MarshallerMUS interface.
 type Foo struct {...}
 ...
 
 func main() {
-  // Now the generic MarshalMUS function can be used like this.
+  // Foo can now be marshalled with a single function call.
   bs := MarshalMUS(Foo{...})
   // ...
 }
 ```
 
-The full code can be found [here](https://github.com/mus-format/mus-examples-go/tree/main/generic_marshal).
+They are already defined in the [ext-mus-go](https://github.com/mus-format/ext-mus-go) 
+module, which also includes the `MarshallerTypedMUS` interface and the 
+`MarshalTypedMUS` function for typed data serialization (DTM + data).
 
-## DTM (Data Type Metadata) Support
-[mus-dts-go](https://github.com/mus-format/mus-dts-go) provides [DTM](https://medium.com/p/21d7be309e8d) 
-support.
-
-## Data Versioning
-mus-dts-go can be used to implement data versioning. [Here](https://github.com/mus-format/mus-examples-go/tree/main/versioning)
-is an example.
+The full code of using `MarshalMUS` function can be found [here](https://github.com/mus-format/mus-examples-go/tree/main/marshal_func).
 
 ## Interface Serialization (oneof feature)
 mus-dts-go will also help to create a serializer for an interface. Example:
 ```go
-import dts "github.com/mus-format/mus-dts-go"
+import (
+  dts "github.com/mus-format/mus-dts-go"
+  ext "github.com/mus-format/ext-mus-go"
+)
 
 // Interface to serializer.
 type Instruction interface {...}
 
-// Copy implements the Instruction and MarshallerMUS interfaces.
+// Copy implements the Instruction and ext.MarshallerTypedMUS interfaces.
 type Copy struct {...}
 
-// MarshalMUS uses CopyDTS.
-func (c Copy) MarshalMUS(bs []byte) (n int) {
+// MarshalTYpedMUS uses CopyDTS.
+func (c Copy) MarshalTypedMUS(bs []byte) (n int) {
   return CopyDTS.Marshal(c, bs)
 }
 
-// SizeMUS uses CopyDTS.
-func (c Copy) SizeMUS() (size int) {
+// SizeTypedMUS uses CopyDTS.
+func (c Copy) SizeTypedMUS() (size int) {
   return CopyDTS.Size(c, bs)
 }
 
-// Insert implements the Instruction and MarshallerMUS interfaces.
+// Insert implements the Instruction and ext.MarshallerTypedMUS interfaces.
 type Insert struct {...}
 
-// MarshalMUS uses InsertDTS.
-func (i Insert) MarshalMUS(bs []byte) (n int) {
-  return InsertDTS.Marshal(c, bs)
-}
-
-// SizeMUS uses InsertDTS.
-func (i Insert) SizeMUS() (size int) {
-  return InsertDTS.Size(c, bs)
-}
+// ...
 
 // instructionMUS implements the mus.Serializer interface.
 type instructionMUS struct {}
 
 func (s instructionMUS) Marshal(i Instruction, bs []byte) (n int) {
-  if m, ok := i.(MarshallerMUS); ok {
-    return m.MarshalMUS(bs)
+  if m, ok := i.(MarshallerTypedMUS); ok {
+    return m.MarshalTypedMUS(bs)
   }
-  panic("i doesn't implement the MarshallerMUS interface")
+  panic(fmt.Sprintf("%v doesn't implement ext.MarshallerTypedMUS interface", 
+    reflect.TypeOf(i)))
 }
 
 func (s instructionMUS) Unmarshal(bs []byte) (i Instruction, n int, err error) {
@@ -506,10 +481,11 @@ func (s instructionMUS) Unmarshal(bs []byte) (i Instruction, n int, err error) {
 }
 
 func (s instructionMUS) Size(i Instruction) (size int) {
-  if s, ok := i.(MarshallerMUS); ok {
-    return s.SizeMUS()
+  if s, ok := i.(MarshallerTypedMUS); ok {
+    return s.SizeTypedMUS()
   }
-  panic("i doesn't implement the MarshallerMUS interface")
+  panic(fmt.Sprintf("%v doesn't implement ext.MarshallerTypedMUS interface", 
+    reflect.TypeOf(i)))
 }
 ```
 
@@ -608,7 +584,6 @@ func main() {
   value, n, err := ser.Unmarshal(bs)
   // ...
 }
-
 ```
 
 ### Map
