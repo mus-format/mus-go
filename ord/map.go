@@ -92,7 +92,7 @@ func (s mapSer[T, V]) Unmarshal(bs []byte) (v map[T]V, n int, err error) {
 		k   T
 		val V
 	)
-	v = make(map[T]V)
+	v = make(map[T]V, length)
 	for i := 0; i < length; i++ {
 		k, n1, err = s.keySer.Unmarshal(bs[n:])
 		n += n1
@@ -182,7 +182,7 @@ func (s validMapSer[T, V]) Unmarshal(bs []byte) (v map[T]V, n int, err error) {
 		k   T
 		val V
 	)
-	v = make(map[T]V)
+	v = make(map[T]V, length)
 	for i := 0; i < length; i++ {
 		k, n1, err = s.keySer.Unmarshal(bs[n:])
 		n += n1
