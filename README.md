@@ -384,11 +384,11 @@ greater flexibility, and thirdly, mus-go stays quite simple, making it easy to
 implement in other programming languages.
 
 ## DTS (Data Type metadata Support)
-[mus-dts-go](https://github.com/mus-format/mus-dts-go) enables typed data 
+[dts-go](https://github.com/mus-format/dts-go) enables typed data 
 serialization using [DTM](https://medium.com/p/21d7be309e8d).
 
 ## Data Versioning
-mus-dts-go can be used to implement data versioning. [Here](https://github.com/mus-format/mus-examples-go/tree/main/versioning) is an example.
+dts-go can be used to implement data versioning. [Here](https://github.com/mus-format/mus-examples-go/tree/main/versioning) is an example.
 
 ## MarshallerMUS Interface and MarshalMUS Function
 It is often convenient to use the `MarshallerMUS` interface:
@@ -425,10 +425,10 @@ module, which also includes the `MarshallerTypedMUS` interface and the
 The full code of using `MarshalMUS` function can be found [here](https://github.com/mus-format/mus-examples-go/tree/main/marshal_func).
 
 ## Interface Serialization (oneof feature)
-mus-dts-go will also help to create a serializer for an interface. Example:
+dts-go will also help to create a serializer for an interface. Example:
 ```go
 import (
-  dts "github.com/mus-format/mus-dts-go"
+  dts "github.com/mus-format/dts-go"
   ext "github.com/mus-format/ext-mus-go"
 )
 
@@ -457,7 +457,7 @@ type Insert struct {...}
 type instructionMUS struct {}
 
 func (s instructionMUS) Marshal(i Instruction, bs []byte) (n int) {
-  if m, ok := i.(MarshallerTypedMUS); ok {
+  if m, ok := i.(ext.MarshallerTypedMUS); ok {
     return m.MarshalTypedMUS(bs)
   }
   panic(fmt.Sprintf("%v doesn't implement ext.MarshallerTypedMUS interface", 
@@ -481,7 +481,7 @@ func (s instructionMUS) Unmarshal(bs []byte) (i Instruction, n int, err error) {
 }
 
 func (s instructionMUS) Size(i Instruction) (size int) {
-  if s, ok := i.(MarshallerTypedMUS); ok {
+  if s, ok := i.(ext.MarshallerTypedMUS); ok {
     return s.SizeTypedMUS()
   }
   panic(fmt.Sprintf("%v doesn't implement ext.MarshallerTypedMUS interface", 
