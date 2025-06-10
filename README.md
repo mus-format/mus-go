@@ -64,8 +64,9 @@ It is lightning fast, space efficient and well tested.
 - [Zero Allocation Deserialization](#zero-allocation-deserialization)
 
 # cmd-stream-go
-[cmd-stream-go](https://github.com/cmd-stream/cmd-stream-go) allows to execute 
-commands on the server. cmd-stream-go/MUS is about [3 times faster](https://github.com/ymz-ncnk/go-client-server-communication-benchmarks) 
+[cmd-stream-go](https://github.com/cmd-stream/cmd-stream-go) is based on the 
+Command pattern, enabling the execution of user-defined Commands on the server.
+cmd-stream-go/MUS is about [3 times faster](https://github.com/ymz-ncnk/go-client-server-communication-benchmarks) 
 than gRPC/Protobuf.
 
 # musgen-go
