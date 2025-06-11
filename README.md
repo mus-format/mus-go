@@ -7,7 +7,7 @@
 mus-go is a [MUS format](https://medium.com/p/21d7be309e8d) serializer. However,
 due to its minimalist design and a wide range of serialization primitives, it 
 can also be used to implement other binary serialization formats 
-([here](https://github.com/mus-format/mus-examples-go/blob/main/protobuf/main.go)
+([here](https://github.com/mus-format/examples-go/blob/main/protobuf/main.go)
 is an example where mus-go is utilized to implement Protobuf encoding).
 
 To get started quickly, go to the [code generator](https://github.com/mus-format/musgen-go) page.
@@ -293,7 +293,7 @@ func main() {
 The unsafe package provides maximum performance, but be careful - it uses an 
 unsafe type conversion. This warning largely applies to the string type because 
 modifying the byte slice after unmarshalling will also change the string’s 
-contents. Here is an [example](https://github.com/mus-format/mus-examples-go/blob/main/unasafe/main.go) 
+contents. Here is an [example](https://github.com/mus-format/examples-go/blob/main/unasafe/main.go) 
 that demonstrates this behavior more clearly.
 
 Provides serializers for the following data types: `byte`, `bool`, `string`, 
@@ -314,7 +314,7 @@ var (
 The `pm` package preserves pointer equality after unmarshalling `ptr1 == ptr2`, 
 while the `ord` package does not. This capability enables the serialization of 
 data structures like graphs or linked lists. You can find corresponding examples 
-in [mus-examples-go](https://github.com/mus-format/mus-examples-go/tree/main/pm).
+in [examples-go](https://github.com/mus-format/examples-go/tree/main/pm).
 
 ## Structs Support
 mus-go doesn’t support structural data types out of the box, which means you’ll 
@@ -389,7 +389,7 @@ implement in other programming languages.
 serialization using [DTM](https://medium.com/p/21d7be309e8d).
 
 ## Data Versioning
-dts-go can be used to implement data versioning. [Here](https://github.com/mus-format/mus-examples-go/tree/main/versioning) is an example.
+dts-go can be used to implement data versioning. [Here](https://github.com/mus-format/examples-go/tree/main/versioning) is an example.
 
 ## MarshallerMUS Interface and MarshalMUS Function
 It is often convenient to use the `MarshallerMUS` interface:
@@ -423,7 +423,7 @@ They are already defined in the [ext-mus-go](https://github.com/mus-format/ext-m
 module, which also includes the `MarshallerTypedMUS` interface and the 
 `MarshalTypedMUS` function for typed data serialization (DTM + data).
 
-The full code of using `MarshalMUS` function can be found [here](https://github.com/mus-format/mus-examples-go/tree/main/marshal_func).
+The full code of using `MarshalMUS` function can be found [here](https://github.com/mus-format/examples-go/tree/main/marshal_func).
 
 ## Interface Serialization (oneof feature)
 dts-go will also help to create a serializer for an interface. Example:
@@ -490,7 +490,7 @@ func (s instructionMUS) Size(i Instruction) (size int) {
 }
 ```
 
-A full example can be found at [mus-examples-go](https://github.com/mus-format/mus-examples-go/tree/main/oneof).
+A full example can be found at [examples-go](https://github.com/mus-format/examples-go/tree/main/oneof).
 
 ## Validation
 Validation is performed during unmarshalling. Validator is just a function 
@@ -674,7 +674,7 @@ func (s fooMUS) Unmarshal(bs []byte) (v Foo, n int, err error) {
 ```
 
 # Out of Order Deserialization
-A simple example can be found [here](https://github.com/mus-format/mus-examples-go/tree/main/out_of_order).
+A simple example can be found [here](https://github.com/mus-format/examples-go/tree/main/out_of_order).
 
 # Zero Allocation Deserialization
 Can be achieved using the `unsafe` package.
