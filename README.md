@@ -2,7 +2,7 @@
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/mus-format/mus-go.svg)](https://pkg.go.dev/github.com/mus-format/mus-go)
 [![GoReportCard](https://goreportcard.com/badge/mus-format/mus-go)](https://goreportcard.com/report/github.com/mus-format/mus-go)
-[![codecov](https://codecov.io/github/mus-format/mus-go/graph/badge.svg?token=WLLZ1MMQDX)](https://codecov.io/github/mus-format/mus-go)
+[![codecov](https://codecov.io/gh/mus-format/mus-go/graph/badge.svg?token=WLLZ1MMQDX)](https://codecov.io/gh/mus-format/mus-go)
 
 mus-go is a [MUS format](https://medium.com/p/21d7be309e8d) serializer. However,
 due to its minimalist design and a wide range of serialization primitives, it 
@@ -66,7 +66,7 @@ It is lightning fast, space efficient and well tested.
 # cmd-stream-go
 [cmd-stream-go](https://github.com/cmd-stream/cmd-stream-go) is based on the 
 Command pattern, enabling the execution of user-defined Commands on the server.
-cmd-stream-go/MUS is about [3 times faster](https://github.com/ymz-ncnk/go-client-server-communication-benchmarks) 
+cmd-stream/MUS is about [3 times faster](https://github.com/ymz-ncnk/go-client-server-communication-benchmarks) 
 than gRPC/Protobuf.
 
 # musgen-go
@@ -81,8 +81,8 @@ incredibly easy to use - just provide a type and call `Generate()`.
 Why did I create another [benchmarks](https://github.com/ymz-ncnk/go-serialization-benchmarks)?
 The existing [benchmarks](https://github.com/alecthomas/go_serialization_benchmarks) 
 have some notable issues - try running them several times, and you'll likely get
-inconsistent results, making it difficult to determine which serializer is truly 
-faster. That was one of the reasons, and basically I made them for my own use.
+inconsistent results, making it hard to determine which serializer is actually 
+faster. That was one reason. But mainly, I created them for my own use.
 
 # How To
 With mus-go, to make a type serializable, you need to implement the [Serializer](./mus.go) 
