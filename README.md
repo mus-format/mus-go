@@ -1,92 +1,90 @@
-# mus-go Serializer
+# mus-go: A High-Performance, Flexible Binary Serialization Library for Go
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/mus-format/mus-go.svg)](https://pkg.go.dev/github.com/mus-format/mus-go)
 [![GoReportCard](https://goreportcard.com/badge/mus-format/mus-go)](https://goreportcard.com/report/github.com/mus-format/mus-go)
 [![codecov](https://codecov.io/gh/mus-format/mus-go/graph/badge.svg?token=WLLZ1MMQDX)](https://codecov.io/gh/mus-format/mus-go)
 
-mus-go is a [MUS format](https://medium.com/p/21d7be309e8d) serializer. However,
-due to its minimalist design and a wide range of serialization primitives, it 
-can also be used to implement other binary serialization formats 
-([here](https://github.com/mus-format/examples-go/blob/main/protobuf/main.go)
-is an example where mus-go is utilized to implement Protobuf encoding).
+**mus-go** is a powerful and versatile Go library for efficient binary 
+serialization.
 
-To get started quickly, go to the [code generator](https://github.com/mus-format/musgen-go) page.
+While `mus-go` was built as a serializer for the [MUS format](https://medium.com/p/21d7be309e8d), 
+its minimalist architecture and broad set of serialization primitives also make 
+it well-suited for implementing other binary formats. Here you can find an 
+[example](https://github.com/mus-format/examples-go/blob/main/protobuf/main.go) 
+where it is used to encode data in Protobuf format.
+
+There’s also a streaming version: [mus-stream-go](https://github.com/mus-format/mus-stream-go).
+
+To get started quickly, visit the [code generator](https://github.com/mus-format/musgen-go) 
+page.
 
 ## Why mus-go?
-It is lightning fast, space efficient and well tested.
+### Core Performance & Reliability
+- Top-tier performance (see [benchmarks](#benchmarks)).
+- Space-efficient data serialization.
+- Robust and reliable.
+- Cross-architecture compatible (32/64-bit systems).
 
-## Description
-- Has a [streaming version](https://github.com/mus-format/mus-stream-go).
-- Can run on both 32 and 64-bit systems.
-- Variable-length data types (like `string`, `array`, `slice`, or `map`) are 
-  encoded as: `length + data`. You can choose binary representation for both of 
-  these parts. 
+### Advanced Capabilities
 - Supports data versioning.
-- Deserialization may fail with one of the following errors: `ErrOverflow`, 
-  `ErrNegativeLength`, `ErrTooSmallByteSlice`, `ErrWrongFormat`.
-- Can validate and skip data while unmarshalling.
-- Supports pointers.
-- Can encode data structures such as graphs or linked lists.
-- Supports oneof feature.
+- Allows interface serialization (oneof feature).
+- Comprehensive pointer support.
+- Can encode graphs and linked lists.
+- Offers zero allocation deserialization.
+
+### Developer Experience
+- Enables validation and field skipping during unmarshalling.
 - Supports private fields.
-- Supports out-of-order deserialization.
-- Supports zero allocation deserialization.
+- Allows out-of-order deserialization.
 
-# Contents
-- [mus-go Serializer](#mus-go-serializer)
+## mus-go in Action: cmd-stream-go
+Want to see it in action? Check out [cmd-stream-go](https://github.com/cmd-stream/cmd-stream-go)! 
+This library, based on the Command Pattern, enables efficient execution of 
+user-defined Commands on a server. The `cmd-stream/MUS` is about 3 times faster 
+than `gRPC/Protobuf`.
+
+## Contents
+- [mus-go: A High-Performance, Flexible Binary Serialization Library for Go](#mus-go-a-high-performance-flexible-binary-serialization-library-for-go)
   - [Why mus-go?](#why-mus-go)
-  - [Description](#description)
-- [Contents](#contents)
-- [cmd-stream-go](#cmd-stream-go)
-- [musgen-go](#musgen-go)
-- [Benchmarks](#benchmarks)
-- [How To](#how-to)
-  - [Packages](#packages)
-    - [varint](#varint)
-    - [raw](#raw)
-    - [ord (ordinary)](#ord-ordinary)
-      - [Array](#array)
-      - [Slice](#slice)
+    - [Core Performance \& Reliability](#core-performance--reliability)
+    - [Advanced Capabilities](#advanced-capabilities)
+    - [Developer Experience](#developer-experience)
+  - [mus-go in Action: cmd-stream-go](#mus-go-in-action-cmd-stream-go)
+  - [Contents](#contents)
+  - [Code Generator](#code-generator)
+  - [How To](#how-to)
+    - [Packages](#packages)
+      - [varint](#varint)
+      - [raw](#raw)
+      - [ord (ordinary)](#ord-ordinary)
+        - [Array](#array)
+        - [Slice](#slice)
       - [Map](#map)
-    - [unsafe](#unsafe)
-    - [pm (pointer mapping)](#pm-pointer-mapping)
-  - [Structs Support](#structs-support)
-  - [DTS (Data Type metadata Support)](#dts-data-type-metadata-support)
-  - [Data Versioning](#data-versioning)
-  - [MarshallerMUS Interface and MarshalMUS Function](#marshallermus-interface-and-marshalmus-function)
-  - [Interface Serialization (oneof feature)](#interface-serialization-oneof-feature)
-  - [Validation](#validation)
-    - [String](#string)
-    - [Slice](#slice-1)
-    - [Map](#map-1)
-    - [Struct](#struct)
-- [Out of Order Deserialization](#out-of-order-deserialization)
-- [Zero Allocation Deserialization](#zero-allocation-deserialization)
+      - [unsafe](#unsafe)
+      - [pm (pointer mapping)](#pm-pointer-mapping)
+    - [Structs Support](#structs-support)
+    - [DTS (Data Type metadata Support)](#dts-data-type-metadata-support)
+    - [Data Versioning](#data-versioning)
+    - [MarshallerMUS Interface and MarshalMUS Function](#marshallermus-interface-and-marshalmus-function)
+    - [Interface Serialization (oneof feature)](#interface-serialization-oneof-feature)
+    - [Validation](#validation)
+      - [String](#string)
+      - [Slice](#slice-1)
+      - [Map](#map-1)
+      - [Struct](#struct)
+  - [Out of Order Deserialization](#out-of-order-deserialization)
+  - [Zero Allocation Deserialization](#zero-allocation-deserialization)
+  - [Benchmarks](#benchmarks)
 
-# cmd-stream-go
-[cmd-stream-go](https://github.com/cmd-stream/cmd-stream-go) is based on the 
-Command pattern, enabling the execution of user-defined Commands on the server.
-cmd-stream/MUS is about [3 times faster](https://github.com/ymz-ncnk/go-client-server-communication-benchmarks) 
-than gRPC/Protobuf.
+## Code Generator
+Manually writing `mus-go` serialization code can be tedious and error-prone. The
+[musgen-go](https://github.com/mus-format/musgen-go) code generator offers a 
+much more efficient and reliable alternative that's simple to use - just provide 
+a type and call `Generate()`.
 
-# musgen-go
-Writing mus-go code manually can be tedious and error-prone. A better approach 
-is to use a [code generator](https://github.com/mus-format/musgen-go), it's also
-incredibly easy to use - just provide a type and call `Generate()`.
-
-# Benchmarks
-- [github.com/ymz-ncnk/go-serialization-benchmarks](https://github.com/ymz-ncnk/go-serialization-benchmarks)
-- [github.com/alecthomas/go_serialization_benchmarks](https://github.com/alecthomas/go_serialization_benchmarks)
-
-Why did I create another [benchmarks](https://github.com/ymz-ncnk/go-serialization-benchmarks)?
-The existing [benchmarks](https://github.com/alecthomas/go_serialization_benchmarks) 
-have some notable issues - try running them several times, and you'll likely get
-inconsistent results, making it hard to determine which serializer is actually 
-faster. That was one reason. But mainly, I created them for my own use.
-
-# How To
-With mus-go, to make a type serializable, you need to implement the [Serializer](./mus.go) 
-interface:
+## How To
+To make a type serializable with `mus-go`, you need to implement the 
+[mus.Serializer](./mus.go) interface:
 ```go
 
 import "github.com/mus-format/mus-go"
@@ -103,7 +101,7 @@ func (s yourTypeMUS) Size(v YourType) (size int)                         {...}
 func (s yourTypeMUS) Skip(bs []byte) (n int, err error)                  {...}
 ```
 
-And than use it like:
+Then, you can use it as follows:
 ```go
 var (
   value YourType = ...
@@ -119,12 +117,12 @@ value, n, err := YourTypeMUS.Unmarshal(bs) // Returns the value, the number of
 n, err := YourTypeMUS.Skip(bs)
 ```
 
-## Packages
-mus-go offers several encoding options, each of which is in a separate package.
+### Packages
+`mus-go` offers several encoding options, each in a separate package.
 
-### varint
-Contains Varint serialzers for all `uint` (`uint64`, `uint32`, `uint16`, 
-`uint8`, `uint`), `int`, `float`, `byte` data types. Example:
+#### varint
+This package provides Varint serializers for all `uint` (e.g., `uint64`, 
+`uint32`, ...), `int`, `float`, and `byte` data types.
 ```go
 package main
 
@@ -141,13 +139,13 @@ func main() {
   // ...
 }
 ```
+It also includes the `PositiveInt` serializer (Varint without ZigZag) for 
+efficiently encoding positive `int` values (negative values are supported as 
+well, though with reduced performance).
 
-Also includes the `PositiveInt` serializer (Varint without ZigZag) for positive 
-`int` values. It can handle negative values as well, but with lower performance.
-
-### raw
-Contains Raw serializers for the same `byte`, `uint`, `int`, `float`, `time.Time` 
-data types. Example:
+#### raw
+This package contains Raw serializers for `byte`, `uint`, `int`, `float`, and 
+`time.Time` data types.
 ```go
 package main
 
@@ -175,31 +173,26 @@ For `time.Time`, there are several serializers:
 - `TimeUnixMicro` – encodes a value as a Unix timestamp in microseconds.
 - `TimeUnixNano` – encodes a value as a Unix timestamp in nanoseconds.
 
-To ensure the deserialized value is in UTC, make sure your TZ environment 
-variable is set to UTC. This can be done as follows:
-```go
-os.Setenv("TZ", "")
-```
+To ensure the deserialized `time.Time` value is in UTC, either set your TZ 
+environment variable to UTC (e.g., `os.Setenv("TZ", "")`) or use one of the 
+corresponding UTC serializers (e.g., `TimeUnixUTC`, `TimeUnixMilliUTC`).
 
-Alternatively, you can use one of the corresponding UTC serializers, e.g., 
-`TimeUnixUTC`, `TimeUnixMilliUTC`, etc.
-
-### ord (ordinary)
+#### ord (ordinary)
 Contains serializers/constructors for `bool`, `string`, `array`, `byte slice`,
-`slice`, `map`, and pointer types.
+`slice`, `map`, and `pointer` types.
 
-Variable-length data types (such as `string`, `array`, `slice`, or `map`) are 
-encoded as `length + data`. You can choose the binary representation for both 
+Variable-length data types (such as `string`, `array`, `slice`, and `map`) are 
+encoded as `length + data`, with customizable binary representations for both 
 parts. By default, the length is encoded using a Varint without ZigZag 
-(`varint.PositiveInt`). In this case, the maximum length is limited by the 
-maximum value of the `int` type on your system. This works well across different 
-architectures - for example, an attempt to unmarshal a string that is too long 
+(`varint.PositiveInt`), which limits the length to the maximum value of the 
+`int` type on your system. Such encoding works well across different
+architectures. For example, an attempt to unmarshal a string that is too long 
 on a 32-bit system will result in an `ErrOverflow`.
 
-For `array`, `slice`, and `map` types, there are only constructors available to 
-create a concrete serializer.
+For `array`, `slice`, and `map` types, only constructors are available to create 
+a concrete serializer.
 
-#### Array
+##### Array
 Unfortunately, Go does not support generic parameterization of array sizes,
 as a result, the array serializer constructor looks like:
 ```go
@@ -213,8 +206,8 @@ import (
 
 func main() {
    var (
-    // The first type parameter of the NewArraySer function represents the array
-    // type, and the second - the type of the array’s elements.
+    // The first type parameter of the NewArraySer function represents the array 
+    // type, the second represents the type of the array’s elements.
     //
     // As for the function parameters, varint.Int specifies the serializer for 
     // the array’s elements.
@@ -233,7 +226,7 @@ func main() {
 }
 ```
 
-#### Slice
+##### Slice
 ```go
 package main
 
@@ -289,9 +282,9 @@ func main() {
 }
 ```
 
-### unsafe
-The unsafe package provides maximum performance, but be careful - it uses an 
-unsafe type conversion. This warning largely applies to the string type because 
+#### unsafe
+The unsafe package provides maximum performance, but be careful, it uses an 
+unsafe type conversion. This warning largely applies to the string type, because 
 modifying the byte slice after unmarshalling will also change the string’s 
 contents. Here is an [example](https://github.com/mus-format/examples-go/blob/main/unasafe/main.go) 
 that demonstrates this behavior more clearly.
@@ -299,7 +292,7 @@ that demonstrates this behavior more clearly.
 Provides serializers for the following data types: `byte`, `bool`, `string`, 
 `byte slice`, `time.Time` and all `uint`, `int`, `float`.
 
-### pm (pointer mapping)
+#### pm (pointer mapping)
 Let's consider two pointers initialized with the same value:
 ```go
 var (
@@ -316,9 +309,9 @@ while the `ord` package does not. This capability enables the serialization of
 data structures like graphs or linked lists. You can find corresponding examples 
 in [examples-go](https://github.com/mus-format/examples-go/tree/main/pm).
 
-## Structs Support
-mus-go doesn’t support structural data types out of the box, which means you’ll 
-need to implement the `mus.Serializer` interface yourself. But that’s not 
+### Structs Support
+`mus-go` doesn’t support structural data types out of the box, which means 
+you’ll need to implement the `mus.Serializer` interface yourself. But that’s not
 difficult at all. For example:
 ```go
 package main
@@ -381,17 +374,17 @@ func (s fooMUS) Skip(bs []byte) (n int, err error) {
 All you have to do is deconstruct the structure into simpler data types and 
 choose the desired encoding for each. Of course, this requires some effort.
 But, firstly, the code can be generated, secondly, this approach provides 
-greater flexibility, and thirdly, mus-go stays quite simple, making it easy to 
+greater flexibility, and thirdly, `mus-go` stays quite simple, making it easy to 
 implement in other programming languages.
 
-## DTS (Data Type metadata Support)
+### DTS (Data Type metadata Support)
 [dts-go](https://github.com/mus-format/dts-go) enables typed data 
-serialization using [DTM](https://medium.com/p/21d7be309e8d).
+serialization using [Data Type Metadata (DTM)](https://medium.com/p/21d7be309e8d).
 
-## Data Versioning
-dts-go can be used to implement data versioning. [Here](https://github.com/mus-format/examples-go/tree/main/versioning) is an example.
+### Data Versioning
+dts-go can also be used to implement data versioning. See this [example](https://github.com/mus-format/examples-go/tree/main/versioning).
 
-## MarshallerMUS Interface and MarshalMUS Function
+### MarshallerMUS Interface and MarshalMUS Function
 It is often convenient to use the `MarshallerMUS` interface:
 ```go
 type MarshallerMUS interface {
@@ -425,7 +418,7 @@ module, which also includes the `MarshallerTypedMUS` interface and the
 
 The full code of using `MarshalMUS` function can be found [here](https://github.com/mus-format/examples-go/tree/main/marshal_func).
 
-## Interface Serialization (oneof feature)
+### Interface Serialization (oneof feature)
 dts-go will also help to create a serializer for an interface. Example:
 ```go
 import (
@@ -446,7 +439,7 @@ func (c Copy) MarshalTypedMUS(bs []byte) (n int) {
 
 // SizeTypedMUS uses CopyDTS.
 func (c Copy) SizeTypedMUS() (size int) {
-  return CopyDTS.Size(c, bs)
+  return CopyDTS.Size(c)
 }
 
 // Insert implements the Instruction and ext.MarshallerTypedMUS interfaces.
@@ -492,12 +485,12 @@ func (s instructionMUS) Size(i Instruction) (size int) {
 
 A full example can be found at [examples-go](https://github.com/mus-format/examples-go/tree/main/oneof).
 
-## Validation
+### Validation
 Validation is performed during unmarshalling. Validator is just a function 
 with the following signature `func (value Type) error`, where `Type` is a type 
 of the value to which the validator is applied.
 
-### String
+#### String
 `ord.NewValidStringSer` constructor creates a string serializer with the length
 validator. 
 ```go
@@ -534,10 +527,9 @@ func main() {
   value, n, err := ser.Unmarshal(bs)
   // ...
 }
-
 ```
 
-### Slice
+#### Slice
 `ord.NewValidSliceSer` constructor creates a valid slice serializer with the 
 length and element validators.
 ```go
@@ -587,7 +579,7 @@ func main() {
 }
 ```
 
-### Map
+#### Map
 `ord.NewValidMapSer` constructor creates a valid map serializer with the 
 length, key and value validators.
 ```go
@@ -646,7 +638,7 @@ func main() {
 }
 ```
 
-### Struct
+#### Struct
 Unmarshalling an invalid structure may stop at the first invalid field, 
 returning a validation error.
 ```go
@@ -673,8 +665,19 @@ func (s fooMUS) Unmarshal(bs []byte) (v Foo, n int, err error) {
 }
 ```
 
-# Out of Order Deserialization
+## Out of Order Deserialization
 A simple example can be found [here](https://github.com/mus-format/examples-go/tree/main/out_of_order).
 
-# Zero Allocation Deserialization
+## Zero Allocation Deserialization
 Can be achieved using the `unsafe` package.
+
+## Benchmarks
+You can find performance benchmarks for `mus-go` at:
+- [github.com/ymz-ncnk/go-serialization-benchmarks](https://github.com/ymz-ncnk/go-serialization-benchmarks)
+- [github.com/alecthomas/go_serialization_benchmarks](https://github.com/alecthomas/go_serialization_benchmarks)
+
+Why did I create another [benchmarks](https://github.com/ymz-ncnk/go-serialization-benchmarks)? 
+The existing [benchmarks](https://github.com/alecthomas/go_serialization_benchmarks)
+have some notable issues - try running them several times, and you'll likely get 
+inconsistent results, making it hard to determine which serializer is actually 
+faster. That was one reason, but mainly I created them for my own use.
