@@ -13,7 +13,7 @@ it well-suited for implementing other binary formats. Here you can find an
 [example](https://github.com/mus-format/examples-go/blob/main/protobuf/main.go) 
 where it is used to encode data in Protobuf format.
 
-There’s also a streaming version: [mus-stream-go](https://github.com/mus-format/mus-stream-go).
+A streaming version is also available: [mus-stream-go](https://github.com/mus-format/mus-stream-go).
 
 To get started quickly, visit the [code generator](https://github.com/mus-format/musgen-go) 
 page.
