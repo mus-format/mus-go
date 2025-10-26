@@ -14,7 +14,7 @@ type byteSer struct{}
 //
 // Returns the number of used bytes. It will panic if receives too small bs.
 func (s byteSer) Marshal(v byte, bs []byte) (n int) {
-	return marshalInteger8[byte](v, bs)
+	return marshalInteger8(v, bs)
 }
 
 // Unmarshal parses an encoded (Raw) byte value from bs.

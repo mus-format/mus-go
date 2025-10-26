@@ -1,3 +1,4 @@
+// Package bslops provides options for customizing byte slice serialization.
 package bslops
 
 import (

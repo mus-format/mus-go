@@ -10,7 +10,8 @@ import (
 // NewSliceSer returns a new slice serializer with the given element serializer.
 // To specify a length or element validator, use NewValidStringSer instead.
 func NewSliceSer[T any](elemSer mus.Serializer[T], ops ...slops.SetOption[T]) (
-	s sliceSer[T]) {
+	s sliceSer[T],
+) {
 	o := slops.Options[T]{}
 	slops.Apply(ops, &o)
 
@@ -19,7 +20,8 @@ func NewSliceSer[T any](elemSer mus.Serializer[T], ops ...slops.SetOption[T]) (
 
 // NewValidSliceSer returns a new valid slice serializer.
 func NewValidSliceSer[T any](elemSer mus.Serializer[T],
-	ops ...slops.SetOption[T]) validSliceSer[T] {
+	ops ...slops.SetOption[T],
+) validSliceSer[T] {
 	o := slops.Options[T]{}
 	slops.Apply(ops, &o)
 
@@ -41,7 +43,8 @@ func NewValidSliceSer[T any](elemSer mus.Serializer[T],
 }
 
 func newSliceSer[T any](elemSer mus.Serializer[T], o slops.Options[T]) (
-	s sliceSer[T]) {
+	s sliceSer[T],
+) {
 	var lenSer mus.Serializer[int] = varint.PositiveInt
 	if o.LenSer != nil {
 		lenSer = o.LenSer

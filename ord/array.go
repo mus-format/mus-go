@@ -15,7 +15,8 @@ import (
 //
 // Panics if T is not an array type.
 func NewArraySer[T, V any](elemSer mus.Serializer[V],
-	ops ...arrops.SetOption[V]) (s arraySer[T, V]) {
+	ops ...arrops.SetOption[V],
+) (s arraySer[T, V]) {
 	var (
 		o      = arrops.Options[V]{}
 		t      = reflect.TypeFor[T]()
@@ -24,7 +25,7 @@ func NewArraySer[T, V any](elemSer mus.Serializer[V],
 	arrops.Apply(ops, &o)
 	var (
 		lenVl    = newLenVl(length)
-		sliceSer = NewValidSliceSer[V](elemSer, slops.WithLenSer[V](o.LenSer),
+		sliceSer = NewValidSliceSer(elemSer, slops.WithLenSer[V](o.LenSer),
 			slops.WithLenValidator[V](lenVl))
 	)
 	return arraySer[T, V]{length, sliceSer}
@@ -35,7 +36,8 @@ func NewArraySer[T, V any](elemSer mus.Serializer[V],
 //
 // Panics if T is not an array type.
 func NewValidArraySer[T, V any](elemSer mus.Serializer[V],
-	ops ...arrops.SetOption[V]) arraySer[T, V] {
+	ops ...arrops.SetOption[V],
+) arraySer[T, V] {
 	var (
 		o      = arrops.Options[V]{}
 		t      = reflect.TypeFor[T]()
@@ -44,7 +46,7 @@ func NewValidArraySer[T, V any](elemSer mus.Serializer[V],
 	arrops.Apply(ops, &o)
 	var (
 		lenVl    = newLenVl(length)
-		sliceSer = NewValidSliceSer[V](elemSer, slops.WithLenSer[V](o.LenSer),
+		sliceSer = NewValidSliceSer(elemSer, slops.WithLenSer[V](o.LenSer),
 			slops.WithLenValidator[V](lenVl), slops.WithElemValidator(o.ElemVl))
 	)
 	return arraySer[T, V]{length, sliceSer}

@@ -38,7 +38,8 @@ func SliceSerData(t *testing.T) (sl []string, elemSer mock.Serializer[string]) {
 }
 
 func SliceLenSerData(t *testing.T) (sl []string, lenSer mock.Serializer[int],
-	elemSer mock.Serializer[string]) {
+	elemSer mock.Serializer[string],
+) {
 	sl, elemSer = SliceSerData(t)
 	var (
 		l    = len(sl)

@@ -1,3 +1,4 @@
+// Package slops provides options for customizing slice serialization.
 package slops
 
 import (

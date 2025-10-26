@@ -19,7 +19,7 @@ func NewStringSer(ops ...strops.SetOption) stringSer {
 	return newStringSer(o)
 }
 
-// NewStringSer returns a new valid string serializer.
+// NewValidStringSer returns a new valid string serializer.
 func NewValidStringSer(ops ...strops.SetOption) validStringSer {
 	o := strops.Options{}
 	strops.Apply(ops, &o)

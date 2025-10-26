@@ -2,10 +2,12 @@ package mock
 
 import "github.com/ymz-ncnk/mok"
 
-type MarshalFn[T any] func(t T, bs []byte) (n int)
-type UnmarshalFn[T any] func(bs []byte) (t T, n int, err error)
-type SizeFn[T any] func(t T) (size int)
-type SkipFn func(bs []byte) (n int, err error)
+type (
+	MarshalFn[T any]   func(t T, bs []byte) (n int)
+	UnmarshalFn[T any] func(bs []byte) (t T, n int, err error)
+	SizeFn[T any]      func(t T) (size int)
+	SkipFn             func(bs []byte) (n int, err error)
+)
 
 func NewSerializer[T any]() Serializer[T] {
 	return Serializer[T]{mok.New("Serializer")}
@@ -31,7 +33,8 @@ func (u Serializer[T]) RegisterUnmarshal(fn UnmarshalFn[T]) Serializer[T] {
 }
 
 func (u Serializer[T]) RegisterUnmarshalN(n int,
-	fn func(bs []byte) (t T, n int, err error)) Serializer[T] {
+	fn func(bs []byte) (t T, n int, err error),
+) Serializer[T] {
 	u.RegisterN("Unmarshal", n, fn)
 	return u
 }

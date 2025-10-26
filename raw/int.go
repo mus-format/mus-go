@@ -38,7 +38,7 @@ type int64Ser struct{}
 //
 // Returns the number of used bytes. It will panic if receives too small bs.
 func (s int64Ser) Marshal(v int64, bs []byte) (n int) {
-	return marshalInteger64[int64](v, bs)
+	return marshalInteger64(v, bs)
 }
 
 // Unmarshal parses an encoded (Raw) int64 value from bs.

@@ -11,7 +11,8 @@ import (
 // serializers. To specify a length, key or value validator, use NewValidMapSer
 // instead.
 func NewMapSer[T comparable, V any](keySer mus.Serializer[T],
-	valueSer mus.Serializer[V], ops ...mapops.SetOption[T, V]) mapSer[T, V] {
+	valueSer mus.Serializer[V], ops ...mapops.SetOption[T, V],
+) mapSer[T, V] {
 	o := mapops.Options[T, V]{}
 	mapops.Apply(ops, &o)
 
@@ -20,7 +21,8 @@ func NewMapSer[T comparable, V any](keySer mus.Serializer[T],
 
 // NewValidMapSer returns a new valid map serializer.
 func NewValidMapSer[T comparable, V any](keySer mus.Serializer[T],
-	valueSer mus.Serializer[V], ops ...mapops.SetOption[T, V]) validMapSer[T, V] {
+	valueSer mus.Serializer[V], ops ...mapops.SetOption[T, V],
+) validMapSer[T, V] {
 	o := mapops.Options[T, V]{}
 	mapops.Apply(ops, &o)
 
@@ -48,7 +50,8 @@ func NewValidMapSer[T comparable, V any](keySer mus.Serializer[T],
 }
 
 func newMapSer[T comparable, V any](keySer mus.Serializer[T],
-	valueSer mus.Serializer[V], o mapops.Options[T, V]) mapSer[T, V] {
+	valueSer mus.Serializer[V], o mapops.Options[T, V],
+) mapSer[T, V] {
 	var lenSer mus.Serializer[int] = varint.PositiveInt
 	if o.LenSer != nil {
 		lenSer = o.LenSer

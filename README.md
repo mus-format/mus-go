@@ -499,9 +499,9 @@ func (s instructionMUS) Unmarshal(bs []byte) (i Instruction, n int, err error) {
     return
   }
   switch dtm {
-  case CopyDTS.DTM():
+  case CopyDTM:
     return CopyDTS.UnmarshalData(bs[n:])
-  case InsertDTS.DTM():
+  case InsertDTM:
     return InsertDTS.UnmarshalData(bs[n:])
   default:
     err = ErrUnexpectedDTM
@@ -728,4 +728,3 @@ Why a separate benchmark suite? The existing [benchmarks](https://github.com/ale
 sometimes produce inconsistent results across multiple runs, making it
 difficult to reliably compare serializers. A new [benchmarks](https://github.com/ymz-ncnk/go-serialization-benchmarks)
 were created to provide more consistent and reproducible measurements.
-

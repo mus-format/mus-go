@@ -11,9 +11,7 @@ import (
 )
 
 func TestPM(t *testing.T) {
-
 	t.Run("pointer", func(t *testing.T) {
-
 		t.Run("Marshal should be able to marshal nil pointer", func(t *testing.T) {
 			var (
 				wantN  = 1
@@ -239,7 +237,5 @@ func TestPM(t *testing.T) {
 					t.Errorf("unexpected err, want '%v' actual '%v'", wantErr, err)
 				}
 			})
-
 	})
-
 }

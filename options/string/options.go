@@ -1,3 +1,4 @@
+// Package strops provides options for customizing string serialization.
 package strops
 
 import (

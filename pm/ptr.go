@@ -12,14 +12,16 @@ import (
 // serializers (all created with the same pointer and reverse pointer maps), so
 // it can be used like a regular serializer.
 func Wrap[T any](ptrMap *com.PtrMap, revPtrMap *com.ReversePtrMap,
-	ser mus.Serializer[T]) wrapper[T] {
+	ser mus.Serializer[T],
+) wrapper[T] {
 	return wrapper[T]{ptrMap, revPtrMap, ser}
 }
 
 // NewPtrSer returns a new pointer serializer with the given pointer map,
 // reverse pointer map and base type serializer.
 func NewPtrSer[T any](ptrMap *com.PtrMap, revPtrMap *com.ReversePtrMap,
-	baseSer mus.Serializer[T]) ptrSer[T] {
+	baseSer mus.Serializer[T],
+) ptrSer[T] {
 	return ptrSer[T]{ptrMap, revPtrMap, baseSer}
 }
 
@@ -74,7 +76,7 @@ func (s ptrSer[T]) Unmarshal(bs []byte) (v *T, n int, err error) {
 		}
 		ptr, _ := s.revPtrMap.Get(id)
 		if ptr == nil {
-			v, n1, err = unmarshalData[T](id, s.baseSer, s.revPtrMap, bs[n:])
+			v, n1, err = unmarshalData(id, s.baseSer, s.revPtrMap, bs[n:])
 			n += n1
 		} else {
 			v = (*T)(ptr)

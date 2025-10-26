@@ -14,7 +14,6 @@ import (
 )
 
 func TestWrapper(t *testing.T) {
-
 	t.Run("wrapper serializer should work correctly",
 		func(t *testing.T) {
 			var (
@@ -56,7 +55,6 @@ func TestWrapper(t *testing.T) {
 			if infomap := mok.CheckCalls(mocks); len(infomap) > 0 {
 				t.Error(infomap)
 			}
-
 		})
 
 	t.Run("Unmarshal should call ser.Unmarshal and empty the revPtrMap",
@@ -160,11 +158,11 @@ func TestWrapper(t *testing.T) {
 				t.Error(infomap)
 			}
 		})
-
 }
 
 func newPtrStructSer(ptrMap *com.PtrMap, revPtrMap *com.ReversePtrMap,
-	baseSer mus.Serializer[int]) mus.Serializer[com_testdata.PtrStruct] {
+	baseSer mus.Serializer[int],
+) mus.Serializer[com_testdata.PtrStruct] {
 	return ptrStructSer{NewPtrSer[int](ptrMap, revPtrMap, baseSer)}
 }
 

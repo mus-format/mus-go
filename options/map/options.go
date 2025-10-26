@@ -1,3 +1,4 @@
+// Package mapops provides options for customizing map serialization.
 package mapops
 
 import (

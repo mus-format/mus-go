@@ -27,6 +27,7 @@ func u[T any](wantBs []byte, r T, t *testing.T) mock.UnmarshalFn[T] {
 		return
 	}
 }
+
 func s[T comparable](wantV T, r int, t *testing.T) mock.SizeFn[T] {
 	return func(v T) (size int) {
 		if v == wantV {

@@ -37,7 +37,7 @@ type uint64Ser struct{}
 //
 // Returns the number of used bytes. It will panic if receives too small bs.
 func (s uint64Ser) Marshal(v uint64, bs []byte) (n int) {
-	return marshalInteger64[uint64](v, bs)
+	return marshalInteger64(v, bs)
 }
 
 // Unmarshal parses an encoded (Raw) uint64 value from bs.
@@ -69,7 +69,7 @@ type uint32Ser struct{}
 //
 // Returns the number of used bytes. It will panic if receives too small bs.
 func (s uint32Ser) Marshal(v uint32, bs []byte) (n int) {
-	return marshalInteger32[uint32](v, bs)
+	return marshalInteger32(v, bs)
 }
 
 // Unmarshal parses an encoded (Raw) uint32 value from bs.
@@ -101,7 +101,7 @@ type uint16Ser struct{}
 //
 // Returns the number of used bytes. It will panic if receives too small bs.
 func (s uint16Ser) Marshal(v uint16, bs []byte) (n int) {
-	return marshalInteger16[uint16](v, bs)
+	return marshalInteger16(v, bs)
 }
 
 // Unmarshal parses an encoded (Raw) uint16 value from bs.
@@ -133,7 +133,7 @@ type uint8Ser struct{}
 //
 // Returns the number of used bytes. It will panic if receives too small bs.
 func (s uint8Ser) Marshal(v uint8, bs []byte) (n int) {
-	return marshalInteger8[uint8](v, bs)
+	return marshalInteger8(v, bs)
 }
 
 // Unmarshal parses an encoded (Raw) uint8 value from bs.

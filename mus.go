@@ -1,3 +1,4 @@
+// Package mus provides Serializer interface.
 package mus
 
 // Serializer is the interface that groups the Marshal, Unmarshal, Size and

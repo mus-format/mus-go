@@ -8,7 +8,8 @@ import (
 )
 
 func MapSerData(t *testing.T) (mp map[string]int, keySer mock.Serializer[string],
-	valueSer mock.Serializer[int]) {
+	valueSer mock.Serializer[int],
+) {
 	var (
 		aBs = append([]byte{1}, []byte("a")...)
 		bBs = append([]byte{1}, []byte("b")...)
@@ -122,7 +123,8 @@ func MapSerData(t *testing.T) (mp map[string]int, keySer mock.Serializer[string]
 }
 
 func MapLenSerData(t *testing.T) (mp map[string]int, lenSer mock.Serializer[int],
-	keySer mock.Serializer[string], valueSer mock.Serializer[int]) {
+	keySer mock.Serializer[string], valueSer mock.Serializer[int],
+) {
 	mp, keySer, valueSer = MapSerData(t)
 	var (
 		l    = len(mp)

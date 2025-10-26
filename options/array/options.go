@@ -1,3 +1,4 @@
+// Package arrops provides options for customizing array serialization.
 package arrops
 
 import (

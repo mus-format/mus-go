@@ -9,7 +9,6 @@ import (
 )
 
 func TestIntegrationOrd(t *testing.T) {
-
 	t.Run("pointer", func(t *testing.T) {
 		ser := NewPtrSer[string](String)
 		testdata.Test[*string](com_testdata.PointerTestCases, ser, t)
@@ -51,5 +50,4 @@ func TestIntegrationOrd(t *testing.T) {
 		testdata.Test[map[float32]uint8](com_testdata.MapTestCases, ser, t)
 		testdata.TestSkip[map[float32]uint8](com_testdata.MapTestCases, ser, t)
 	})
-
 }

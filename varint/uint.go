@@ -194,7 +194,8 @@ func marshalUint[T constraints.Unsigned](t T, bs []byte) (n int) {
 }
 
 func unmarshalUint[T constraints.Unsigned](maxVarintLen int, maxLastByte byte,
-	bs []byte) (t T, n int, err error) {
+	bs []byte,
+) (t T, n int, err error) {
 	if len(bs) == 0 {
 		err = mus.ErrTooSmallByteSlice
 		return
@@ -230,7 +231,8 @@ func sizeUint[T constraints.Unsigned](t T) (size int) {
 }
 
 func skipUint(maxVarintLen int, maxLastByte byte, bs []byte) (n int,
-	err error) {
+	err error,
+) {
 	if len(bs) == 0 {
 		err = mus.ErrTooSmallByteSlice
 		return

@@ -22,9 +22,7 @@ import (
 )
 
 func TestOrd(t *testing.T) {
-
 	t.Run("bool", func(t *testing.T) {
-
 		t.Run("Bool serializer should work correctly",
 			func(t *testing.T) {
 				ser := Bool
@@ -77,11 +75,9 @@ func TestOrd(t *testing.T) {
 				)
 				com_testdata.TestSkipResults(wantN, n, wantErr, err, nil, t)
 			})
-
 	})
 
 	t.Run("string", func(t *testing.T) {
-
 		t.Run("String serializer should work correctly",
 			func(t *testing.T) {
 				ser := String
@@ -269,11 +265,9 @@ func TestOrd(t *testing.T) {
 			)
 			com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 		})
-
 	})
 
 	t.Run("pointer", func(t *testing.T) {
-
 		t.Run("Pointer seralizer should work correctly",
 			func(t *testing.T) {
 				var (
@@ -417,11 +411,9 @@ func TestOrd(t *testing.T) {
 				)
 				com_testdata.TestSkipResults(wantN, n, wantErr, err, mocks, t)
 			})
-
 	})
 
 	t.Run("byte_slice", func(t *testing.T) {
-
 		t.Run("ByteSlice serializer should work correctly for empty slice",
 			func(t *testing.T) {
 				var (
@@ -615,11 +607,9 @@ func TestOrd(t *testing.T) {
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil,
 					t)
 			})
-
 	})
 
 	t.Run("array", func(t *testing.T) {
-
 		t.Run("Array serializer should work correctly", func(t *testing.T) {
 			var (
 				arr, elemSer = testdata.ArraySerData(t)
@@ -694,11 +684,9 @@ func TestOrd(t *testing.T) {
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err,
 					mocks, t)
 			})
-
 	})
 
 	t.Run("slice", func(t *testing.T) {
-
 		t.Run("Slice serializer should work correctly with empty slice",
 			func(t *testing.T) {
 				var (
@@ -947,11 +935,9 @@ func TestOrd(t *testing.T) {
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 			})
-
 	})
 
 	t.Run("map", func(t *testing.T) {
-
 		t.Run("Map should work correctly with empty map",
 			func(t *testing.T) {
 				var (
@@ -1307,9 +1293,7 @@ func TestOrd(t *testing.T) {
 				)
 				com_testdata.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 			})
-
 	})
-
 }
 
 func NegativeLengthBs() (n int, bs []byte) {
