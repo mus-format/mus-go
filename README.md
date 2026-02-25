@@ -63,10 +63,10 @@ than `gRPC/Protobuf`.
       - [varint](#varint)
       - [raw](#raw)
       - [ord (ordinary)](#ord-ordinary)
-        - [Array](#array)
         - [Slice](#slice)
       - [Map](#map)
       - [unsafe](#unsafe)
+        - [Array](#array)
       - [pm (pointer mapping)](#pm-pointer-mapping)
     - [Structs Support](#structs-support)
     - [DTS (Data Type metadata Support)](#dts-data-type-metadata-support)
@@ -197,10 +197,10 @@ corresponding UTC serializers (e.g., `TimeUnixUTC`, `TimeUnixMilliUTC`).
 
 #### ord (ordinary)
 
-Contains serializers/constructors for `bool`, `string`, `array`, `byte slice`,
+Contains serializers/constructors for `bool`, `string`, `byte slice`,
 `slice`, `map`, and `pointer` types.
 
-Variable-length data types (such as `string`, `array`, `slice`, and `map`) are
+Variable-length data types (such as `string`, `slice`, and `map`) are
 encoded as `length + data`, with customizable binary representations for both
 parts. By default, the length is encoded using a Varint without ZigZag
 (`varint.PositiveInt`), which limits the length to the maximum value of the
@@ -208,44 +208,9 @@ parts. By default, the length is encoded using a Varint without ZigZag
 architectures. For example, an attempt to unmarshal a string that is too long
 on a 32-bit system will result in an `ErrOverflow`.
 
-For `array`, `slice`, and `map` types, only constructors are available to create
+For `slice`, and `map` types, only constructors are available to create
 a concrete serializer.
 
-##### Array
-
-Unfortunately, Go does not support generic parameterization of array sizes,
-as a result, the array serializer constructor looks like:
-
-```go
-package main
-
-import (
-  "github.com/mus-format/mus-go/ord"
-  "github.com/mus-format/mus-go/varint"
-  arrops "github.com/mus-format/mus-go/options/array"
-)
-
-func main() {
-   var (
-    // The first type parameter of the NewArraySer function represents the 
-    // array type, the second represents the type of the array’s elements.
-    //
-    // As for the function parameters, varint.Int specifies the serializer for 
-    // the array’s elements.
-    ser = ord.NewArraySer[[3]int, int](varint.Int)
-
-    // To create an array serializer with the specific length serializer use:
-    // ser = ord.NewArraySer[[3]int, int](varint.Int, arrops.WithLenSer(lenSer))
-
-    arr  = [3]int{1, 2, 3}
-    size = ser.Size(arr)
-    bs   = make([]byte, size)
-  )
-  n := ser.Marshal(arr, bs)
-  arr, n, err := ser.Unmarshal(bs)
-  // ...
-}
-```
 
 ##### Slice
 
@@ -314,7 +279,43 @@ contents. Here is an [example](https://github.com/mus-format/examples-go/blob/ma
 that demonstrates this behavior more clearly.
 
 Provides serializers for the following data types: `byte`, `bool`, `string`,
-`byte slice`, `time.Time` and all `uint`, `int`, `float`.
+`array`, `byte slice`, `time.Time` and all `uint`, `int`, `float`.
+
+##### Array
+
+Unfortunately, Go does not support generic parameterization of array sizes,
+as a result, the array serializer constructor looks like:
+
+```go
+package main
+
+import (
+  "github.com/mus-format/mus-go/unsafe"
+  "github.com/mus-format/mus-go/varint"
+  arrops "github.com/mus-format/mus-go/options/array"
+)
+
+func main() {
+   var (
+    // The first type parameter of the NewArraySer function represents the 
+    // array type, the second represents the type of the array’s elements.
+    //
+    // As for the function parameters, varint.Int specifies the serializer for 
+    // the array’s elements.
+    ser = unsafe.NewArraySer[[3]int, int](varint.Int)
+
+    // To create an array serializer with the specific length serializer use:
+    // ser = unsafe.NewArraySer[[3]int, int](varint.Int, arrops.WithLenSer(lenSer))
+
+    arr  = [3]int{1, 2, 3}
+    size = ser.Size(arr)
+    bs   = make([]byte, size)
+  )
+  n := ser.Marshal(arr, bs)
+  arr, n, err := ser.Unmarshal(bs)
+  // ...
+}
+```
 
 #### pm (pointer mapping)
 
