@@ -1,13 +1,13 @@
-package testdata
+package testutil
 
 import (
 	"bytes"
 	"testing"
 
-	mock "github.com/mus-format/mus-go/testdata/mock"
+	mock "github.com/mus-format/mus-go/testutil/mock"
 )
 
-func MapSerData(t *testing.T) (mp map[string]int, keySer mock.Serializer[string],
+func MapTestData(t *testing.T) (mp map[string]int, keySer mock.Serializer[string],
 	valueSer mock.Serializer[int],
 ) {
 	var (
@@ -122,10 +122,10 @@ func MapSerData(t *testing.T) (mp map[string]int, keySer mock.Serializer[string]
 	return
 }
 
-func MapLenSerData(t *testing.T) (mp map[string]int, lenSer mock.Serializer[int],
+func MapLenTestData(t *testing.T) (mp map[string]int, lenSer mock.Serializer[int],
 	keySer mock.Serializer[string], valueSer mock.Serializer[int],
 ) {
-	mp, keySer, valueSer = MapSerData(t)
+	mp, keySer, valueSer = MapTestData(t)
 	var (
 		l    = len(mp)
 		lBs  = []byte{byte(l * 2)}

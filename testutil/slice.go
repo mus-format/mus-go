@@ -1,12 +1,12 @@
-package testdata
+package testutil
 
 import (
 	"testing"
 
-	mock "github.com/mus-format/mus-go/testdata/mock"
+	mock "github.com/mus-format/mus-go/testutil/mock"
 )
 
-func SliceSerData(t *testing.T) (sl []string, elemSer mock.Serializer[string]) {
+func SliceTestData(t *testing.T) (sl []string, elemSer mock.Serializer[string]) {
 	var (
 		aBs = append([]byte{1}, []byte("a")...)
 		bBs = append([]byte{1}, []byte("b")...)
@@ -37,10 +37,10 @@ func SliceSerData(t *testing.T) (sl []string, elemSer mock.Serializer[string]) {
 	return
 }
 
-func SliceLenSerData(t *testing.T) (sl []string, lenSer mock.Serializer[int],
+func SliceLenTestData(t *testing.T) (sl []string, lenSer mock.Serializer[int],
 	elemSer mock.Serializer[string],
 ) {
-	sl, elemSer = SliceSerData(t)
+	sl, elemSer = SliceTestData(t)
 	var (
 		l    = len(sl)
 		lBs  = []byte{byte(l * 2)}

@@ -42,28 +42,6 @@ func newByteSliceSer(o bslops.Options) byteSliceSer {
 	return byteSliceSer{lenSer}
 }
 
-// // ByteSlice is a byte slice serializer.
-// var ByteSlice = NewByteSliceSerWith(varint.PositiveInt)
-
-// // NewByteSliceSerWith returns a new byte slice serializer with the given length
-// // serializer.
-// func NewByteSliceSerWith(lenSer mus.Serializer[int]) byteSliceSer {
-// 	return byteSliceSer{lenSer}
-// }
-
-// // NewValidByteSliceSer returns a new byte slice serializer with the given length
-// // validator.
-// func NewValidByteSliceSer(lenVl com.Validator[int]) validByteSliceSer {
-// 	return NewValidByteSliceSerWith(varint.PositiveInt, lenVl)
-// }
-
-// // NewValidByteSliceSerWith returns a new byte slice serializer with the given
-// // length serializer and length validator.
-// func NewValidByteSliceSerWith(lenSer mus.Serializer[int],
-// 	lenVl com.Validator[int]) validByteSliceSer {
-// 	return validByteSliceSer{NewByteSliceSerWith(lenSer), lenVl}
-// }
-
 type byteSliceSer struct {
 	lenSer mus.Serializer[int]
 }

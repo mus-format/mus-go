@@ -3,17 +3,17 @@ package mapops
 import (
 	"testing"
 
-	com_mock "github.com/mus-format/common-go/testdata/mock"
-	"github.com/mus-format/mus-go/testdata/mock"
+	cmock "github.com/mus-format/common-go/testutil/mock"
+	"github.com/mus-format/mus-go/testutil/mock"
 )
 
 func TestOptions(t *testing.T) {
 	var (
 		o           = Options[any, any]{}
 		wantLenSer  = mock.NewSerializer[int]()
-		wantLenVl   = com_mock.NewValidator[int]()
-		wantKeyVl   = com_mock.NewValidator[any]()
-		wantValueVl = com_mock.NewValidator[any]()
+		wantLenVl   = cmock.NewValidator[int]()
+		wantKeyVl   = cmock.NewValidator[any]()
+		wantValueVl = cmock.NewValidator[any]()
 	)
 	Apply([]SetOption[any, any]{
 		WithLenSer[any, any](wantLenSer),

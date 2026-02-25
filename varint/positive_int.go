@@ -13,6 +13,8 @@ var (
 	PositiveInt = positiveIntSer{}
 )
 
+// int64 -----------------------------------------------------------------------
+
 type positiveInt64Ser struct{}
 
 // Marshal fills bs with an encoded (Varint) int64 value.
@@ -46,7 +48,7 @@ func (s positiveInt64Ser) Skip(bs []byte) (n int, err error) {
 	return Uint64.Skip(bs)
 }
 
-// -----------------------------------------------------------------------------
+// int32 -----------------------------------------------------------------------
 
 type positiveInt32Ser struct{}
 
@@ -81,7 +83,7 @@ func (s positiveInt32Ser) Skip(bs []byte) (n int, err error) {
 	return Uint32.Skip(bs)
 }
 
-// -----------------------------------------------------------------------------
+// int16 -----------------------------------------------------------------------
 
 type positiveInt16Ser struct{}
 
@@ -116,7 +118,7 @@ func (s positiveInt16Ser) Skip(bs []byte) (n int, err error) {
 	return Uint16.Skip(bs)
 }
 
-// -----------------------------------------------------------------------------
+// int8 ------------------------------------------------------------------------
 
 type positiveInt8Ser struct{}
 
@@ -151,7 +153,7 @@ func (s positiveInt8Ser) Skip(bs []byte) (n int, err error) {
 	return Uint8.Skip(bs)
 }
 
-// -----------------------------------------------------------------------------
+// int -------------------------------------------------------------------------
 
 type positiveIntSer struct{}
 

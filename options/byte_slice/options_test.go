@@ -1,17 +1,17 @@
-package strops
+package bslops
 
 import (
 	"testing"
 
-	com_mock "github.com/mus-format/common-go/testdata/mock"
-	"github.com/mus-format/mus-go/testdata/mock"
+	cmock "github.com/mus-format/common-go/testutil/mock"
+	"github.com/mus-format/mus-go/testutil/mock"
 )
 
 func TestOptions(t *testing.T) {
 	var (
 		o          = Options{}
 		wantLenSer = mock.NewSerializer[int]()
-		wantLenVl  = com_mock.NewValidator[int]()
+		wantLenVl  = cmock.NewValidator[int]()
 	)
 	Apply([]SetOption{
 		WithLenSer(wantLenSer),
@@ -25,4 +25,5 @@ func TestOptions(t *testing.T) {
 	if o.LenVl != wantLenVl {
 		t.Errorf("unexpected LenVl, want %v actual %v", wantLenVl, o.LenVl)
 	}
+
 }

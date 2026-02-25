@@ -7,7 +7,7 @@ import (
 
 	com "github.com/mus-format/common-go"
 	"github.com/mus-format/mus-go"
-	mock "github.com/mus-format/mus-go/testdata/mock"
+	mock "github.com/mus-format/mus-go/testutil/mock"
 )
 
 func TestPM(t *testing.T) {

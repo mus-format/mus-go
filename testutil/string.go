@@ -1,12 +1,12 @@
-package testdata
+package testutil
 
 import (
 	"testing"
 
-	mock "github.com/mus-format/mus-go/testdata/mock"
+	mock "github.com/mus-format/mus-go/testutil/mock"
 )
 
-func StringLenSerData(t *testing.T) (str string, lenSer mock.Serializer[int]) {
+func StringLenTestData(t *testing.T) (str string, lenSer mock.Serializer[int]) {
 	str = "abc"
 	var (
 		l    = len(str)

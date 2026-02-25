@@ -1,10 +1,10 @@
-package testdata
+package testutil
 
 import (
 	"testing"
 
-	com_testdata "github.com/mus-format/common-go/testdata"
-	mock "github.com/mus-format/mus-go/testdata/mock"
+	ctestutil "github.com/mus-format/common-go/testutil"
+	mock "github.com/mus-format/mus-go/testutil/mock"
 )
 
 type PointerMappingStruct struct {
@@ -13,7 +13,7 @@ type PointerMappingStruct struct {
 	A3 *int
 }
 
-func PtrStructSerData(t *testing.T) (st com_testdata.PtrStruct, baseSer mock.Serializer[int]) {
+func PtrStructTestData(t *testing.T) (st ctestutil.PtrStruct, baseSer mock.Serializer[int]) {
 	var (
 		one = 1
 		two = 2
@@ -21,7 +21,7 @@ func PtrStructSerData(t *testing.T) (st com_testdata.PtrStruct, baseSer mock.Ser
 		oneBs   = []byte{2}
 		threeBs = []byte{2}
 	)
-	st = com_testdata.PtrStruct{A1: &one, A2: &one, A3: &two}
+	st = ctestutil.PtrStruct{A1: &one, A2: &one, A3: &two}
 	baseSer = mock.NewSerializer[int]().
 		// unmarshal
 		RegisterMarshal(m(one, oneBs, t)).

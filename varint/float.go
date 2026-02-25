@@ -9,6 +9,8 @@ var (
 	Float32 = float32Ser{}
 )
 
+// float64 ---------------------------------------------------------------------
+
 type float64Ser struct{}
 
 // Marshal fills bs with an encoded (Varint) float64 value.
@@ -44,7 +46,7 @@ func (s float64Ser) Skip(bs []byte) (n int, err error) {
 	return Uint64.Skip(bs)
 }
 
-// -----------------------------------------------------------------------------
+// float32 ---------------------------------------------------------------------
 
 type float32Ser struct{}
 

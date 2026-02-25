@@ -1,12 +1,12 @@
-package testdata
+package testutil
 
 import (
 	"testing"
 
-	mock "github.com/mus-format/mus-go/testdata/mock"
+	mock "github.com/mus-format/mus-go/testutil/mock"
 )
 
-func PtrSerData(t *testing.T) (ptr *int, baseSer mock.Serializer[int]) {
+func PtrTestData(t *testing.T) (ptr *int, baseSer mock.Serializer[int]) {
 	var (
 		one = 1
 

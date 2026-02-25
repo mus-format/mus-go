@@ -126,12 +126,12 @@ func (s ptrSer[T]) Skip(bs []byte) (n int, err error) {
 		}
 		_, pst := s.revPtrMap.Get(id)
 		if !pst {
+			s.revPtrMap.Put(id, nil)
 			n1, err = s.baseSer.Skip(bs[n:])
 			n += n1
 			if err != nil {
 				return
 			}
-			s.revPtrMap.Put(id, nil)
 		}
 	default:
 		err = com.ErrWrongFormat

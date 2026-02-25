@@ -1,12 +1,12 @@
-package testdata
+package testutil
 
 import (
 	"testing"
 
-	mock "github.com/mus-format/mus-go/testdata/mock"
+	mock "github.com/mus-format/mus-go/testutil/mock"
 )
 
-func ByteSliceLenSerData(t *testing.T) (sl []byte, lenSer mock.Serializer[int]) {
+func ByteSliceLenTestData(t *testing.T) (sl []byte, lenSer mock.Serializer[int]) {
 	sl = []byte{1, 2, 45, 255, 123, 70, 0, 0}
 	var (
 		l    = 8

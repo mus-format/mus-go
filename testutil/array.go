@@ -1,12 +1,12 @@
-package testdata
+package testutil
 
 import (
 	"testing"
 
-	mock "github.com/mus-format/mus-go/testdata/mock"
+	mock "github.com/mus-format/mus-go/testutil/mock"
 )
 
-func ArraySerData(t *testing.T) (ar [3]int, elemSer mock.Serializer[int]) {
+func ArrayTestData(t *testing.T) (ar [3]int, elemSer mock.Serializer[int]) {
 	var (
 		oneBs   = []byte{1}
 		twoBs   = []byte{2}
@@ -34,5 +34,24 @@ func ArraySerData(t *testing.T) (ar [3]int, elemSer mock.Serializer[int]) {
 		RegisterSkip(sk(oneBs, t)).
 		RegisterSkip(sk(twoBs, t)).
 		RegisterSkip(sk(threeBs, t))
+	return
+}
+
+func ArrayLenTestData(t *testing.T) (arr [3]int, lenSer mock.Serializer[int]) {
+	arr = [3]int{1, 2, 3}
+	var (
+		l    = 3
+		lBs  = []byte{6}
+		size = 1
+	)
+	lenSer = mock.NewSerializer[int]().
+		// unmarshal
+		RegisterMarshal(m(l, lBs, t)).
+		RegisterUnmarshal(u(lBs, l, t)).
+		RegisterSize(s(l, size, t)).
+		// skip
+		RegisterMarshal(m(l, lBs, t)).
+		RegisterUnmarshal(u(lBs, l, t)).
+		RegisterSize(s(l, size, t))
 	return
 }

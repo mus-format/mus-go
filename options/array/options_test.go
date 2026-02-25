@@ -3,15 +3,15 @@ package arrops
 import (
 	"testing"
 
-	com_mock "github.com/mus-format/common-go/testdata/mock"
-	"github.com/mus-format/mus-go/testdata/mock"
+	cmock "github.com/mus-format/common-go/testutil/mock"
+	"github.com/mus-format/mus-go/testutil/mock"
 )
 
 func TestOptions(t *testing.T) {
 	var (
 		o          = Options[any]{}
 		wantLenSer = mock.NewSerializer[int]()
-		wantElemVl = com_mock.NewValidator[any]()
+		wantElemVl = cmock.NewValidator[any]()
 	)
 	Apply([]SetOption[any]{
 		WithLenSer[any](wantLenSer),

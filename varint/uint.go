@@ -19,6 +19,8 @@ var (
 	Uint = uintSer{}
 )
 
+// uint64 ----------------------------------------------------------------------
+
 type uint64Ser struct{}
 
 // Marshal fills bs with an encoded (Varint) uint64 value.
@@ -50,7 +52,7 @@ func (s uint64Ser) Skip(bs []byte) (n int, err error) {
 	return skipUint(com.Uint64MaxVarintLen, com.Uint64MaxLastByte, bs)
 }
 
-// -----------------------------------------------------------------------------
+// uint32 ----------------------------------------------------------------------
 
 type uint32Ser struct{}
 
@@ -83,7 +85,7 @@ func (s uint32Ser) Skip(bs []byte) (n int, err error) {
 	return skipUint(com.Uint32MaxVarintLen, com.Uint32MaxLastByte, bs)
 }
 
-// -----------------------------------------------------------------------------
+// uint16 ----------------------------------------------------------------------
 
 type uint16Ser struct{}
 
@@ -116,7 +118,7 @@ func (s uint16Ser) Skip(bs []byte) (n int, err error) {
 	return skipUint(com.Uint16MaxVarintLen, com.Uint16MaxLastByte, bs)
 }
 
-// -----------------------------------------------------------------------------
+// uint8 -----------------------------------------------------------------------
 
 type uint8Ser struct{}
 
@@ -149,7 +151,7 @@ func (s uint8Ser) Skip(bs []byte) (n int, err error) {
 	return skipUint(com.Uint8MaxVarintLen, com.Uint8MaxLastByte, bs)
 }
 
-// -----------------------------------------------------------------------------
+// uint ------------------------------------------------------------------------
 
 type uintSer struct{}
 
