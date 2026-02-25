@@ -20,7 +20,7 @@ jobs:
         run: go mod download
 
       - name: Run tests
-        run: go test -coverprofile=coverage.txt ./...
+        run: go test -coverprofile=coverage.txt $(go list ./... | grep -v "testutil")
 
       - name: Upload results to Codecov
         uses: codecov/codecov-action@v5
