@@ -80,7 +80,9 @@ than `gRPC/Protobuf`.
       - [Struct](#struct)
   - [Out of Order Deserialization](#out-of-order-deserialization)
   - [Zero Allocation Deserialization](#zero-allocation-deserialization)
+  - [Testing](#testing)
   - [Benchmarks](#benchmarks)
+
 
 ## Code Generator
 
@@ -717,6 +719,28 @@ A simple example can be found in [examples-go](https://github.com/mus-format/exa
 ## Zero Allocation Deserialization
 
 Can be achieved using the `unsafe` package.
+
+## Testing
+
+To run all `mus-go` tests, use the following command:
+
+```bash
+go test ./...
+```
+
+### Fuzz Testing
+
+`mus-go` also includes fuzz tests. To run them, you can use the `fuzz.sh` script:
+
+```bash
+./fuzz.sh 10s
+```
+
+Or you can run a specific fuzz test using the `go test` command:
+
+```bash
+go test -v -fuzz="^FuzzByte$" ./varint -fuzztime 10s
+```
 
 ## Benchmarks
 
