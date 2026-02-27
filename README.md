@@ -7,7 +7,7 @@
 **mus-go** is a powerful and versatile Go library for efficient binary
 serialization.
 
-While `mus-go` was built as a serializer for the [MUS format](https://medium.com/p/21d7be309e8d),
+While `mus-go` was built as a serializer for the [MUS format](https://medium.com/@ymz-ncnk/mus-serialization-format-20f833df12d5),
 its minimalist architecture and broad set of serialization primitives also make
 it well-suited for implementing other binary formats. Here you can find an
 [example](https://github.com/mus-format/examples-go/blob/main/protobuf/main.go)
@@ -82,7 +82,6 @@ than `gRPC/Protobuf`.
   - [Zero Allocation Deserialization](#zero-allocation-deserialization)
   - [Testing](#testing)
   - [Benchmarks](#benchmarks)
-
 
 ## Code Generator
 
@@ -212,7 +211,6 @@ on a 32-bit system will result in an `ErrOverflow`.
 
 For `slice`, and `map` types, only constructors are available to create
 a concrete serializer.
-
 
 ##### Slice
 
