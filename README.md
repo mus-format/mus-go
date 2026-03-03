@@ -10,7 +10,7 @@ serialization.
 While `mus-go` was built as a serializer for the [MUS format](https://medium.com/@ymz-ncnk/mus-serialization-format-20f833df12d5),
 its minimalist architecture and broad set of serialization primitives also make
 it well-suited for implementing other binary formats. Here you can find an
-[example](https://github.com/mus-format/examples-go/blob/main/protobuf/main.go)
+[example](https://github.com/mus-format/examples-go/tree/main/protobuf)
 where it is used to encode data in Protobuf format.
 
 A streaming version is also available: [mus-stream-go](https://github.com/mus-format/mus-stream-go).
