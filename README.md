@@ -70,6 +70,7 @@ than `gRPC/Protobuf`.
   - [Testing](#testing)
     - [Fuzz Testing](#fuzz-testing)
   - [Benchmarks](#benchmarks)
+  - [Version Compatibility](#version-compatibility)
 
 ## Code Generator
 
@@ -266,3 +267,7 @@ Why a separate benchmark suite? The existing [benchmarks](https://github.com/ale
 sometimes produce inconsistent results across multiple runs, making it
 difficult to reliably compare serializers. New [benchmarks](https://github.com/ymz-ncnk/go-serialization-benchmarks)
 were created to provide more consistent and reproducible measurements.
+
+## Version Compatibility
+
+For a complete list of compatible module versions, see [VERSIONS.md](VERSIONS.md).
