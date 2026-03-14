@@ -11,7 +11,7 @@ import (
 
 // ptr -------------------------------------------------------------------------
 
-func FuzzPtr(f *testing.F) {
+func FuzzPM_Ptr(f *testing.F) {
 	f.Add(true, 1, 1)  // nil
 	f.Add(false, 1, 1) // single pointer
 	f.Add(false, 2, 1) // two pointers to same value
@@ -53,7 +53,7 @@ func FuzzPtr(f *testing.F) {
 	})
 }
 
-func FuzzPtrUnmarshal(f *testing.F) {
+func FuzzPM_PtrUnmarshal(f *testing.F) {
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		var (
 			ptrMap    = com.NewPtrMap()
@@ -109,7 +109,7 @@ func (s *nodeSer) Skip(bs []byte) (n int, err error) {
 	return n + n1, err
 }
 
-func FuzzWrap(f *testing.F) {
+func FuzzPM_Wrap(f *testing.F) {
 	f.Add(0, false)
 	f.Add(1, false)
 	f.Add(5, false)
@@ -145,7 +145,7 @@ func FuzzWrap(f *testing.F) {
 	})
 }
 
-func FuzzWrapUnmarshal(f *testing.F) {
+func FuzzPM_WrapUnmarshal(f *testing.F) {
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		var (
 			ptrMap    = com.NewPtrMap()

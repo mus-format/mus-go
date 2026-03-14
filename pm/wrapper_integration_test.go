@@ -9,16 +9,15 @@ import (
 	"github.com/mus-format/mus-go/varint"
 )
 
-func TestIntegrationWrapper(t *testing.T) {
-	t.Run("wrapper", func(t *testing.T) {
+func TestPMIntegration_Wrapper(t *testing.T) {
+	t.Run("Wrapped serializer should succeed", func(t *testing.T) {
 		var (
 			ptrMap    = com.NewPtrMap()
 			revPtrMap = com.NewReversePtrMap()
 			ser       = Wrap(ptrMap, revPtrMap, newPtrStructSer(ptrMap, revPtrMap,
 				varint.Int))
 		)
-		test.Test(
-			ctestutil.PointerMappingTestCases(), ser, t)
+		test.Test(ctestutil.PointerMappingTestCases(), ser, t)
 	})
 
 	t.Run("We should be able to use same serializer several times", func(t *testing.T) {

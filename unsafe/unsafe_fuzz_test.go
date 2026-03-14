@@ -16,7 +16,7 @@ const maxLen = 1000
 
 // bool ------------------------------------------------------------------------
 
-func FuzzBool(f *testing.F) {
+func FuzzUnsafe_Bool(f *testing.F) {
 	f.Add(true)
 	f.Add(false)
 	f.Fuzz(func(t *testing.T, v bool) {
@@ -25,7 +25,7 @@ func FuzzBool(f *testing.F) {
 	})
 }
 
-func FuzzBoolUnmarshal(f *testing.F) {
+func FuzzUnsafe_BoolUnmarshal(f *testing.F) {
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		Bool.Unmarshal(bs)
 		Bool.Skip(bs)
@@ -34,7 +34,7 @@ func FuzzBoolUnmarshal(f *testing.F) {
 
 // byte ------------------------------------------------------------------------
 
-func FuzzByte(f *testing.F) {
+func FuzzUnsafe_Byte(f *testing.F) {
 	seeds := []byte{0, 1, 255}
 	for _, seed := range seeds {
 		f.Add(seed)
@@ -45,7 +45,7 @@ func FuzzByte(f *testing.F) {
 	})
 }
 
-func FuzzByteUnmarshal(f *testing.F) {
+func FuzzUnsafe_ByteUnmarshal(f *testing.F) {
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		Byte.Unmarshal(bs)
 		Byte.Skip(bs)
@@ -54,7 +54,7 @@ func FuzzByteUnmarshal(f *testing.F) {
 
 // uint64 ----------------------------------------------------------------------
 
-func FuzzUint64(f *testing.F) {
+func FuzzUnsafe_Uint64(f *testing.F) {
 	seeds := []uint64{0, 1, 1 << 63}
 	for _, seed := range seeds {
 		f.Add(seed)
@@ -65,7 +65,7 @@ func FuzzUint64(f *testing.F) {
 	})
 }
 
-func FuzzUint64Unmarshal(f *testing.F) {
+func FuzzUnsafe_Uint64Unmarshal(f *testing.F) {
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		Uint64.Unmarshal(bs)
 		Uint64.Skip(bs)
@@ -74,7 +74,7 @@ func FuzzUint64Unmarshal(f *testing.F) {
 
 // uint32 ----------------------------------------------------------------------
 
-func FuzzUint32(f *testing.F) {
+func FuzzUnsafe_Uint32(f *testing.F) {
 	seeds := []uint32{0, 1, 1 << 31}
 	for _, seed := range seeds {
 		f.Add(seed)
@@ -85,7 +85,7 @@ func FuzzUint32(f *testing.F) {
 	})
 }
 
-func FuzzUint32Unmarshal(f *testing.F) {
+func FuzzUnsafe_Uint32Unmarshal(f *testing.F) {
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		Uint32.Unmarshal(bs)
 		Uint32.Skip(bs)
@@ -94,7 +94,7 @@ func FuzzUint32Unmarshal(f *testing.F) {
 
 // uint16 ----------------------------------------------------------------------
 
-func FuzzUint16(f *testing.F) {
+func FuzzUnsafe_Uint16(f *testing.F) {
 	seeds := []uint16{0, 1, 1 << 15}
 	for _, seed := range seeds {
 		f.Add(seed)
@@ -105,7 +105,7 @@ func FuzzUint16(f *testing.F) {
 	})
 }
 
-func FuzzUint16Unmarshal(f *testing.F) {
+func FuzzUnsafe_Uint16Unmarshal(f *testing.F) {
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		Uint16.Unmarshal(bs)
 		Uint16.Skip(bs)
@@ -114,7 +114,7 @@ func FuzzUint16Unmarshal(f *testing.F) {
 
 // uint8 -----------------------------------------------------------------------
 
-func FuzzUint8(f *testing.F) {
+func FuzzUnsafe_Uint8(f *testing.F) {
 	seeds := []uint8{0, 1, 255}
 	for _, seed := range seeds {
 		f.Add(seed)
@@ -125,7 +125,7 @@ func FuzzUint8(f *testing.F) {
 	})
 }
 
-func FuzzUint8Unmarshal(f *testing.F) {
+func FuzzUnsafe_Uint8Unmarshal(f *testing.F) {
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		Uint8.Unmarshal(bs)
 		Uint8.Skip(bs)
@@ -134,7 +134,7 @@ func FuzzUint8Unmarshal(f *testing.F) {
 
 // uint ------------------------------------------------------------------------
 
-func FuzzUint(f *testing.F) {
+func FuzzUnsafe_Uint(f *testing.F) {
 	seeds := []uint{0, 1}
 	for _, seed := range seeds {
 		f.Add(seed)
@@ -145,7 +145,7 @@ func FuzzUint(f *testing.F) {
 	})
 }
 
-func FuzzUintUnmarshal(f *testing.F) {
+func FuzzUnsafe_UintUnmarshal(f *testing.F) {
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		Uint.Unmarshal(bs)
 		Uint.Skip(bs)
@@ -154,7 +154,7 @@ func FuzzUintUnmarshal(f *testing.F) {
 
 // int64 -----------------------------------------------------------------------
 
-func FuzzInt64(f *testing.F) {
+func FuzzUnsafe_Int64(f *testing.F) {
 	seeds := []int64{0, 1, -1, 1 << 62, -(1 << 62)}
 	for _, seed := range seeds {
 		f.Add(seed)
@@ -165,7 +165,7 @@ func FuzzInt64(f *testing.F) {
 	})
 }
 
-func FuzzInt64Unmarshal(f *testing.F) {
+func FuzzUnsafe_Int64Unmarshal(f *testing.F) {
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		Int64.Unmarshal(bs)
 		Int64.Skip(bs)
@@ -174,7 +174,7 @@ func FuzzInt64Unmarshal(f *testing.F) {
 
 // int32 -----------------------------------------------------------------------
 
-func FuzzInt32(f *testing.F) {
+func FuzzUnsafe_Int32(f *testing.F) {
 	seeds := []int32{0, 1, -1, 1 << 30, -(1 << 30)}
 	for _, seed := range seeds {
 		f.Add(seed)
@@ -185,7 +185,7 @@ func FuzzInt32(f *testing.F) {
 	})
 }
 
-func FuzzInt32Unmarshal(f *testing.F) {
+func FuzzUnsafe_Int32Unmarshal(f *testing.F) {
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		Int32.Unmarshal(bs)
 		Int32.Skip(bs)
@@ -194,7 +194,7 @@ func FuzzInt32Unmarshal(f *testing.F) {
 
 // int16 -----------------------------------------------------------------------
 
-func FuzzInt16(f *testing.F) {
+func FuzzUnsafe_Int16(f *testing.F) {
 	seeds := []int16{0, 1, -1, 1 << 14, -(1 << 14)}
 	for _, seed := range seeds {
 		f.Add(seed)
@@ -205,7 +205,7 @@ func FuzzInt16(f *testing.F) {
 	})
 }
 
-func FuzzInt16Unmarshal(f *testing.F) {
+func FuzzUnsafe_Int16Unmarshal(f *testing.F) {
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		Int16.Unmarshal(bs)
 		Int16.Skip(bs)
@@ -214,7 +214,7 @@ func FuzzInt16Unmarshal(f *testing.F) {
 
 // int8 ------------------------------------------------------------------------
 
-func FuzzInt8(f *testing.F) {
+func FuzzUnsafe_Int8(f *testing.F) {
 	seeds := []int8{0, 1, -1, 127, -128}
 	for _, seed := range seeds {
 		f.Add(seed)
@@ -225,7 +225,7 @@ func FuzzInt8(f *testing.F) {
 	})
 }
 
-func FuzzInt8Unmarshal(f *testing.F) {
+func FuzzUnsafe_Int8Unmarshal(f *testing.F) {
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		Int8.Unmarshal(bs)
 		Int8.Skip(bs)
@@ -234,7 +234,7 @@ func FuzzInt8Unmarshal(f *testing.F) {
 
 // int -------------------------------------------------------------------------
 
-func FuzzInt(f *testing.F) {
+func FuzzUnsafe_Int(f *testing.F) {
 	seeds := []int{0, 1, -1}
 	for _, seed := range seeds {
 		f.Add(seed)
@@ -245,7 +245,7 @@ func FuzzInt(f *testing.F) {
 	})
 }
 
-func FuzzIntUnmarshal(f *testing.F) {
+func FuzzUnsafe_IntUnmarshal(f *testing.F) {
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		Int.Unmarshal(bs)
 		Int.Skip(bs)
@@ -254,7 +254,7 @@ func FuzzIntUnmarshal(f *testing.F) {
 
 // float64 ---------------------------------------------------------------------
 
-func FuzzFloat64(f *testing.F) {
+func FuzzUnsafe_Float64(f *testing.F) {
 	seeds := []float64{0, 1, -1, 3.14}
 	for _, seed := range seeds {
 		f.Add(seed)
@@ -265,7 +265,7 @@ func FuzzFloat64(f *testing.F) {
 	})
 }
 
-func FuzzFloat64Unmarshal(f *testing.F) {
+func FuzzUnsafe_Float64Unmarshal(f *testing.F) {
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		Float64.Unmarshal(bs)
 		Float64.Skip(bs)
@@ -274,7 +274,7 @@ func FuzzFloat64Unmarshal(f *testing.F) {
 
 // float32 ---------------------------------------------------------------------
 
-func FuzzFloat32(f *testing.F) {
+func FuzzUnsafe_Float32(f *testing.F) {
 	seeds := []float32{0, 1, -1, 3.14}
 	for _, seed := range seeds {
 		f.Add(seed)
@@ -285,7 +285,7 @@ func FuzzFloat32(f *testing.F) {
 	})
 }
 
-func FuzzFloat32Unmarshal(f *testing.F) {
+func FuzzUnsafe_Float32Unmarshal(f *testing.F) {
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		Float32.Unmarshal(bs)
 		Float32.Skip(bs)
@@ -294,7 +294,7 @@ func FuzzFloat32Unmarshal(f *testing.F) {
 
 // string ----------------------------------------------------------------------
 
-func FuzzString(f *testing.F) {
+func FuzzUnsafe_String(f *testing.F) {
 	seeds := []string{"", "hello", "world", "mus-format"}
 	for _, seed := range seeds {
 		f.Add(seed)
@@ -308,7 +308,7 @@ func FuzzString(f *testing.F) {
 	})
 }
 
-func FuzzStringUnmarshal(f *testing.F) {
+func FuzzUnsafe_StringUnmarshal(f *testing.F) {
 	ser := NewValidStringSer(strops.WithLenValidator(
 		com.ValidatorFn[int](func(v int) error {
 			if v > maxLen {
@@ -325,7 +325,7 @@ func FuzzStringUnmarshal(f *testing.F) {
 
 // byte slice ------------------------------------------------------------------
 
-func FuzzByteSlice(f *testing.F) {
+func FuzzUnsafe_ByteSlice(f *testing.F) {
 	seeds := [][]byte{{}, {1, 2, 3}, {255, 0, 255}}
 	for _, seed := range seeds {
 		f.Add(seed)
@@ -339,7 +339,7 @@ func FuzzByteSlice(f *testing.F) {
 	})
 }
 
-func FuzzByteSliceUnmarshal(f *testing.F) {
+func FuzzUnsafe_ByteSliceUnmarshal(f *testing.F) {
 	ser := NewValidByteSliceSer(bslops.WithLenValidator(
 		com.ValidatorFn[int](func(v int) error {
 			if v > maxLen {
@@ -356,7 +356,7 @@ func FuzzByteSliceUnmarshal(f *testing.F) {
 
 // time ------------------------------------------------------------------------
 
-func FuzzTimeUnixUTC(f *testing.F) {
+func FuzzUnsafe_TimeUnixUTC(f *testing.F) {
 	f.Fuzz(func(t *testing.T, sec int64) {
 		v := time.Unix(sec, 0).UTC()
 		test.Test([]time.Time{v}, TimeUnixUTC, t)
@@ -364,7 +364,7 @@ func FuzzTimeUnixUTC(f *testing.F) {
 	})
 }
 
-func FuzzTimeUnixMilliUTC(f *testing.F) {
+func FuzzUnsafe_TimeUnixMilliUTC(f *testing.F) {
 	f.Fuzz(func(t *testing.T, milli int64) {
 		v := time.UnixMilli(milli).UTC()
 		test.Test([]time.Time{v}, TimeUnixMilliUTC, t)
@@ -372,7 +372,7 @@ func FuzzTimeUnixMilliUTC(f *testing.F) {
 	})
 }
 
-func FuzzTimeUnixMicroUTC(f *testing.F) {
+func FuzzUnsafe_TimeUnixMicroUTC(f *testing.F) {
 	f.Fuzz(func(t *testing.T, micro int64) {
 		v := time.UnixMicro(micro).UTC()
 		test.Test([]time.Time{v}, TimeUnixMicroUTC, t)
@@ -380,7 +380,7 @@ func FuzzTimeUnixMicroUTC(f *testing.F) {
 	})
 }
 
-func FuzzTimeUnixNanoUTC(f *testing.F) {
+func FuzzUnsafe_TimeUnixNanoUTC(f *testing.F) {
 	f.Fuzz(func(t *testing.T, nano int64) {
 		v := time.Unix(0, nano).UTC()
 		test.Test([]time.Time{v}, TimeUnixNanoUTC, t)
@@ -388,7 +388,7 @@ func FuzzTimeUnixNanoUTC(f *testing.F) {
 	})
 }
 
-func FuzzTimeUnmarshal(f *testing.F) {
+func FuzzUnsafe_TimeUnmarshal(f *testing.F) {
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		TimeUnixUTC.Unmarshal(bs)
 		TimeUnixUTC.Skip(bs)
@@ -403,7 +403,7 @@ func FuzzTimeUnmarshal(f *testing.F) {
 
 // array -----------------------------------------------------------------------
 
-func FuzzArray(f *testing.F) {
+func FuzzUnsafe_Array(f *testing.F) {
 	seeds := [][3]byte{
 		{1, 2, 3},
 		{0, 0, 0},
@@ -420,7 +420,7 @@ func FuzzArray(f *testing.F) {
 	})
 }
 
-func FuzzArrayUnmarshal(f *testing.F) {
+func FuzzUnsafe_ArrayUnmarshal(f *testing.F) {
 	ser := NewArraySer[[3]int](varint.Int)
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		ser.Unmarshal(bs)

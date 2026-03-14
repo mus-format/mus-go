@@ -9,7 +9,7 @@ import (
 
 // byte ------------------------------------------------------------------------
 
-func FuzzByte(f *testing.F) {
+func FuzzVarint_Byte(f *testing.F) {
 	seeds := []byte{0, 1, 127, 128, 255}
 	for _, seed := range seeds {
 		f.Add(seed)
@@ -20,7 +20,7 @@ func FuzzByte(f *testing.F) {
 	})
 }
 
-func FuzzByteUnmarshal(f *testing.F) {
+func FuzzVarint_ByteUnmarshal(f *testing.F) {
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		Byte.Unmarshal(bs)
 		Byte.Skip(bs)
@@ -29,7 +29,7 @@ func FuzzByteUnmarshal(f *testing.F) {
 
 // uint ------------------------------------------------------------------------
 
-func FuzzUint64(f *testing.F) {
+func FuzzVarint_Uint64(f *testing.F) {
 	seeds := []uint64{0, 1, 127, 128, 255, 256, math.MaxUint64}
 	for _, seed := range seeds {
 		f.Add(seed)
@@ -40,7 +40,7 @@ func FuzzUint64(f *testing.F) {
 	})
 }
 
-func FuzzUint32(f *testing.F) {
+func FuzzVarint_Uint32(f *testing.F) {
 	seeds := []uint32{0, 1, 127, 128, 255, 256, math.MaxUint32}
 	for _, seed := range seeds {
 		f.Add(seed)
@@ -51,7 +51,7 @@ func FuzzUint32(f *testing.F) {
 	})
 }
 
-func FuzzUint16(f *testing.F) {
+func FuzzVarint_Uint16(f *testing.F) {
 	seeds := []uint16{0, 1, 127, 128, 255, 256, math.MaxUint16}
 	for _, seed := range seeds {
 		f.Add(seed)
@@ -62,7 +62,7 @@ func FuzzUint16(f *testing.F) {
 	})
 }
 
-func FuzzUint8(f *testing.F) {
+func FuzzVarint_Uint8(f *testing.F) {
 	seeds := []uint8{0, 1, 127, 128, 255}
 	for _, seed := range seeds {
 		f.Add(seed)
@@ -73,7 +73,7 @@ func FuzzUint8(f *testing.F) {
 	})
 }
 
-func FuzzUint(f *testing.F) {
+func FuzzVarint_Uint(f *testing.F) {
 	seeds := []uint{0, 1, 127, 128, 255, 256, math.MaxUint}
 	for _, seed := range seeds {
 		f.Add(seed)
@@ -84,35 +84,35 @@ func FuzzUint(f *testing.F) {
 	})
 }
 
-func FuzzUint64Unmarshal(f *testing.F) {
+func FuzzVarint_Uint64Unmarshal(f *testing.F) {
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		Uint64.Unmarshal(bs)
 		Uint64.Skip(bs)
 	})
 }
 
-func FuzzUint32Unmarshal(f *testing.F) {
+func FuzzVarint_Uint32Unmarshal(f *testing.F) {
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		Uint32.Unmarshal(bs)
 		Uint32.Skip(bs)
 	})
 }
 
-func FuzzUint16Unmarshal(f *testing.F) {
+func FuzzVarint_Uint16Unmarshal(f *testing.F) {
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		Uint16.Unmarshal(bs)
 		Uint16.Skip(bs)
 	})
 }
 
-func FuzzUint8Unmarshal(f *testing.F) {
+func FuzzVarint_Uint8Unmarshal(f *testing.F) {
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		Uint8.Unmarshal(bs)
 		Uint8.Skip(bs)
 	})
 }
 
-func FuzzUintUnmarshal(f *testing.F) {
+func FuzzVarint_UintUnmarshal(f *testing.F) {
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		Uint.Unmarshal(bs)
 		Uint.Skip(bs)
@@ -121,7 +121,7 @@ func FuzzUintUnmarshal(f *testing.F) {
 
 // int -------------------------------------------------------------------------
 
-func FuzzInt64(f *testing.F) {
+func FuzzVarint_Int64(f *testing.F) {
 	seeds := []int64{0, 1, -1, 127, -127, 128, -128, 255, -255, 256, -256, math.MinInt64, math.MaxInt64}
 	for _, seed := range seeds {
 		f.Add(seed)
@@ -132,7 +132,7 @@ func FuzzInt64(f *testing.F) {
 	})
 }
 
-func FuzzInt32(f *testing.F) {
+func FuzzVarint_Int32(f *testing.F) {
 	seeds := []int32{0, 1, -1, 127, -127, 128, -128, 255, -255, 256, -256, math.MinInt32, math.MaxInt32}
 	for _, seed := range seeds {
 		f.Add(seed)
@@ -143,7 +143,7 @@ func FuzzInt32(f *testing.F) {
 	})
 }
 
-func FuzzInt16(f *testing.F) {
+func FuzzVarint_Int16(f *testing.F) {
 	seeds := []int16{0, 1, -1, 127, -127, 128, -128, 255, -255, 256, -256, math.MinInt16, math.MaxInt16}
 	for _, seed := range seeds {
 		f.Add(seed)
@@ -154,7 +154,7 @@ func FuzzInt16(f *testing.F) {
 	})
 }
 
-func FuzzInt8(f *testing.F) {
+func FuzzVarint_Int8(f *testing.F) {
 	seeds := []int8{0, 1, -1, 127, -127, math.MinInt8, math.MaxInt8}
 	for _, seed := range seeds {
 		f.Add(seed)
@@ -165,7 +165,7 @@ func FuzzInt8(f *testing.F) {
 	})
 }
 
-func FuzzInt(f *testing.F) {
+func FuzzVarint_Int(f *testing.F) {
 	seeds := []int{0, 1, -1, 127, -127, 128, -128, 255, -255, 256, -256, math.MinInt, math.MaxInt}
 	for _, seed := range seeds {
 		f.Add(seed)
@@ -176,35 +176,35 @@ func FuzzInt(f *testing.F) {
 	})
 }
 
-func FuzzInt64Unmarshal(f *testing.F) {
+func FuzzVarint_Int64Unmarshal(f *testing.F) {
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		Int64.Unmarshal(bs)
 		Int64.Skip(bs)
 	})
 }
 
-func FuzzInt32Unmarshal(f *testing.F) {
+func FuzzVarint_Int32Unmarshal(f *testing.F) {
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		Int32.Unmarshal(bs)
 		Int32.Skip(bs)
 	})
 }
 
-func FuzzInt16Unmarshal(f *testing.F) {
+func FuzzVarint_Int16Unmarshal(f *testing.F) {
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		Int16.Unmarshal(bs)
 		Int16.Skip(bs)
 	})
 }
 
-func FuzzInt8Unmarshal(f *testing.F) {
+func FuzzVarint_Int8Unmarshal(f *testing.F) {
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		Int8.Unmarshal(bs)
 		Int8.Skip(bs)
 	})
 }
 
-func FuzzIntUnmarshal(f *testing.F) {
+func FuzzVarint_IntUnmarshal(f *testing.F) {
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		Int.Unmarshal(bs)
 		Int.Skip(bs)
@@ -213,7 +213,7 @@ func FuzzIntUnmarshal(f *testing.F) {
 
 // float -----------------------------------------------------------------------
 
-func FuzzFloat64(f *testing.F) {
+func FuzzVarint_Float64(f *testing.F) {
 	seeds := []float64{0, 1, -1, 0.1, -0.1, math.Pi, math.E, math.Inf(1), math.Inf(-1), math.NaN()}
 	for _, seed := range seeds {
 		f.Add(seed)
@@ -224,7 +224,7 @@ func FuzzFloat64(f *testing.F) {
 	})
 }
 
-func FuzzFloat32(f *testing.F) {
+func FuzzVarint_Float32(f *testing.F) {
 	seeds := []float32{0, 1, -1, 0.1, -0.1, math.Pi, math.E, float32(math.Inf(1)), float32(math.Inf(-1)), float32(math.NaN())}
 	for _, seed := range seeds {
 		f.Add(seed)
@@ -235,14 +235,14 @@ func FuzzFloat32(f *testing.F) {
 	})
 }
 
-func FuzzFloat64Unmarshal(f *testing.F) {
+func FuzzVarint_Float64Unmarshal(f *testing.F) {
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		Float64.Unmarshal(bs)
 		Float64.Skip(bs)
 	})
 }
 
-func FuzzFloat32Unmarshal(f *testing.F) {
+func FuzzVarint_Float32Unmarshal(f *testing.F) {
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		Float32.Unmarshal(bs)
 		Float32.Skip(bs)
@@ -251,7 +251,7 @@ func FuzzFloat32Unmarshal(f *testing.F) {
 
 // positive_int ----------------------------------------------------------------
 
-func FuzzPositiveInt64(f *testing.F) {
+func FuzzVarint_PositiveInt64(f *testing.F) {
 	seeds := []int64{0, 1, 127, 128, 255, 256, math.MaxInt64}
 	for _, seed := range seeds {
 		f.Add(seed)
@@ -265,7 +265,7 @@ func FuzzPositiveInt64(f *testing.F) {
 	})
 }
 
-func FuzzPositiveInt32(f *testing.F) {
+func FuzzVarint_PositiveInt32(f *testing.F) {
 	seeds := []int32{0, 1, 127, 128, 255, 256, math.MaxInt32}
 	for _, seed := range seeds {
 		f.Add(seed)
@@ -279,7 +279,7 @@ func FuzzPositiveInt32(f *testing.F) {
 	})
 }
 
-func FuzzPositiveInt16(f *testing.F) {
+func FuzzVarint_PositiveInt16(f *testing.F) {
 	seeds := []int16{0, 1, 127, 128, 255, 256, math.MaxInt16}
 	for _, seed := range seeds {
 		f.Add(seed)
@@ -293,7 +293,7 @@ func FuzzPositiveInt16(f *testing.F) {
 	})
 }
 
-func FuzzPositiveInt8(f *testing.F) {
+func FuzzVarint_PositiveInt8(f *testing.F) {
 	seeds := []int8{0, 1, 127, math.MaxInt8}
 	for _, seed := range seeds {
 		f.Add(seed)
@@ -307,7 +307,7 @@ func FuzzPositiveInt8(f *testing.F) {
 	})
 }
 
-func FuzzPositiveInt(f *testing.F) {
+func FuzzVarint_PositiveInt(f *testing.F) {
 	seeds := []int{0, 1, 127, 128, 255, 256, math.MaxInt}
 	for _, seed := range seeds {
 		f.Add(seed)
@@ -321,35 +321,35 @@ func FuzzPositiveInt(f *testing.F) {
 	})
 }
 
-func FuzzPositiveInt64Unmarshal(f *testing.F) {
+func FuzzVarint_PositiveInt64Unmarshal(f *testing.F) {
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		PositiveInt64.Unmarshal(bs)
 		PositiveInt64.Skip(bs)
 	})
 }
 
-func FuzzPositiveInt32Unmarshal(f *testing.F) {
+func FuzzVarint_PositiveInt32Unmarshal(f *testing.F) {
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		PositiveInt32.Unmarshal(bs)
 		PositiveInt32.Skip(bs)
 	})
 }
 
-func FuzzPositiveInt16Unmarshal(f *testing.F) {
+func FuzzVarint_PositiveInt16Unmarshal(f *testing.F) {
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		PositiveInt16.Unmarshal(bs)
 		PositiveInt16.Skip(bs)
 	})
 }
 
-func FuzzPositiveInt8Unmarshal(f *testing.F) {
+func FuzzVarint_PositiveInt8Unmarshal(f *testing.F) {
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		PositiveInt8.Unmarshal(bs)
 		PositiveInt8.Skip(bs)
 	})
 }
 
-func FuzzPositiveIntUnmarshal(f *testing.F) {
+func FuzzVarint_PositiveIntUnmarshal(f *testing.F) {
 	f.Fuzz(func(t *testing.T, bs []byte) {
 		PositiveInt.Unmarshal(bs)
 		PositiveInt.Skip(bs)

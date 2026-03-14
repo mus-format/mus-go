@@ -8,16 +8,14 @@ import (
 	"github.com/mus-format/mus-go/varint"
 )
 
-func TestIntegrationUnsafe(t *testing.T) {
-	t.Run("array", func(t *testing.T) {
-		ser := NewArraySer[[3]int](varint.Int)
-		test.Test(ctestutil.ArrayTestCases, ser, t)
-		test.TestSkip(ctestutil.ArrayTestCases, ser, t)
-	})
+func TestUnsafeIntegration_Array(t *testing.T) {
+	ser := NewArraySer[[3]int](varint.Int)
+	test.Test(ctestutil.ArrayTestCases, ser, t)
+	test.TestSkip(ctestutil.ArrayTestCases, ser, t)
+}
 
-	t.Run("valid array", func(t *testing.T) {
-		ser := NewValidArraySer[[3]int](varint.Int, nil)
-		test.Test(ctestutil.ArrayTestCases, ser, t)
-		test.TestSkip(ctestutil.ArrayTestCases, ser, t)
-	})
+func TestUnsafeIntegration_ValidArray(t *testing.T) {
+	ser := NewValidArraySer[[3]int](varint.Int, nil)
+	test.Test(ctestutil.ArrayTestCases, ser, t)
+	test.TestSkip(ctestutil.ArrayTestCases, ser, t)
 }

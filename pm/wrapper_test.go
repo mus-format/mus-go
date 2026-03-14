@@ -13,17 +13,17 @@ import (
 	"github.com/ymz-ncnk/mok"
 )
 
-func TestWrapper(t *testing.T) {
-	t.Run("wrapper serializer should work correctly",
+func TestPM_Wrapper(t *testing.T) {
+	t.Run("Wrapped serializer should succeed",
 		func(t *testing.T) {
 			var (
 				st, baseSer = test.PtrStructTestData(t)
 				ptrMap      = com.NewPtrMap()
 				revPtrMap   = com.NewReversePtrMap()
-				w           = Wrap(ptrMap, revPtrMap, newPtrStructSer(ptrMap, revPtrMap, baseSer))
+				ser         = Wrap(ptrMap, revPtrMap, newPtrStructSer(ptrMap, revPtrMap, baseSer))
 			)
-			test.Test([]ctestutil.PtrStruct{st}, w, t)
-			test.TestSkip([]ctestutil.PtrStruct{st}, w, t)
+			test.Test([]ctestutil.PtrStruct{st}, ser, t)
+			test.TestSkip([]ctestutil.PtrStruct{st}, ser, t)
 		})
 
 	t.Run("Marshal should call ser.Marshal and empty the ptrMap",
