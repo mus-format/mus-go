@@ -5,7 +5,7 @@ import (
 
 	com "github.com/mus-format/common-go"
 	ctestutil "github.com/mus-format/common-go/testutil"
-	"github.com/mus-format/mus-go/testutil"
+	"github.com/mus-format/mus-go/test"
 	"github.com/mus-format/mus-go/varint"
 )
 
@@ -17,7 +17,7 @@ func TestIntegrationWrapper(t *testing.T) {
 			ser       = Wrap(ptrMap, revPtrMap, newPtrStructSer(ptrMap, revPtrMap,
 				varint.Int))
 		)
-		testutil.Test(
+		test.Test(
 			ctestutil.PointerMappingTestCases(), ser, t)
 	})
 
@@ -34,11 +34,11 @@ func TestIntegrationWrapper(t *testing.T) {
 			e = 5
 			f = 6
 		)
-		testutil.Test(
+		test.Test(
 			[]ctestutil.PtrStruct{{A1: &a, A2: &b, A3: &c}},
 			ser, t)
 
-		testutil.TestSkip(
+		test.TestSkip(
 			[]ctestutil.PtrStruct{{A1: &d, A2: &e, A3: &f}},
 			ser, t)
 	})

@@ -1,10 +1,10 @@
-package testutil
+package test
 
 import (
 	"testing"
 
 	ctestutil "github.com/mus-format/common-go/testutil"
-	mock "github.com/mus-format/mus-go/testutil/mock"
+	mock "github.com/mus-format/mus-go/test/mock"
 )
 
 type PointerMappingStruct struct {

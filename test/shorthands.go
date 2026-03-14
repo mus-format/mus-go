@@ -1,10 +1,10 @@
-package testutil
+package test
 
 import (
 	"bytes"
 	"testing"
 
-	mock "github.com/mus-format/mus-go/testutil/mock"
+	mock "github.com/mus-format/mus-go/test/mock"
 )
 
 func m[T comparable](wantV T, r []byte, t *testing.T) mock.MarshalFn[T] {

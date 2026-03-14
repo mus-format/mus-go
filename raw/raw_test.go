@@ -8,7 +8,7 @@ import (
 	com "github.com/mus-format/common-go"
 	ctestutil "github.com/mus-format/common-go/testutil"
 	"github.com/mus-format/mus-go"
-	"github.com/mus-format/mus-go/testutil"
+	"github.com/mus-format/mus-go/test"
 )
 
 func TestRaw(t *testing.T) {
@@ -208,8 +208,8 @@ func TestRaw(t *testing.T) {
 		t.Run("Byte serializer should work correctly",
 			func(t *testing.T) {
 				ser := Byte
-				testutil.Test(ctestutil.ByteTestCases, ser, t)
-				testutil.TestSkip(ctestutil.ByteTestCases, ser, t)
+				test.Test(ctestutil.ByteTestCases, ser, t)
+				test.TestSkip(ctestutil.ByteTestCases, ser, t)
 			})
 	})
 
@@ -217,36 +217,36 @@ func TestRaw(t *testing.T) {
 		t.Run("Uint64 serializer should work correctly",
 			func(t *testing.T) {
 				ser := Uint64
-				testutil.Test(ctestutil.Uint64TestCases, ser, t)
-				testutil.TestSkip(ctestutil.Uint64TestCases, ser, t)
+				test.Test(ctestutil.Uint64TestCases, ser, t)
+				test.TestSkip(ctestutil.Uint64TestCases, ser, t)
 			})
 
 		t.Run("Uint32 serializer should work correctly",
 			func(t *testing.T) {
 				ser := Uint32
-				testutil.Test(ctestutil.Uint32TestCases, ser, t)
-				testutil.TestSkip(ctestutil.Uint32TestCases, ser, t)
+				test.Test(ctestutil.Uint32TestCases, ser, t)
+				test.TestSkip(ctestutil.Uint32TestCases, ser, t)
 			})
 
 		t.Run("Uint16 serializer should work correctly",
 			func(t *testing.T) {
 				ser := Uint16
-				testutil.Test(ctestutil.Uint16TestCases, ser, t)
-				testutil.TestSkip(ctestutil.Uint16TestCases, ser, t)
+				test.Test(ctestutil.Uint16TestCases, ser, t)
+				test.TestSkip(ctestutil.Uint16TestCases, ser, t)
 			})
 
 		t.Run("Uint8 serializer should work correctly",
 			func(t *testing.T) {
 				ser := Uint8
-				testutil.Test(ctestutil.Uint8TestCases, ser, t)
-				testutil.TestSkip(ctestutil.Uint8TestCases, ser, t)
+				test.Test(ctestutil.Uint8TestCases, ser, t)
+				test.TestSkip(ctestutil.Uint8TestCases, ser, t)
 			})
 
 		t.Run("Uint serializer should work correctly",
 			func(t *testing.T) {
 				ser := Uint
-				testutil.Test(ctestutil.UintTestCases, ser, t)
-				testutil.TestSkip(ctestutil.UintTestCases, ser, t)
+				test.Test(ctestutil.UintTestCases, ser, t)
+				test.TestSkip(ctestutil.UintTestCases, ser, t)
 			})
 	})
 
@@ -254,36 +254,36 @@ func TestRaw(t *testing.T) {
 		t.Run("Int64 serializer should work correctly",
 			func(t *testing.T) {
 				ser := Int64
-				testutil.Test(ctestutil.Int64TestCases, ser, t)
-				testutil.TestSkip(ctestutil.Int64TestCases, ser, t)
+				test.Test(ctestutil.Int64TestCases, ser, t)
+				test.TestSkip(ctestutil.Int64TestCases, ser, t)
 			})
 
 		t.Run("Int32 serializer should work correctly",
 			func(t *testing.T) {
 				ser := Int32
-				testutil.Test(ctestutil.Int32TestCases, ser, t)
-				testutil.TestSkip(ctestutil.Int32TestCases, ser, t)
+				test.Test(ctestutil.Int32TestCases, ser, t)
+				test.TestSkip(ctestutil.Int32TestCases, ser, t)
 			})
 
 		t.Run("Int16 serializer should work correctly",
 			func(t *testing.T) {
 				ser := Int16
-				testutil.Test(ctestutil.Int16TestCases, ser, t)
-				testutil.TestSkip(ctestutil.Int16TestCases, ser, t)
+				test.Test(ctestutil.Int16TestCases, ser, t)
+				test.TestSkip(ctestutil.Int16TestCases, ser, t)
 			})
 
 		t.Run("Int8 serializer should work correctly",
 			func(t *testing.T) {
 				ser := Int8
-				testutil.Test(ctestutil.Int8TestCases, ser, t)
-				testutil.TestSkip(ctestutil.Int8TestCases, ser, t)
+				test.Test(ctestutil.Int8TestCases, ser, t)
+				test.TestSkip(ctestutil.Int8TestCases, ser, t)
 			})
 
 		t.Run("Int serializer should work correctly",
 			func(t *testing.T) {
 				ser := Int
-				testutil.Test(ctestutil.IntTestCases, ser, t)
-				testutil.TestSkip(ctestutil.IntTestCases, ser, t)
+				test.Test(ctestutil.IntTestCases, ser, t)
+				test.TestSkip(ctestutil.IntTestCases, ser, t)
 			})
 	})
 
@@ -292,8 +292,8 @@ func TestRaw(t *testing.T) {
 			t.Run("Float64 serializer should work correctly",
 				func(t *testing.T) {
 					ser := Float64
-					testutil.Test(ctestutil.Float64TestCases, ser, t)
-					testutil.TestSkip(ctestutil.Float64TestCases, ser, t)
+					test.Test(ctestutil.Float64TestCases, ser, t)
+					test.TestSkip(ctestutil.Float64TestCases, ser, t)
 				})
 
 			t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
@@ -324,8 +324,8 @@ func TestRaw(t *testing.T) {
 			t.Run("Float32 serializer should work correctly",
 				func(t *testing.T) {
 					ser := Float32
-					testutil.Test(ctestutil.Float32TestCases, ser, t)
-					testutil.TestSkip(ctestutil.Float32TestCases, ser, t)
+					test.Test(ctestutil.Float32TestCases, ser, t)
+					test.TestSkip(ctestutil.Float32TestCases, ser, t)
 				})
 
 			t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
@@ -363,14 +363,14 @@ func TestRaw(t *testing.T) {
 						sec = time.Now().Unix()
 						tm  = time.Unix(sec, 0)
 					)
-					testutil.Test([]time.Time{tm}, TimeUnixUTC, t)
-					testutil.TestSkip([]time.Time{tm}, TimeUnixUTC, t)
+					test.Test([]time.Time{tm}, TimeUnixUTC, t)
+					test.TestSkip([]time.Time{tm}, TimeUnixUTC, t)
 				})
 
 			t.Run("We should be able to serializer the zero Time",
 				func(t *testing.T) {
-					testutil.Test([]time.Time{{}}, TimeUnixUTC, t)
-					testutil.TestSkip([]time.Time{{}}, TimeUnixUTC, t)
+					test.Test([]time.Time{{}}, TimeUnixUTC, t)
+					test.TestSkip([]time.Time{{}}, TimeUnixUTC, t)
 				})
 
 			t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
@@ -394,14 +394,14 @@ func TestRaw(t *testing.T) {
 						milli = time.Now().UnixMilli()
 						tm    = time.UnixMilli(milli)
 					)
-					testutil.Test([]time.Time{tm}, TimeUnixMilliUTC, t)
-					testutil.TestSkip([]time.Time{tm}, TimeUnixMilliUTC, t)
+					test.Test([]time.Time{tm}, TimeUnixMilliUTC, t)
+					test.TestSkip([]time.Time{tm}, TimeUnixMilliUTC, t)
 				})
 
 			t.Run("We should be able to serializer the zero Time",
 				func(t *testing.T) {
-					testutil.Test([]time.Time{{}}, TimeUnixMilliUTC, t)
-					testutil.TestSkip([]time.Time{{}}, TimeUnixMilliUTC, t)
+					test.Test([]time.Time{{}}, TimeUnixMilliUTC, t)
+					test.TestSkip([]time.Time{{}}, TimeUnixMilliUTC, t)
 				})
 
 			t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
@@ -425,14 +425,14 @@ func TestRaw(t *testing.T) {
 						milli = time.Now().UnixMicro()
 						tm    = time.UnixMicro(milli)
 					)
-					testutil.Test([]time.Time{tm}, TimeUnixMicroUTC, t)
-					testutil.TestSkip([]time.Time{tm}, TimeUnixMicroUTC, t)
+					test.Test([]time.Time{tm}, TimeUnixMicroUTC, t)
+					test.TestSkip([]time.Time{tm}, TimeUnixMicroUTC, t)
 				})
 
 			t.Run("We should be able to serializer the zero Time",
 				func(t *testing.T) {
-					testutil.Test([]time.Time{{}}, TimeUnixMicroUTC, t)
-					testutil.TestSkip([]time.Time{{}}, TimeUnixMicroUTC, t)
+					test.Test([]time.Time{{}}, TimeUnixMicroUTC, t)
+					test.TestSkip([]time.Time{{}}, TimeUnixMicroUTC, t)
 				})
 
 			t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
@@ -456,8 +456,8 @@ func TestRaw(t *testing.T) {
 						nano = time.Now().UnixNano()
 						tm   = time.Unix(0, nano)
 					)
-					testutil.Test([]time.Time{tm}, TimeUnixNanoUTC, t)
-					testutil.TestSkip([]time.Time{tm}, TimeUnixNanoUTC, t)
+					test.Test([]time.Time{tm}, TimeUnixNanoUTC, t)
+					test.TestSkip([]time.Time{tm}, TimeUnixNanoUTC, t)
 				})
 
 			t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",

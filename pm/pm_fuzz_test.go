@@ -5,7 +5,7 @@ import (
 
 	com "github.com/mus-format/common-go"
 	"github.com/mus-format/mus-go"
-	"github.com/mus-format/mus-go/testutil"
+	"github.com/mus-format/mus-go/test"
 	"github.com/mus-format/mus-go/varint"
 )
 
@@ -47,8 +47,8 @@ func FuzzPtr(f *testing.F) {
 		}
 
 		for _, p := range ptrs {
-			testutil.Test([]*int{p}, ser, t)
-			testutil.TestSkip([]*int{p}, ser, t)
+			test.Test([]*int{p}, ser, t)
+			test.TestSkip([]*int{p}, ser, t)
 		}
 	})
 }
@@ -140,8 +140,8 @@ func FuzzWrap(f *testing.F) {
 			}
 		}
 
-		testutil.Test([]*node{head}, ser, t)
-		testutil.TestSkip([]*node{head}, ser, t)
+		test.Test([]*node{head}, ser, t)
+		test.TestSkip([]*node{head}, ser, t)
 	})
 }
 

@@ -1,16 +1,16 @@
-package testutil
+package test
 
 import (
 	"testing"
 
-	mock "github.com/mus-format/mus-go/testutil/mock"
+	mock "github.com/mus-format/mus-go/test/mock"
 )
 
-func ByteSliceLenTestData(t *testing.T) (sl []byte, lenSer mock.Serializer[int]) {
-	sl = []byte{1, 2, 45, 255, 123, 70, 0, 0}
+func StringLenTestData(t *testing.T) (str string, lenSer mock.Serializer[int]) {
+	str = "abc"
 	var (
-		l    = 8
-		lBs  = []byte{16}
+		l    = len(str)
+		lBs  = []byte{byte(l * 2)}
 		size = 1
 	)
 	lenSer = mock.NewSerializer[int]().

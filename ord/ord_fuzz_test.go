@@ -9,7 +9,7 @@ import (
 	mapops "github.com/mus-format/mus-go/options/map"
 	slops "github.com/mus-format/mus-go/options/slice"
 	strops "github.com/mus-format/mus-go/options/string"
-	"github.com/mus-format/mus-go/testutil"
+	"github.com/mus-format/mus-go/test"
 	"github.com/mus-format/mus-go/varint"
 )
 
@@ -30,8 +30,8 @@ func FuzzByteSlice(f *testing.F) {
 		if len(v) > maxLen {
 			v = v[:maxLen]
 		}
-		testutil.Test([][]byte{v}, ByteSlice, t)
-		testutil.TestSkip([][]byte{v}, ByteSlice, t)
+		test.Test([][]byte{v}, ByteSlice, t)
+		test.TestSkip([][]byte{v}, ByteSlice, t)
 	})
 }
 
@@ -63,8 +63,8 @@ func FuzzSlice(f *testing.F) {
 			v[i] = int(b)
 		}
 		ser := NewSliceSer(varint.Int)
-		testutil.Test([][]int{v}, ser, t)
-		testutil.TestSkip([][]int{v}, ser, t)
+		test.Test([][]int{v}, ser, t)
+		test.TestSkip([][]int{v}, ser, t)
 	})
 }
 
@@ -92,8 +92,8 @@ func FuzzBool(f *testing.F) {
 		f.Add(seed)
 	}
 	f.Fuzz(func(t *testing.T, v bool) {
-		testutil.Test([]bool{v}, Bool, t)
-		testutil.TestSkip([]bool{v}, Bool, t)
+		test.Test([]bool{v}, Bool, t)
+		test.TestSkip([]bool{v}, Bool, t)
 	})
 }
 
@@ -111,8 +111,8 @@ func FuzzMap(f *testing.F) {
 	f.Fuzz(func(t *testing.T, b1, b2, b3, b4 byte) {
 		v := map[int]int{int(b1): int(b2), int(b3): int(b4)}
 		ser := NewMapSer(varint.Int, varint.Int)
-		testutil.Test([]map[int]int{v}, ser, t)
-		testutil.TestSkip([]map[int]int{v}, ser, t)
+		test.Test([]map[int]int{v}, ser, t)
+		test.TestSkip([]map[int]int{v}, ser, t)
 	})
 }
 
@@ -144,8 +144,8 @@ func FuzzString(f *testing.F) {
 		if len(v) > maxLen {
 			v = v[:maxLen]
 		}
-		testutil.Test([]string{v}, String, t)
-		testutil.TestSkip([]string{v}, String, t)
+		test.Test([]string{v}, String, t)
+		test.TestSkip([]string{v}, String, t)
 	})
 }
 
@@ -179,8 +179,8 @@ func FuzzPtr(f *testing.F) {
 			v = &val
 		}
 		ser := NewPtrSer(varint.Int)
-		testutil.Test([]*int{v}, ser, t)
-		testutil.TestSkip([]*int{v}, ser, t)
+		test.Test([]*int{v}, ser, t)
+		test.TestSkip([]*int{v}, ser, t)
 	})
 }
 
