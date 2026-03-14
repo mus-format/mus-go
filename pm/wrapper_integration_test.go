@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	com "github.com/mus-format/common-go"
-	ctestutil "github.com/mus-format/common-go/testutil"
+	ctest "github.com/mus-format/common-go/test"
 	"github.com/mus-format/mus-go/test"
 	"github.com/mus-format/mus-go/varint"
 )
@@ -17,7 +17,7 @@ func TestPMIntegration_Wrapper(t *testing.T) {
 			ser       = Wrap(ptrMap, revPtrMap, newPtrStructSer(ptrMap, revPtrMap,
 				varint.Int))
 		)
-		test.Test(ctestutil.PointerMappingTestCases(), ser, t)
+		test.Test(ctest.PointerMappingTestCases(), ser, t)
 	})
 
 	t.Run("We should be able to use same serializer several times", func(t *testing.T) {
@@ -34,11 +34,11 @@ func TestPMIntegration_Wrapper(t *testing.T) {
 			f = 6
 		)
 		test.Test(
-			[]ctestutil.PtrStruct{{A1: &a, A2: &b, A3: &c}},
+			[]ctest.PtrStruct{{A1: &a, A2: &b, A3: &c}},
 			ser, t)
 
 		test.TestSkip(
-			[]ctestutil.PtrStruct{{A1: &d, A2: &e, A3: &f}},
+			[]ctest.PtrStruct{{A1: &d, A2: &e, A3: &f}},
 			ser, t)
 	})
 }

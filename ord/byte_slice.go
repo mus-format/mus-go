@@ -3,7 +3,7 @@ package ord
 import (
 	com "github.com/mus-format/common-go"
 	"github.com/mus-format/mus-go"
-	bslops "github.com/mus-format/mus-go/options/byte_slice"
+	bslopts "github.com/mus-format/mus-go/options/byte_slice"
 	"github.com/mus-format/mus-go/varint"
 )
 
@@ -12,17 +12,17 @@ var ByteSlice = NewByteSliceSer()
 
 // NewByteSliceSer returns a new byte slice serializer. To specify a length
 // validator, use NewValidByteSliceSer instead.
-func NewByteSliceSer(ops ...bslops.SetOption) byteSliceSer {
-	o := bslops.Options{}
-	bslops.Apply(ops, &o)
+func NewByteSliceSer(opts ...bslopts.SetOption) byteSliceSer {
+	o := bslopts.Options{}
+	bslopts.Apply(opts, &o)
 
 	return newByteSliceSer(o)
 }
 
 // NewValidByteSliceSer returns a new valid byte slice serializer.
-func NewValidByteSliceSer(ops ...bslops.SetOption) validByteSliceSer {
-	o := bslops.Options{}
-	bslops.Apply(ops, &o)
+func NewValidByteSliceSer(opts ...bslopts.SetOption) validByteSliceSer {
+	o := bslopts.Options{}
+	bslopts.Apply(opts, &o)
 
 	var lenVl com.Validator[int]
 	if o.LenVl != nil {
@@ -31,7 +31,7 @@ func NewValidByteSliceSer(ops ...bslops.SetOption) validByteSliceSer {
 	return validByteSliceSer{newByteSliceSer(o), lenVl}
 }
 
-func newByteSliceSer(o bslops.Options) byteSliceSer {
+func newByteSliceSer(o bslopts.Options) byteSliceSer {
 	var lenSer mus.Serializer[int] = varint.PositiveInt
 	if o.LenSer != nil {
 		lenSer = o.LenSer

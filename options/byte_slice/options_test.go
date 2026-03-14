@@ -1,9 +1,9 @@
-package bslops
+package bslopts
 
 import (
 	"testing"
 
-	cmock "github.com/mus-format/common-go/testutil/mock"
+	cmock "github.com/mus-format/common-go/test/mock"
 	"github.com/mus-format/mus-go/test/mock"
 )
 

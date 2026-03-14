@@ -3,27 +3,26 @@ package ord
 import (
 	com "github.com/mus-format/common-go"
 	"github.com/mus-format/mus-go"
-	slops "github.com/mus-format/mus-go/options/slice"
+	slopts "github.com/mus-format/mus-go/options/slice"
 	"github.com/mus-format/mus-go/varint"
 )
 
 // NewSliceSer returns a new slice serializer with the given element serializer.
 // To specify a length or element validator, use NewValidStringSer instead.
-func NewSliceSer[T any](elemSer mus.Serializer[T], ops ...slops.SetOption[T]) (
+func NewSliceSer[T any](elemSer mus.Serializer[T], opts ...slopts.SetOption[T]) (
 	s sliceSer[T],
 ) {
-	o := slops.Options[T]{}
-	slops.Apply(ops, &o)
+	o := slopts.Options[T]{}
+	slopts.Apply(opts, &o)
 
 	return newSliceSer(elemSer, o)
 }
 
-// NewValidSliceSer returns a new valid slice serializer.
 func NewValidSliceSer[T any](elemSer mus.Serializer[T],
-	ops ...slops.SetOption[T],
+	opts ...slopts.SetOption[T],
 ) validSliceSer[T] {
-	o := slops.Options[T]{}
-	slops.Apply(ops, &o)
+	o := slopts.Options[T]{}
+	slopts.Apply(opts, &o)
 
 	var (
 		lenVl  com.Validator[int]
@@ -42,7 +41,7 @@ func NewValidSliceSer[T any](elemSer mus.Serializer[T],
 	}
 }
 
-func newSliceSer[T any](elemSer mus.Serializer[T], o slops.Options[T]) (
+func newSliceSer[T any](elemSer mus.Serializer[T], o slopts.Options[T]) (
 	s sliceSer[T],
 ) {
 	var lenSer mus.Serializer[int] = varint.PositiveInt

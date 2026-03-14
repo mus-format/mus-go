@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	com "github.com/mus-format/common-go"
-	ctestutil "github.com/mus-format/common-go/testutil"
+	ctest "github.com/mus-format/common-go/test"
 	"github.com/mus-format/mus-go"
 	mock "github.com/mus-format/mus-go/test/mock"
 )
@@ -38,7 +38,7 @@ func TestPM_Pointer(t *testing.T) {
 				ser          = NewPtrSer(nil, com.NewReversePtrMap(), mus.Serializer[int](nil))
 			)
 			v, n, err := ser.Unmarshal([]byte{})
-			ctestutil.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 		})
 
 	t.Run("Unmarshal should be able to unmarshal nil pointer",
@@ -51,7 +51,7 @@ func TestPM_Pointer(t *testing.T) {
 				ser           = NewPtrSer(nil, com.NewReversePtrMap(), mus.Serializer[int](nil))
 			)
 			v, n, err := ser.Unmarshal(bs)
-			ctestutil.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 		})
 
 	t.Run("If unmarshaling pointer id fails with an error, Unmarshal should return it",
@@ -64,7 +64,7 @@ func TestPM_Pointer(t *testing.T) {
 				ser          = NewPtrSer(nil, com.NewReversePtrMap(), mus.Serializer[int](nil))
 			)
 			v, n, err := ser.Unmarshal(bs)
-			ctestutil.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 		})
 
 	t.Run("If unmarshaling data fails with an error, Unmarshal should return it",
@@ -84,7 +84,7 @@ func TestPM_Pointer(t *testing.T) {
 				bs     = []byte{byte(com.Mapping), 2, 1}
 			)
 			v, n, err := ser.Unmarshal(bs)
-			ctestutil.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 		})
 
 	t.Run("Unmarshal should fail with com.ErrWrongFormat if meets unknown pointer flag",
@@ -97,7 +97,7 @@ func TestPM_Pointer(t *testing.T) {
 				ser          = NewPtrSer(nil, com.NewReversePtrMap(), mus.Serializer[int](nil))
 			)
 			v, n, err := ser.Unmarshal(bs)
-			ctestutil.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 		})
 
 	t.Run("Size should return 1 for nil pointer", func(t *testing.T) {
@@ -120,7 +120,7 @@ func TestPM_Pointer(t *testing.T) {
 				ser     = NewPtrSer(nil, com.NewReversePtrMap(), mus.Serializer[int](nil))
 			)
 			n, err := ser.Skip(bs)
-			ctestutil.TestSkipResults(wantN, n, wantErr, err, nil, t)
+			ctest.TestSkipResults(wantN, n, wantErr, err, nil, t)
 		})
 
 	t.Run("Skip should fail with com.ErrWrongFormat if meets unknown pointer flag",
@@ -132,7 +132,7 @@ func TestPM_Pointer(t *testing.T) {
 				ser     = NewPtrSer(nil, com.NewReversePtrMap(), mus.Serializer[int](nil))
 			)
 			n, err := ser.Skip(bs)
-			ctestutil.TestSkipResults(wantN, n, wantErr, err, nil, t)
+			ctest.TestSkipResults(wantN, n, wantErr, err, nil, t)
 		})
 
 	t.Run("Skip should return mus.ErrTooSmallByteSlice if bs is too small",
@@ -143,7 +143,7 @@ func TestPM_Pointer(t *testing.T) {
 				ser     = NewPtrSer(nil, com.NewReversePtrMap(), mus.Serializer[int](nil))
 			)
 			n, err := ser.Skip([]byte{})
-			ctestutil.TestSkipResults(wantN, n, wantErr, err, nil, t)
+			ctest.TestSkipResults(wantN, n, wantErr, err, nil, t)
 		})
 
 	t.Run("Skip should be able to skip nil pointer",
@@ -155,7 +155,7 @@ func TestPM_Pointer(t *testing.T) {
 				ser           = NewPtrSer(nil, com.NewReversePtrMap(), mus.Serializer[int](nil))
 			)
 			n, err := ser.Skip(bs)
-			ctestutil.TestSkipResults(wantN, n, wantErr, err, nil, t)
+			ctest.TestSkipResults(wantN, n, wantErr, err, nil, t)
 		})
 
 	t.Run("If unmarshaling data fails with an error, SKip should return it",
@@ -174,6 +174,6 @@ func TestPM_Pointer(t *testing.T) {
 				bs     = []byte{byte(com.Mapping), 2, 1}
 			)
 			n, err := ser.Skip(bs)
-			ctestutil.TestSkipResults(wantN, n, wantErr, err, nil, t)
+			ctest.TestSkipResults(wantN, n, wantErr, err, nil, t)
 		})
 }

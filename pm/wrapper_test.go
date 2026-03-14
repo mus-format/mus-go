@@ -6,7 +6,7 @@ import (
 	"unsafe"
 
 	com "github.com/mus-format/common-go"
-	ctestutil "github.com/mus-format/common-go/testutil"
+	ctest "github.com/mus-format/common-go/test"
 	mus "github.com/mus-format/mus-go"
 	"github.com/mus-format/mus-go/test"
 	mock "github.com/mus-format/mus-go/test/mock"
@@ -22,8 +22,8 @@ func TestPM_Wrapper(t *testing.T) {
 				revPtrMap   = com.NewReversePtrMap()
 				ser         = Wrap(ptrMap, revPtrMap, newPtrStructSer(ptrMap, revPtrMap, baseSer))
 			)
-			test.Test([]ctestutil.PtrStruct{st}, ser, t)
-			test.TestSkip([]ctestutil.PtrStruct{st}, ser, t)
+			test.Test([]ctest.PtrStruct{st}, ser, t)
+			test.TestSkip([]ctest.PtrStruct{st}, ser, t)
 		})
 
 	t.Run("Marshal should call ser.Marshal and empty the ptrMap",
@@ -162,7 +162,7 @@ func TestPM_Wrapper(t *testing.T) {
 
 func newPtrStructSer(ptrMap *com.PtrMap, revPtrMap *com.ReversePtrMap,
 	baseSer mus.Serializer[int],
-) mus.Serializer[ctestutil.PtrStruct] {
+) mus.Serializer[ctest.PtrStruct] {
 	return ptrStructSer{NewPtrSer(ptrMap, revPtrMap, baseSer)}
 }
 
@@ -170,14 +170,14 @@ type ptrStructSer struct {
 	intPtrSer mus.Serializer[*int]
 }
 
-func (s ptrStructSer) Marshal(v ctestutil.PtrStruct, bs []byte) (n int) {
+func (s ptrStructSer) Marshal(v ctest.PtrStruct, bs []byte) (n int) {
 	n = s.intPtrSer.Marshal(v.A1, bs)
 	n += s.intPtrSer.Marshal(v.A2, bs[n:])
 	n += s.intPtrSer.Marshal(v.A3, bs[n:])
 	return
 }
 
-func (s ptrStructSer) Unmarshal(bs []byte) (v ctestutil.PtrStruct, n int, err error) {
+func (s ptrStructSer) Unmarshal(bs []byte) (v ctest.PtrStruct, n int, err error) {
 	v.A1, n, err = s.intPtrSer.Unmarshal(bs)
 	if err != nil {
 		return
@@ -193,7 +193,7 @@ func (s ptrStructSer) Unmarshal(bs []byte) (v ctestutil.PtrStruct, n int, err er
 	return
 }
 
-func (s ptrStructSer) Size(v ctestutil.PtrStruct) (size int) {
+func (s ptrStructSer) Size(v ctest.PtrStruct) (size int) {
 	size = s.intPtrSer.Size(v.A1)
 	size += s.intPtrSer.Size(v.A2)
 	size += s.intPtrSer.Size(v.A3)

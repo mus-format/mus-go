@@ -6,8 +6,8 @@ import (
 	"time"
 
 	com "github.com/mus-format/common-go"
-	bslops "github.com/mus-format/mus-go/options/byte_slice"
-	strops "github.com/mus-format/mus-go/options/string"
+	bslopts "github.com/mus-format/mus-go/options/byte_slice"
+	stropts "github.com/mus-format/mus-go/options/string"
 	"github.com/mus-format/mus-go/test"
 	"github.com/mus-format/mus-go/varint"
 )
@@ -309,7 +309,7 @@ func FuzzUnsafe_String(f *testing.F) {
 }
 
 func FuzzUnsafe_StringUnmarshal(f *testing.F) {
-	ser := NewValidStringSer(strops.WithLenValidator(
+	ser := NewValidStringSer(stropts.WithLenValidator(
 		com.ValidatorFn[int](func(v int) error {
 			if v > maxLen {
 				return errors.New("too large length")
@@ -340,7 +340,7 @@ func FuzzUnsafe_ByteSlice(f *testing.F) {
 }
 
 func FuzzUnsafe_ByteSliceUnmarshal(f *testing.F) {
-	ser := NewValidByteSliceSer(bslops.WithLenValidator(
+	ser := NewValidByteSliceSer(bslopts.WithLenValidator(
 		com.ValidatorFn[int](func(v int) error {
 			if v > maxLen {
 				return errors.New("too large length")

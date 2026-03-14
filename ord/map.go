@@ -3,7 +3,7 @@ package ord
 import (
 	com "github.com/mus-format/common-go"
 	"github.com/mus-format/mus-go"
-	mapops "github.com/mus-format/mus-go/options/map"
+	mapopts "github.com/mus-format/mus-go/options/map"
 	"github.com/mus-format/mus-go/varint"
 )
 
@@ -11,20 +11,20 @@ import (
 // serializers. To specify a length, key or value validator, use NewValidMapSer
 // instead.
 func NewMapSer[T comparable, V any](keySer mus.Serializer[T],
-	valueSer mus.Serializer[V], ops ...mapops.SetOption[T, V],
+	valueSer mus.Serializer[V], opts ...mapopts.SetOption[T, V],
 ) mapSer[T, V] {
-	o := mapops.Options[T, V]{}
-	mapops.Apply(ops, &o)
+	o := mapopts.Options[T, V]{}
+	mapopts.Apply(opts, &o)
 
 	return newMapSer(keySer, valueSer, o)
 }
 
 // NewValidMapSer returns a new valid map serializer.
 func NewValidMapSer[T comparable, V any](keySer mus.Serializer[T],
-	valueSer mus.Serializer[V], ops ...mapops.SetOption[T, V],
+	valueSer mus.Serializer[V], opts ...mapopts.SetOption[T, V],
 ) validMapSer[T, V] {
-	o := mapops.Options[T, V]{}
-	mapops.Apply(ops, &o)
+	o := mapopts.Options[T, V]{}
+	mapopts.Apply(opts, &o)
 
 	var (
 		lenVl   com.Validator[int]
@@ -50,7 +50,7 @@ func NewValidMapSer[T comparable, V any](keySer mus.Serializer[T],
 }
 
 func newMapSer[T comparable, V any](keySer mus.Serializer[T],
-	valueSer mus.Serializer[V], o mapops.Options[T, V],
+	valueSer mus.Serializer[V], o mapopts.Options[T, V],
 ) mapSer[T, V] {
 	var lenSer mus.Serializer[int] = varint.PositiveInt
 	if o.LenSer != nil {

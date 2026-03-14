@@ -1,5 +1,5 @@
-// Package arrops provides options for customizing array serialization.
-package arrops
+// Package arropts provides options for customizing array serialization.
+package arropts
 
 import (
 	com "github.com/mus-format/common-go"
@@ -22,10 +22,10 @@ func WithElemValidator[T any](elemVl com.Validator[T]) SetOption[T] {
 	return func(o *Options[T]) { o.ElemVl = elemVl }
 }
 
-func Apply[T any](ops []SetOption[T], o *Options[T]) {
-	for i := range ops {
-		if ops[i] != nil {
-			ops[i](o)
+func Apply[T any](opts []SetOption[T], o *Options[T]) {
+	for i := range opts {
+		if opts[i] != nil {
+			opts[i](o)
 		}
 	}
 }

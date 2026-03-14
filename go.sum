@@ -1,6 +1,7 @@
-github.com/mus-format/common-go v0.0.0-20260225152706-590b1bf7cb37 h1:d8d/XP3jBr8lC//l9MpIQ9jCzr49Hq6X65AH1FYk+TA=
-github.com/mus-format/common-go v0.0.0-20260225152706-590b1bf7cb37/go.mod h1:G4cssLSCvTjdGear9Svw8tLTqvUFv47uOpa7VQJYsNs=
+github.com/mus-format/common-go v0.0.0-20260314231257-b11fb3945107 h1:r9uyKil/321osWAgvaHRSNrAbnpq3k4gi2C5A7P0fN4=
+github.com/mus-format/common-go v0.0.0-20260314231257-b11fb3945107/go.mod h1:G4cssLSCvTjdGear9Svw8tLTqvUFv47uOpa7VQJYsNs=
 github.com/ymz-ncnk/assert v0.0.0-20260108210721-155bc9aa4282 h1:lU0oPVPOGW0BZwLwAqfSTh1yxhFbwXDv/UAYY54QTq0=
+github.com/ymz-ncnk/assert v0.0.0-20260108210721-155bc9aa4282/go.mod h1:+lSOTrCyOPuvc0xuvK4uKhgQ0Ar3U/HJPpJZg73kvgE=
 github.com/ymz-ncnk/mok v0.2.2 h1:MkHkli+n3Ci6Xla9e/6LApJZ6/XjLB6AB3IXDr9a7hk=
 github.com/ymz-ncnk/mok v0.2.2/go.mod h1:oG5QOzlimZyay1H6edXmCSd7YmcRhAm1j7qC8QcmWzM=
 golang.org/x/exp v0.0.0-20230425010034-47ecfdc1ba53 h1:5llv2sWeaMSnA3w2kS57ouQQ4pudlXrR0dCgw51QK9o=

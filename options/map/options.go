@@ -1,5 +1,5 @@
-// Package mapops provides options for customizing map serialization.
-package mapops
+// Package mapopts provides options for customizing map serialization.
+package mapopts
 
 import (
 	com "github.com/mus-format/common-go"
@@ -32,10 +32,10 @@ func WithValueValidator[T, V any](valVl com.Validator[V]) SetOption[T, V] {
 	return func(o *Options[T, V]) { o.ValueVl = valVl }
 }
 
-func Apply[T, V any](ops []SetOption[T, V], o *Options[T, V]) {
-	for i := range ops {
-		if ops[i] != nil {
-			ops[i](o)
+func Apply[T, V any](opts []SetOption[T, V], o *Options[T, V]) {
+	for i := range opts {
+		if opts[i] != nil {
+			opts[i](o)
 		}
 	}
 }

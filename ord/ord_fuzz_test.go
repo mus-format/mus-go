@@ -5,10 +5,10 @@ import (
 	"testing"
 
 	com "github.com/mus-format/common-go"
-	bslops "github.com/mus-format/mus-go/options/byte_slice"
-	mapops "github.com/mus-format/mus-go/options/map"
-	slops "github.com/mus-format/mus-go/options/slice"
-	strops "github.com/mus-format/mus-go/options/string"
+	bslopts "github.com/mus-format/mus-go/options/byte_slice"
+	mapopts "github.com/mus-format/mus-go/options/map"
+	slopts "github.com/mus-format/mus-go/options/slice"
+	stropts "github.com/mus-format/mus-go/options/string"
 	"github.com/mus-format/mus-go/test"
 	"github.com/mus-format/mus-go/varint"
 )
@@ -37,7 +37,7 @@ func FuzzOrd_ByteSlice(f *testing.F) {
 
 func FuzzOrd_ByteSliceUnmarshal(f *testing.F) {
 	// We use Valid serializer to avoid OOM during fuzzing.
-	ser := NewValidByteSliceSer(bslops.WithLenValidator(
+	ser := NewValidByteSliceSer(bslopts.WithLenValidator(
 		com.ValidatorFn[int](func(v int) error {
 			if v > maxLen {
 				return errors.New("too large length")
@@ -70,7 +70,7 @@ func FuzzOrd_Slice(f *testing.F) {
 
 func FuzzOrd_SliceUnmarshal(f *testing.F) {
 	// We use Valid serializer to avoid OOM during fuzzing.
-	ser := NewValidSliceSer(varint.Int, slops.WithLenValidator[int](
+	ser := NewValidSliceSer(varint.Int, slopts.WithLenValidator[int](
 		com.ValidatorFn[int](func(v int) error {
 			if v > maxLen {
 				return errors.New("too large length")
@@ -119,7 +119,7 @@ func FuzzOrd_Map(f *testing.F) {
 func FuzzOrd_MapUnmarshal(f *testing.F) {
 	// We use Valid serializer to avoid OOM during fuzzing.
 	ser := NewValidMapSer(varint.Int, varint.Int,
-		mapops.WithLenValidator[int, int](
+		mapopts.WithLenValidator[int, int](
 			com.ValidatorFn[int](func(v int) error {
 				if v > maxLen {
 					return errors.New("too large length")
@@ -151,7 +151,7 @@ func FuzzOrd_String(f *testing.F) {
 
 func FuzzOrd_StringUnmarshal(f *testing.F) {
 	// We use Valid serializer to avoid OOM during fuzzing.
-	ser := NewValidStringSer(strops.WithLenValidator(
+	ser := NewValidStringSer(stropts.WithLenValidator(
 		com.ValidatorFn[int](func(v int) error {
 			if v > maxLen {
 				return errors.New("too large length")
