@@ -93,7 +93,7 @@ func (s byteSliceSer) Skip(bs []byte) (n int, err error) {
 	return ord.SkipByteSlice(s.lenSer, bs)
 }
 
-// -----------------------------------------------------------------------------
+// valid -----------------------------------------------------------------------
 
 type validByteSliceSer struct {
 	byteSliceSer

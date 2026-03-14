@@ -152,7 +152,7 @@ func (s mapSer[T, V]) Skip(bs []byte) (n int, err error) {
 	return
 }
 
-// -----------------------------------------------------------------------------
+// valid -----------------------------------------------------------------------
 
 type validMapSer[T comparable, V any] struct {
 	mapSer[T, V]

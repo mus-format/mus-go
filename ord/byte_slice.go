@@ -119,7 +119,7 @@ func SkipByteSlice(lenSer mus.Serializer[int], bs []byte) (n int, err error) {
 	return
 }
 
-// -----------------------------------------------------------------------------
+// valid -----------------------------------------------------------------------
 
 type validByteSliceSer struct {
 	byteSliceSer

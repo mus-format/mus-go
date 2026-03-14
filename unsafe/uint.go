@@ -31,6 +31,8 @@ var (
 	skipUint      func(bs []byte) (int, error)
 )
 
+// uint64 ----------------------------------------------------------------------
+
 type uint64Ser struct{}
 
 // Marshal fills bs with an encoded (Raw) uint64 value.
@@ -61,7 +63,7 @@ func (s uint64Ser) Skip(bs []byte) (n int, err error) {
 	return raw.SkipInteger64(bs)
 }
 
-// -----------------------------------------------------------------------------
+// uint32 ----------------------------------------------------------------------
 
 type uint32Ser struct{}
 
@@ -93,7 +95,7 @@ func (s uint32Ser) Skip(bs []byte) (n int, err error) {
 	return raw.SkipInteger32(bs)
 }
 
-// -----------------------------------------------------------------------------
+// uint16 ----------------------------------------------------------------------
 
 type uint16Ser struct{}
 
@@ -125,7 +127,7 @@ func (s uint16Ser) Skip(bs []byte) (n int, err error) {
 	return raw.SkipInteger16(bs)
 }
 
-// -----------------------------------------------------------------------------
+// uint8 -----------------------------------------------------------------------
 
 type uint8Ser struct{}
 
@@ -157,7 +159,7 @@ func (s uint8Ser) Skip(bs []byte) (n int, err error) {
 	return raw.SkipInteger8(bs)
 }
 
-// -----------------------------------------------------------------------------
+// uint ------------------------------------------------------------------------
 
 type uintSer struct{}
 

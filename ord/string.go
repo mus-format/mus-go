@@ -84,7 +84,7 @@ func (s stringSer) Skip(bs []byte) (n int, err error) {
 	return SkipString(s.lenSer, bs)
 }
 
-// -----------------------------------------------------------------------------
+// valid -----------------------------------------------------------------------
 
 type validStringSer struct {
 	stringSer

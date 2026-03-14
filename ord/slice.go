@@ -89,7 +89,7 @@ func (s sliceSer[T]) Skip(bs []byte) (n int, err error) {
 	return SkipSlice(bs, s.ElemSer, s.LenSer)
 }
 
-// -----------------------------------------------------------------------------
+// valid -----------------------------------------------------------------------
 
 type validSliceSer[T any] struct {
 	sliceSer[T]
@@ -108,7 +108,8 @@ func (s validSliceSer[T]) Unmarshal(bs []byte) (v []T, n int, err error) {
 }
 
 func MarshalSlice[T any](v []T, elemSer mus.Serializer[T],
-	lenSer mus.Serializer[int], bs []byte) (n int) {
+	lenSer mus.Serializer[int], bs []byte,
+) (n int) {
 	n = lenSer.Marshal(len(v), bs)
 	for _, e := range v {
 		n += elemSer.Marshal(e, bs[n:])
@@ -117,7 +118,8 @@ func MarshalSlice[T any](v []T, elemSer mus.Serializer[T],
 }
 
 func UnmarshalSlice[T any](bs []byte, elemSer mus.Serializer[T],
-	lenSer mus.Serializer[int]) (v []T, n int, err error) {
+	lenSer mus.Serializer[int],
+) (v []T, n int, err error) {
 	length, n, err := lenSer.Unmarshal(bs)
 	if err != nil {
 		return
@@ -143,7 +145,8 @@ func UnmarshalSlice[T any](bs []byte, elemSer mus.Serializer[T],
 }
 
 func SizeSlice[T any](v []T, elemSer mus.Serializer[T],
-	lenSer mus.Serializer[int]) (size int) {
+	lenSer mus.Serializer[int],
+) (size int) {
 	length := len(v)
 	size = lenSer.Size(length)
 	for i := 0; i < length; i++ {
@@ -153,7 +156,8 @@ func SizeSlice[T any](v []T, elemSer mus.Serializer[T],
 }
 
 func SkipSlice[T any](bs []byte, elemSer mus.Serializer[T],
-	lenSer mus.Serializer[int]) (n int, err error) {
+	lenSer mus.Serializer[int],
+) (n int, err error) {
 	length, n, err := lenSer.Unmarshal(bs)
 	if err != nil {
 		return
@@ -175,7 +179,8 @@ func SkipSlice[T any](bs []byte, elemSer mus.Serializer[T],
 
 func UnmarshalValidSlice[T any](bs []byte, elemSer mus.Serializer[T],
 	lenSer mus.Serializer[int], lenVl com.Validator[int],
-	elemVl com.Validator[T]) (v []T, n int, err error) {
+	elemVl com.Validator[T],
+) (v []T, n int, err error) {
 	length, n, err := lenSer.Unmarshal(bs)
 	if err != nil {
 		return
