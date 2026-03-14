@@ -1,6 +1,6 @@
 module github.com/mus-format/mus-go
 
-go 1.20
+go 1.24
 
 require (
 	github.com/mus-format/common-go v0.0.0-20260225152706-590b1bf7cb37
