@@ -10,14 +10,14 @@ import (
 
 func TestIntegrationUnsafe(t *testing.T) {
 	t.Run("array", func(t *testing.T) {
-		ser := NewArraySer[[3]int, int](varint.Int)
-		testutil.Test[[3]int](ctestutil.ArrayTestCases, ser, t)
-		testutil.TestSkip[[3]int](ctestutil.ArrayTestCases, ser, t)
+		ser := NewArraySer[[3]int](varint.Int)
+		testutil.Test(ctestutil.ArrayTestCases, ser, t)
+		testutil.TestSkip(ctestutil.ArrayTestCases, ser, t)
 	})
 
 	t.Run("valid array", func(t *testing.T) {
-		ser := NewValidArraySer[[3]int, int](varint.Int, nil)
-		testutil.Test[[3]int](ctestutil.ArrayTestCases, ser, t)
-		testutil.TestSkip[[3]int](ctestutil.ArrayTestCases, ser, t)
+		ser := NewValidArraySer[[3]int](varint.Int, nil)
+		testutil.Test(ctestutil.ArrayTestCases, ser, t)
+		testutil.TestSkip(ctestutil.ArrayTestCases, ser, t)
 	})
 }

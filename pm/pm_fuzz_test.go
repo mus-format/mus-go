@@ -28,8 +28,8 @@ func FuzzPtr(f *testing.F) {
 		var (
 			ptrMap    = com.NewPtrMap()
 			revPtrMap = com.NewReversePtrMap()
-			pSer      = NewPtrSer[int](ptrMap, revPtrMap, varint.Int)
-			ser       = Wrap[*int](ptrMap, revPtrMap, pSer)
+			pSer      = NewPtrSer(ptrMap, revPtrMap, varint.Int)
+			ser       = Wrap(ptrMap, revPtrMap, pSer)
 			values    = make([]int, valuesCount)
 			ptrs      = make([]*int, ptrsCount)
 		)
@@ -47,8 +47,8 @@ func FuzzPtr(f *testing.F) {
 		}
 
 		for _, p := range ptrs {
-			testutil.Test[*int]([]*int{p}, ser, t)
-			testutil.TestSkip[*int]([]*int{p}, ser, t)
+			testutil.Test([]*int{p}, ser, t)
+			testutil.TestSkip([]*int{p}, ser, t)
 		}
 	})
 }
@@ -58,8 +58,8 @@ func FuzzPtrUnmarshal(f *testing.F) {
 		var (
 			ptrMap    = com.NewPtrMap()
 			revPtrMap = com.NewReversePtrMap()
-			pSer      = NewPtrSer[int](ptrMap, revPtrMap, varint.Int)
-			ser       = Wrap[*int](ptrMap, revPtrMap, pSer)
+			pSer      = NewPtrSer(ptrMap, revPtrMap, varint.Int)
+			ser       = Wrap(ptrMap, revPtrMap, pSer)
 		)
 		ser.Unmarshal(bs)
 		ser.Skip(bs)
@@ -122,10 +122,10 @@ func FuzzWrap(f *testing.F) {
 			ptrMap    = com.NewPtrMap()
 			revPtrMap = com.NewReversePtrMap()
 			nSer      = &nodeSer{}
-			pSer      = NewPtrSer[node](ptrMap, revPtrMap, nSer)
+			pSer      = NewPtrSer(ptrMap, revPtrMap, nSer)
 		)
 		nSer.ptrSer = pSer
-		ser := Wrap[*node](ptrMap, revPtrMap, pSer)
+		ser := Wrap(ptrMap, revPtrMap, pSer)
 
 		var head *node
 		if length > 0 {
@@ -140,8 +140,8 @@ func FuzzWrap(f *testing.F) {
 			}
 		}
 
-		testutil.Test[*node]([]*node{head}, ser, t)
-		testutil.TestSkip[*node]([]*node{head}, ser, t)
+		testutil.Test([]*node{head}, ser, t)
+		testutil.TestSkip([]*node{head}, ser, t)
 	})
 }
 
@@ -151,10 +151,10 @@ func FuzzWrapUnmarshal(f *testing.F) {
 			ptrMap    = com.NewPtrMap()
 			revPtrMap = com.NewReversePtrMap()
 			nSer      = &nodeSer{}
-			pSer      = NewPtrSer[node](ptrMap, revPtrMap, nSer)
+			pSer      = NewPtrSer(ptrMap, revPtrMap, nSer)
 		)
 		nSer.ptrSer = pSer
-		ser := Wrap[*node](ptrMap, revPtrMap, pSer)
+		ser := Wrap(ptrMap, revPtrMap, pSer)
 
 		ser.Unmarshal(bs)
 		ser.Skip(bs)

@@ -22,8 +22,8 @@ func TestWrapper(t *testing.T) {
 				revPtrMap   = com.NewReversePtrMap()
 				w           = Wrap(ptrMap, revPtrMap, newPtrStructSer(ptrMap, revPtrMap, baseSer))
 			)
-			testutil.Test[ctestutil.PtrStruct]([]ctestutil.PtrStruct{st}, w, t)
-			testutil.TestSkip[ctestutil.PtrStruct]([]ctestutil.PtrStruct{st}, w, t)
+			testutil.Test([]ctestutil.PtrStruct{st}, w, t)
+			testutil.TestSkip([]ctestutil.PtrStruct{st}, w, t)
 		})
 
 	t.Run("Marshal should call ser.Marshal and empty the ptrMap",
@@ -42,7 +42,7 @@ func TestWrapper(t *testing.T) {
 						return
 					},
 				)
-				ser   = Wrap[byte](ptrMap, nil, ptrSer)
+				ser   = Wrap(ptrMap, nil, ptrSer)
 				mocks = []*mok.Mock{ptrSer.Mock}
 			)
 			n := ser.Marshal(wantV, nil)
@@ -75,7 +75,7 @@ func TestWrapper(t *testing.T) {
 						return
 					},
 				)
-				ser   = Wrap[byte](nil, revPtrMap, ptrSer)
+				ser   = Wrap(nil, revPtrMap, ptrSer)
 				mocks = []*mok.Mock{ptrSer.Mock}
 			)
 			v, n, err := ser.Unmarshal([]byte{wantV})
@@ -108,7 +108,7 @@ func TestWrapper(t *testing.T) {
 						return wantSize
 					},
 				)
-				ser   = Wrap[byte](ptrMap, nil, ptrSer)
+				ser   = Wrap(ptrMap, nil, ptrSer)
 				mocks = []*mok.Mock{ptrSer.Mock}
 			)
 			size := ser.Size(wantV)
@@ -141,7 +141,7 @@ func TestWrapper(t *testing.T) {
 						return
 					},
 				)
-				ser   = Wrap[byte](nil, revPtrMap, ptrSer)
+				ser   = Wrap(nil, revPtrMap, ptrSer)
 				mocks = []*mok.Mock{ptrSer.Mock}
 			)
 			n, err := ser.Skip([]byte{wantV})
@@ -163,7 +163,7 @@ func TestWrapper(t *testing.T) {
 func newPtrStructSer(ptrMap *com.PtrMap, revPtrMap *com.ReversePtrMap,
 	baseSer mus.Serializer[int],
 ) mus.Serializer[ctestutil.PtrStruct] {
-	return ptrStructSer{NewPtrSer[int](ptrMap, revPtrMap, baseSer)}
+	return ptrStructSer{NewPtrSer(ptrMap, revPtrMap, baseSer)}
 }
 
 type ptrStructSer struct {

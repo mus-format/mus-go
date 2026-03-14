@@ -15,8 +15,8 @@ func FuzzByte(f *testing.F) {
 		f.Add(seed)
 	}
 	f.Fuzz(func(t *testing.T, v byte) {
-		testutil.Test[byte]([]byte{v}, Byte, t)
-		testutil.TestSkip[byte]([]byte{v}, Byte, t)
+		testutil.Test([]byte{v}, Byte, t)
+		testutil.TestSkip([]byte{v}, Byte, t)
 	})
 }
 
@@ -35,8 +35,8 @@ func FuzzUint64(f *testing.F) {
 		f.Add(seed)
 	}
 	f.Fuzz(func(t *testing.T, v uint64) {
-		testutil.Test[uint64]([]uint64{v}, Uint64, t)
-		testutil.TestSkip[uint64]([]uint64{v}, Uint64, t)
+		testutil.Test([]uint64{v}, Uint64, t)
+		testutil.TestSkip([]uint64{v}, Uint64, t)
 	})
 }
 
@@ -55,8 +55,8 @@ func FuzzUint32(f *testing.F) {
 		f.Add(seed)
 	}
 	f.Fuzz(func(t *testing.T, v uint32) {
-		testutil.Test[uint32]([]uint32{v}, Uint32, t)
-		testutil.TestSkip[uint32]([]uint32{v}, Uint32, t)
+		testutil.Test([]uint32{v}, Uint32, t)
+		testutil.TestSkip([]uint32{v}, Uint32, t)
 	})
 }
 
@@ -75,8 +75,8 @@ func FuzzUint16(f *testing.F) {
 		f.Add(seed)
 	}
 	f.Fuzz(func(t *testing.T, v uint16) {
-		testutil.Test[uint16]([]uint16{v}, Uint16, t)
-		testutil.TestSkip[uint16]([]uint16{v}, Uint16, t)
+		testutil.Test([]uint16{v}, Uint16, t)
+		testutil.TestSkip([]uint16{v}, Uint16, t)
 	})
 }
 
@@ -95,8 +95,8 @@ func FuzzUint8(f *testing.F) {
 		f.Add(seed)
 	}
 	f.Fuzz(func(t *testing.T, v uint8) {
-		testutil.Test[uint8]([]uint8{v}, Uint8, t)
-		testutil.TestSkip[uint8]([]uint8{v}, Uint8, t)
+		testutil.Test([]uint8{v}, Uint8, t)
+		testutil.TestSkip([]uint8{v}, Uint8, t)
 	})
 }
 
@@ -115,8 +115,8 @@ func FuzzUint(f *testing.F) {
 		f.Add(seed)
 	}
 	f.Fuzz(func(t *testing.T, v uint) {
-		testutil.Test[uint]([]uint{v}, Uint, t)
-		testutil.TestSkip[uint]([]uint{v}, Uint, t)
+		testutil.Test([]uint{v}, Uint, t)
+		testutil.TestSkip([]uint{v}, Uint, t)
 	})
 }
 
@@ -135,8 +135,8 @@ func FuzzInt64(f *testing.F) {
 		f.Add(seed)
 	}
 	f.Fuzz(func(t *testing.T, v int64) {
-		testutil.Test[int64]([]int64{v}, Int64, t)
-		testutil.TestSkip[int64]([]int64{v}, Int64, t)
+		testutil.Test([]int64{v}, Int64, t)
+		testutil.TestSkip([]int64{v}, Int64, t)
 	})
 }
 
@@ -155,8 +155,8 @@ func FuzzInt32(f *testing.F) {
 		f.Add(seed)
 	}
 	f.Fuzz(func(t *testing.T, v int32) {
-		testutil.Test[int32]([]int32{v}, Int32, t)
-		testutil.TestSkip[int32]([]int32{v}, Int32, t)
+		testutil.Test([]int32{v}, Int32, t)
+		testutil.TestSkip([]int32{v}, Int32, t)
 	})
 }
 
@@ -175,8 +175,8 @@ func FuzzInt16(f *testing.F) {
 		f.Add(seed)
 	}
 	f.Fuzz(func(t *testing.T, v int16) {
-		testutil.Test[int16]([]int16{v}, Int16, t)
-		testutil.TestSkip[int16]([]int16{v}, Int16, t)
+		testutil.Test([]int16{v}, Int16, t)
+		testutil.TestSkip([]int16{v}, Int16, t)
 	})
 }
 
@@ -195,8 +195,8 @@ func FuzzInt8(f *testing.F) {
 		f.Add(seed)
 	}
 	f.Fuzz(func(t *testing.T, v int8) {
-		testutil.Test[int8]([]int8{v}, Int8, t)
-		testutil.TestSkip[int8]([]int8{v}, Int8, t)
+		testutil.Test([]int8{v}, Int8, t)
+		testutil.TestSkip([]int8{v}, Int8, t)
 	})
 }
 
@@ -215,8 +215,8 @@ func FuzzInt(f *testing.F) {
 		f.Add(seed)
 	}
 	f.Fuzz(func(t *testing.T, v int) {
-		testutil.Test[int]([]int{v}, Int, t)
-		testutil.TestSkip[int]([]int{v}, Int, t)
+		testutil.Test([]int{v}, Int, t)
+		testutil.TestSkip([]int{v}, Int, t)
 	})
 }
 
@@ -235,8 +235,8 @@ func FuzzFloat64(f *testing.F) {
 		f.Add(seed)
 	}
 	f.Fuzz(func(t *testing.T, v float64) {
-		testutil.Test[float64]([]float64{v}, Float64, t)
-		testutil.TestSkip[float64]([]float64{v}, Float64, t)
+		testutil.Test([]float64{v}, Float64, t)
+		testutil.TestSkip([]float64{v}, Float64, t)
 	})
 }
 
@@ -255,8 +255,8 @@ func FuzzFloat32(f *testing.F) {
 		f.Add(seed)
 	}
 	f.Fuzz(func(t *testing.T, v float32) {
-		testutil.Test[float32]([]float32{v}, Float32, t)
-		testutil.TestSkip[float32]([]float32{v}, Float32, t)
+		testutil.Test([]float32{v}, Float32, t)
+		testutil.TestSkip([]float32{v}, Float32, t)
 	})
 }
 
@@ -272,32 +272,32 @@ func FuzzFloat32Unmarshal(f *testing.F) {
 func FuzzTimeUnixUTC(f *testing.F) {
 	f.Fuzz(func(t *testing.T, sec int64) {
 		v := time.Unix(sec, 0).UTC()
-		testutil.Test[time.Time]([]time.Time{v}, TimeUnixUTC, t)
-		testutil.TestSkip[time.Time]([]time.Time{v}, TimeUnixUTC, t)
+		testutil.Test([]time.Time{v}, TimeUnixUTC, t)
+		testutil.TestSkip([]time.Time{v}, TimeUnixUTC, t)
 	})
 }
 
 func FuzzTimeUnixMilliUTC(f *testing.F) {
 	f.Fuzz(func(t *testing.T, milli int64) {
 		v := time.UnixMilli(milli).UTC()
-		testutil.Test[time.Time]([]time.Time{v}, TimeUnixMilliUTC, t)
-		testutil.TestSkip[time.Time]([]time.Time{v}, TimeUnixMilliUTC, t)
+		testutil.Test([]time.Time{v}, TimeUnixMilliUTC, t)
+		testutil.TestSkip([]time.Time{v}, TimeUnixMilliUTC, t)
 	})
 }
 
 func FuzzTimeUnixMicroUTC(f *testing.F) {
 	f.Fuzz(func(t *testing.T, micro int64) {
 		v := time.UnixMicro(micro).UTC()
-		testutil.Test[time.Time]([]time.Time{v}, TimeUnixMicroUTC, t)
-		testutil.TestSkip[time.Time]([]time.Time{v}, TimeUnixMicroUTC, t)
+		testutil.Test([]time.Time{v}, TimeUnixMicroUTC, t)
+		testutil.TestSkip([]time.Time{v}, TimeUnixMicroUTC, t)
 	})
 }
 
 func FuzzTimeUnixNanoUTC(f *testing.F) {
 	f.Fuzz(func(t *testing.T, nano int64) {
 		v := time.Unix(0, nano).UTC()
-		testutil.Test[time.Time]([]time.Time{v}, TimeUnixNanoUTC, t)
-		testutil.TestSkip[time.Time]([]time.Time{v}, TimeUnixNanoUTC, t)
+		testutil.Test([]time.Time{v}, TimeUnixNanoUTC, t)
+		testutil.TestSkip([]time.Time{v}, TimeUnixNanoUTC, t)
 	})
 }
 

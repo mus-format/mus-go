@@ -172,8 +172,8 @@ func TestUnsafe(t *testing.T) {
 		t.Run("String serializer should work correctly",
 			func(t *testing.T) {
 				ser := String
-				testutil.Test[string](ctestutil.StringTestCases, ser, t)
-				testutil.TestSkip[string](ctestutil.StringTestCases, ser, t)
+				testutil.Test(ctestutil.StringTestCases, ser, t)
+				testutil.TestSkip(ctestutil.StringTestCases, ser, t)
 			})
 
 		t.Run("We should be able to set a length serializer",
@@ -182,8 +182,8 @@ func TestUnsafe(t *testing.T) {
 					str, lenSer = testutil.StringLenTestData(t)
 					ser         = NewStringSer(strops.WithLenSer(lenSer))
 				)
-				testutil.Test[string]([]string{str}, ser, t)
-				testutil.TestSkip[string]([]string{str}, ser, t)
+				testutil.Test([]string{str}, ser, t)
+				testutil.TestSkip([]string{str}, ser, t)
 			})
 
 		t.Run("Marshal should return ErrTooSmallByteSlice if there is no space in bs",
@@ -243,8 +243,8 @@ func TestUnsafe(t *testing.T) {
 		t.Run("String serializer should work correctly",
 			func(t *testing.T) {
 				ser := NewValidStringSer(nil)
-				testutil.Test[string](ctestutil.StringTestCases, ser, t)
-				testutil.TestSkip[string](ctestutil.StringTestCases, ser, t)
+				testutil.Test(ctestutil.StringTestCases, ser, t)
+				testutil.TestSkip(ctestutil.StringTestCases, ser, t)
 			})
 
 		t.Run("If lenSer fails to unmarshal length, Unmarshal should return an error",
@@ -326,72 +326,72 @@ func TestUnsafe(t *testing.T) {
 		t.Run("Byte serializer should work correctly",
 			func(t *testing.T) {
 				ser := Byte
-				testutil.Test[byte](ctestutil.ByteTestCases, ser, t)
-				testutil.TestSkip[byte](ctestutil.ByteTestCases, ser, t)
+				testutil.Test(ctestutil.ByteTestCases, ser, t)
+				testutil.TestSkip(ctestutil.ByteTestCases, ser, t)
 			})
 	})
 
 	t.Run("unsigned", func(t *testing.T) {
 		t.Run("Uint64 serializer should work correctly", func(t *testing.T) {
 			ser := Uint64
-			testutil.Test[uint64](ctestutil.Uint64TestCases, ser, t)
-			testutil.TestSkip[uint64](ctestutil.Uint64TestCases, ser, t)
+			testutil.Test(ctestutil.Uint64TestCases, ser, t)
+			testutil.TestSkip(ctestutil.Uint64TestCases, ser, t)
 		})
 
 		t.Run("Uint32 serializer should work correctly", func(t *testing.T) {
 			ser := Uint32
-			testutil.Test[uint32](ctestutil.Uint32TestCases, ser, t)
-			testutil.TestSkip[uint32](ctestutil.Uint32TestCases, ser, t)
+			testutil.Test(ctestutil.Uint32TestCases, ser, t)
+			testutil.TestSkip(ctestutil.Uint32TestCases, ser, t)
 		})
 
 		t.Run("Uint16 serializer should work correctly", func(t *testing.T) {
 			ser := Uint16
-			testutil.Test[uint16](ctestutil.Uint16TestCases, ser, t)
-			testutil.TestSkip[uint16](ctestutil.Uint16TestCases, ser, t)
+			testutil.Test(ctestutil.Uint16TestCases, ser, t)
+			testutil.TestSkip(ctestutil.Uint16TestCases, ser, t)
 		})
 
 		t.Run("Uint8 serializer should work correctly", func(t *testing.T) {
 			ser := Uint8
-			testutil.Test[uint8](ctestutil.Uint8TestCases, ser, t)
-			testutil.TestSkip[uint8](ctestutil.Uint8TestCases, ser, t)
+			testutil.Test(ctestutil.Uint8TestCases, ser, t)
+			testutil.TestSkip(ctestutil.Uint8TestCases, ser, t)
 		})
 
 		t.Run("Uint serializer should work correctly", func(t *testing.T) {
 			ser := Uint
-			testutil.Test[uint](ctestutil.UintTestCases, ser, t)
-			testutil.TestSkip[uint](ctestutil.UintTestCases, ser, t)
+			testutil.Test(ctestutil.UintTestCases, ser, t)
+			testutil.TestSkip(ctestutil.UintTestCases, ser, t)
 		})
 	})
 
 	t.Run("signed", func(t *testing.T) {
 		t.Run("Int64 serializer should work correctly", func(t *testing.T) {
 			ser := Int64
-			testutil.Test[int64](ctestutil.Int64TestCases, ser, t)
-			testutil.TestSkip[int64](ctestutil.Int64TestCases, ser, t)
+			testutil.Test(ctestutil.Int64TestCases, ser, t)
+			testutil.TestSkip(ctestutil.Int64TestCases, ser, t)
 		})
 
 		t.Run("Int32 serializer should work correctly", func(t *testing.T) {
 			ser := Int32
-			testutil.Test[int32](ctestutil.Int32TestCases, ser, t)
-			testutil.TestSkip[int32](ctestutil.Int32TestCases, ser, t)
+			testutil.Test(ctestutil.Int32TestCases, ser, t)
+			testutil.TestSkip(ctestutil.Int32TestCases, ser, t)
 		})
 
 		t.Run("Int16 serializer should work correctly", func(t *testing.T) {
 			ser := Int16
-			testutil.Test[int16](ctestutil.Int16TestCases, ser, t)
-			testutil.TestSkip[int16](ctestutil.Int16TestCases, ser, t)
+			testutil.Test(ctestutil.Int16TestCases, ser, t)
+			testutil.TestSkip(ctestutil.Int16TestCases, ser, t)
 		})
 
 		t.Run("Int8 serializer should work correctly", func(t *testing.T) {
 			ser := Int8
-			testutil.Test[int8](ctestutil.Int8TestCases, ser, t)
-			testutil.TestSkip[int8](ctestutil.Int8TestCases, ser, t)
+			testutil.Test(ctestutil.Int8TestCases, ser, t)
+			testutil.TestSkip(ctestutil.Int8TestCases, ser, t)
 		})
 
 		t.Run("Int serializer should work correctly", func(t *testing.T) {
 			ser := Int
-			testutil.Test[int](ctestutil.IntTestCases, ser, t)
-			testutil.TestSkip[int](ctestutil.IntTestCases, ser, t)
+			testutil.Test(ctestutil.IntTestCases, ser, t)
+			testutil.TestSkip(ctestutil.IntTestCases, ser, t)
 		})
 	})
 
@@ -399,8 +399,8 @@ func TestUnsafe(t *testing.T) {
 		t.Run("float64", func(t *testing.T) {
 			t.Run("Float64 serializer should work correctly", func(t *testing.T) {
 				ser := Float64
-				testutil.Test[float64](ctestutil.Float64TestCases, ser, t)
-				testutil.TestSkip[float64](ctestutil.Float64TestCases, ser, t)
+				testutil.Test(ctestutil.Float64TestCases, ser, t)
+				testutil.TestSkip(ctestutil.Float64TestCases, ser, t)
 			})
 
 			t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
@@ -419,8 +419,8 @@ func TestUnsafe(t *testing.T) {
 		t.Run("float32", func(t *testing.T) {
 			t.Run("Float32 serializer should work correctly", func(t *testing.T) {
 				ser := Float32
-				testutil.Test[float32](ctestutil.Float32TestCases, ser, t)
-				testutil.TestSkip[float32](ctestutil.Float32TestCases, ser, t)
+				testutil.Test(ctestutil.Float32TestCases, ser, t)
+				testutil.TestSkip(ctestutil.Float32TestCases, ser, t)
 			})
 
 			t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
@@ -440,8 +440,8 @@ func TestUnsafe(t *testing.T) {
 	t.Run("bool", func(t *testing.T) {
 		t.Run("Bool serializer should work correctly", func(t *testing.T) {
 			ser := Bool
-			testutil.Test[bool](ctestutil.BoolTestCases, ser, t)
-			testutil.TestSkip[bool](ctestutil.BoolTestCases, ser, t)
+			testutil.Test(ctestutil.BoolTestCases, ser, t)
+			testutil.TestSkip(ctestutil.BoolTestCases, ser, t)
 		})
 
 		t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
@@ -473,15 +473,15 @@ func TestUnsafe(t *testing.T) {
 		t.Run("ByteSlice serializer should work correctly with empty slice",
 			func(t *testing.T) {
 				ser := ByteSlice
-				testutil.Test[[]byte]([][]byte{{}}, ser, t)
-				testutil.TestSkip[[]byte]([][]byte{{}}, ser, t)
+				testutil.Test([][]byte{{}}, ser, t)
+				testutil.TestSkip([][]byte{{}}, ser, t)
 			})
 
 		t.Run("ByteSlice serializer should work correctly with non-empty slice",
 			func(t *testing.T) {
 				ser := ByteSlice
-				testutil.Test[[]byte]([][]byte{{0, 1, 1, 255, 100, 0, 1, 10}}, ser, t)
-				testutil.TestSkip[[]byte]([][]byte{{0, 1, 1, 255, 100, 0, 1, 10}}, ser, t)
+				testutil.Test([][]byte{{0, 1, 1, 255, 100, 0, 1, 10}}, ser, t)
+				testutil.TestSkip([][]byte{{0, 1, 1, 255, 100, 0, 1, 10}}, ser, t)
 			})
 
 		t.Run("We should be able to set a length serializer", func(t *testing.T) {
@@ -489,8 +489,8 @@ func TestUnsafe(t *testing.T) {
 				sl, lenSer = testutil.ByteSliceLenTestData(t)
 				ser        = NewByteSliceSer(bslops.WithLenSer(lenSer))
 			)
-			testutil.Test[[]byte]([][]byte{sl}, ser, t)
-			testutil.TestSkip[[]byte]([][]byte{sl}, ser, t)
+			testutil.Test([][]byte{sl}, ser, t)
+			testutil.TestSkip([][]byte{sl}, ser, t)
 		})
 
 		t.Run("Marshal should return ErrTooSmallByteSlice if there is no space in bs",
@@ -568,15 +568,15 @@ func TestUnsafe(t *testing.T) {
 		t.Run("Valid ByteSlice serializer should work correctly with empty slice",
 			func(t *testing.T) {
 				ser := NewValidByteSliceSer(nil)
-				testutil.Test[[]byte]([][]byte{{}}, ser, t)
-				testutil.TestSkip[[]byte]([][]byte{{}}, ser, t)
+				testutil.Test([][]byte{{}}, ser, t)
+				testutil.TestSkip([][]byte{{}}, ser, t)
 			})
 
 		t.Run("Valid ByteSlice serializer should work correctly with non-empty slice",
 			func(t *testing.T) {
 				ser := NewValidByteSliceSer(nil)
-				testutil.Test[[]byte]([][]byte{{0, 1, 1, 255, 100, 0, 1, 10}}, ser, t)
-				testutil.TestSkip[[]byte]([][]byte{{0, 1, 1, 255, 100, 0, 1, 10}}, ser, t)
+				testutil.Test([][]byte{{0, 1, 1, 255, 100, 0, 1, 10}}, ser, t)
+				testutil.TestSkip([][]byte{{0, 1, 1, 255, 100, 0, 1, 10}}, ser, t)
 			})
 
 		t.Run("If lenSer fails with an error, valid Unmarshal should return it",
@@ -647,14 +647,14 @@ func TestUnsafe(t *testing.T) {
 						sec = time.Now().Unix()
 						tm  = time.Unix(sec, 0)
 					)
-					testutil.Test[time.Time]([]time.Time{tm}, TimeUnixUTC, t)
-					testutil.TestSkip[time.Time]([]time.Time{tm}, TimeUnix, t)
+					testutil.Test([]time.Time{tm}, TimeUnixUTC, t)
+					testutil.TestSkip([]time.Time{tm}, TimeUnix, t)
 				})
 
 			t.Run("We should be able to serializer the zero Time",
 				func(t *testing.T) {
-					testutil.Test[time.Time]([]time.Time{{}}, TimeUnixUTC, t)
-					testutil.TestSkip[time.Time]([]time.Time{{}}, TimeUnixUTC, t)
+					testutil.Test([]time.Time{{}}, TimeUnixUTC, t)
+					testutil.TestSkip([]time.Time{{}}, TimeUnixUTC, t)
 				})
 
 			t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
@@ -678,14 +678,14 @@ func TestUnsafe(t *testing.T) {
 						milli = time.Now().UnixMilli()
 						tm    = time.UnixMilli(milli)
 					)
-					testutil.Test[time.Time]([]time.Time{tm}, TimeUnixMilliUTC, t)
-					testutil.TestSkip[time.Time]([]time.Time{tm}, TimeUnixMilliUTC, t)
+					testutil.Test([]time.Time{tm}, TimeUnixMilliUTC, t)
+					testutil.TestSkip([]time.Time{tm}, TimeUnixMilliUTC, t)
 				})
 
 			t.Run("We should be able to serializer the zero Time",
 				func(t *testing.T) {
-					testutil.Test[time.Time]([]time.Time{{}}, TimeUnixMilliUTC, t)
-					testutil.TestSkip[time.Time]([]time.Time{{}}, TimeUnixMilliUTC, t)
+					testutil.Test([]time.Time{{}}, TimeUnixMilliUTC, t)
+					testutil.TestSkip([]time.Time{{}}, TimeUnixMilliUTC, t)
 				})
 
 			t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
@@ -709,14 +709,14 @@ func TestUnsafe(t *testing.T) {
 						milli = time.Now().UnixMicro()
 						tm    = time.UnixMicro(milli)
 					)
-					testutil.Test[time.Time]([]time.Time{tm}, TimeUnixMicroUTC, t)
-					testutil.TestSkip[time.Time]([]time.Time{tm}, TimeUnixMicroUTC, t)
+					testutil.Test([]time.Time{tm}, TimeUnixMicroUTC, t)
+					testutil.TestSkip([]time.Time{tm}, TimeUnixMicroUTC, t)
 				})
 
 			t.Run("We should be able to serializer the zero Time",
 				func(t *testing.T) {
-					testutil.Test[time.Time]([]time.Time{{}}, TimeUnixMicroUTC, t)
-					testutil.TestSkip[time.Time]([]time.Time{{}}, TimeUnixMicroUTC, t)
+					testutil.Test([]time.Time{{}}, TimeUnixMicroUTC, t)
+					testutil.TestSkip([]time.Time{{}}, TimeUnixMicroUTC, t)
 				})
 
 			t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
@@ -740,8 +740,8 @@ func TestUnsafe(t *testing.T) {
 						nano = time.Now().UnixNano()
 						tm   = time.Unix(0, nano)
 					)
-					testutil.Test[time.Time]([]time.Time{tm}, TimeUnixNanoUTC, t)
-					testutil.TestSkip[time.Time]([]time.Time{tm}, TimeUnixNanoUTC, t)
+					testutil.Test([]time.Time{tm}, TimeUnixNanoUTC, t)
+					testutil.TestSkip([]time.Time{tm}, TimeUnixNanoUTC, t)
 				})
 
 			t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
@@ -764,10 +764,10 @@ func TestUnsafe(t *testing.T) {
 			var (
 				arr, elemSer = testutil.ArrayTestData(t)
 				mocks        = []*mok.Mock{elemSer.Mock}
-				ser          = NewArraySer[[3]int, int](elemSer)
+				ser          = NewArraySer[[3]int](elemSer)
 			)
-			testutil.Test[[3]int]([][3]int{arr}, ser, t)
-			testutil.TestSkip[[3]int]([][3]int{arr}, ser, t)
+			testutil.Test([][3]int{arr}, ser, t)
+			testutil.TestSkip([][3]int{arr}, ser, t)
 
 			if infomap := mok.CheckCalls(mocks); len(infomap) > 0 {
 				t.Error(infomap)
@@ -791,10 +791,10 @@ func TestUnsafe(t *testing.T) {
 			var (
 				arr, elemSer = testutil.ArrayTestData(t)
 				mocks        = []*mok.Mock{elemSer.Mock}
-				ser          = NewValidArraySer[[3]int, int](elemSer, nil)
+				ser          = NewValidArraySer[[3]int](elemSer, nil)
 			)
-			testutil.Test[[3]int]([][3]int{arr}, ser, t)
-			testutil.TestSkip[[3]int]([][3]int{arr}, ser, t)
+			testutil.Test([][3]int{arr}, ser, t)
+			testutil.TestSkip([][3]int{arr}, ser, t)
 
 			if infomap := mok.CheckCalls(mocks); len(infomap) > 0 {
 				t.Error(infomap)
@@ -835,7 +835,7 @@ func TestUnsafe(t *testing.T) {
 							return wantErr
 						},
 					)
-					ser   = NewValidArraySer[[3]int, int](elemSer, arrops.WithElemValidator[int](elemVl))
+					ser   = NewValidArraySer[[3]int](elemSer, arrops.WithElemValidator[int](elemVl))
 					mocks = []*mok.Mock{elemSer.Mock, elemVl.Mock}
 				)
 				v, n, err := ser.Unmarshal(bs)
@@ -847,20 +847,20 @@ func TestUnsafe(t *testing.T) {
 			var (
 				arr, elemSer = testutil.ArrayTestData(t)
 				_, lenSer    = testutil.ArrayLenTestData(t)
-				ser          = NewArraySer[[3]int, int](elemSer, arrops.WithLenSer[int](lenSer))
+				ser          = NewArraySer[[3]int](elemSer, arrops.WithLenSer[int](lenSer))
 			)
-			testutil.Test[[3]int]([][3]int{arr}, ser, t)
-			testutil.TestSkip[[3]int]([][3]int{arr}, ser, t)
+			testutil.Test([][3]int{arr}, ser, t)
+			testutil.TestSkip([][3]int{arr}, ser, t)
 		})
 
 		t.Run("Valid array: We should be able to set a length serializer", func(t *testing.T) {
 			var (
 				arr, elemSer = testutil.ArrayTestData(t)
 				_, lenSer    = testutil.ArrayLenTestData(t)
-				ser          = NewValidArraySer[[3]int, int](elemSer, arrops.WithLenSer[int](lenSer))
+				ser          = NewValidArraySer[[3]int](elemSer, arrops.WithLenSer[int](lenSer))
 			)
-			testutil.Test[[3]int]([][3]int{arr}, ser, t)
-			testutil.TestSkip[[3]int]([][3]int{arr}, ser, t)
+			testutil.Test([][3]int{arr}, ser, t)
+			testutil.TestSkip([][3]int{arr}, ser, t)
 		})
 	})
 }

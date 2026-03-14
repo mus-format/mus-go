@@ -25,8 +25,8 @@ func TestOrd(t *testing.T) {
 		t.Run("Bool serializer should work correctly",
 			func(t *testing.T) {
 				ser := Bool
-				testutil.Test[bool](ctestutil.BoolTestCases, ser, t)
-				testutil.TestSkip[bool](ctestutil.BoolTestCases, ser, t)
+				testutil.Test(ctestutil.BoolTestCases, ser, t)
+				testutil.TestSkip(ctestutil.BoolTestCases, ser, t)
 			})
 
 		t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
@@ -80,8 +80,8 @@ func TestOrd(t *testing.T) {
 		t.Run("String serializer should work correctly",
 			func(t *testing.T) {
 				ser := String
-				testutil.Test[string](ctestutil.StringTestCases, ser, t)
-				testutil.TestSkip[string](ctestutil.StringTestCases, ser, t)
+				testutil.Test(ctestutil.StringTestCases, ser, t)
+				testutil.TestSkip(ctestutil.StringTestCases, ser, t)
 			})
 
 		t.Run("We should be able to set a length serializer",
@@ -90,8 +90,8 @@ func TestOrd(t *testing.T) {
 					str, lenSer = testutil.StringLenTestData(t)
 					ser         = NewStringSer(strops.WithLenSer(lenSer))
 				)
-				testutil.Test[string]([]string{str}, ser, t)
-				testutil.TestSkip[string]([]string{str}, ser, t)
+				testutil.Test([]string{str}, ser, t)
+				testutil.TestSkip([]string{str}, ser, t)
 			})
 
 		t.Run("Marshal should panic with ErrTooSmallByteSlice if there is no space in bs",
@@ -182,15 +182,15 @@ func TestOrd(t *testing.T) {
 		t.Run("Valid string serializer should work correctly",
 			func(t *testing.T) {
 				ser := NewValidStringSer(nil)
-				testutil.Test[string](ctestutil.StringTestCases, ser, t)
-				testutil.TestSkip[string](ctestutil.StringTestCases, ser, t)
+				testutil.Test(ctestutil.StringTestCases, ser, t)
+				testutil.TestSkip(ctestutil.StringTestCases, ser, t)
 			})
 
 		t.Run("Valid string serializer with varint length should work correctly",
 			func(t *testing.T) {
 				ser := NewValidStringSer(nil)
-				testutil.Test[string](ctestutil.StringTestCases, ser, t)
-				testutil.TestSkip[string](ctestutil.StringTestCases, ser, t)
+				testutil.Test(ctestutil.StringTestCases, ser, t)
+				testutil.TestSkip(ctestutil.StringTestCases, ser, t)
 			})
 
 		t.Run("If lenSer fails with an error, valid Unmarshal should return it",
@@ -271,17 +271,17 @@ func TestOrd(t *testing.T) {
 			func(t *testing.T) {
 				var (
 					ptr, baseSer = testutil.PtrTestData(t)
-					ser          = NewPtrSer[int](baseSer)
+					ser          = NewPtrSer(baseSer)
 				)
-				testutil.Test[*int]([]*int{ptr}, ser, t)
-				testutil.TestSkip[*int]([]*int{ptr}, ser, t)
+				testutil.Test([]*int{ptr}, ser, t)
+				testutil.TestSkip([]*int{ptr}, ser, t)
 			})
 
 		t.Run("Pointer serializer should work correctly for nil ptr",
 			func(t *testing.T) {
-				ser := NewPtrSer[string](nil)
-				testutil.Test[*string]([]*string{nil}, ser, t)
-				testutil.TestSkip[*string]([]*string{nil}, ser, t)
+				ser := NewPtrSer(mus.Serializer[string](nil))
+				testutil.Test([]*string{nil}, ser, t)
+				testutil.TestSkip([]*string{nil}, ser, t)
 			})
 
 		t.Run("Pointer serializer should work correctly for not nil ptr",
@@ -329,10 +329,10 @@ func TestOrd(t *testing.T) {
 							}
 						},
 					)
-					ser = NewPtrSer[string](strSer)
+					ser = NewPtrSer(strSer)
 				)
-				testutil.Test[*string]([]*string{ptr}, ser, t)
-				testutil.TestSkip[*string]([]*string{ptr}, ser, t)
+				testutil.Test([]*string{ptr}, ser, t)
+				testutil.TestSkip([]*string{ptr}, ser, t)
 			})
 
 		t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
@@ -341,7 +341,7 @@ func TestOrd(t *testing.T) {
 					wantV     *string = nil
 					wantN             = 0
 					wantErr           = mus.ErrTooSmallByteSlice
-					v, n, err         = NewPtrSer[string](nil).Unmarshal([]byte{})
+					v, n, err         = NewPtrSer(mus.Serializer[string](nil)).Unmarshal([]byte{})
 				)
 				ctestutil.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
@@ -352,7 +352,7 @@ func TestOrd(t *testing.T) {
 					wantV     *string = nil
 					wantN             = 0
 					wantErr           = com.ErrWrongFormat
-					v, n, err         = NewPtrSer[string](nil).Unmarshal([]byte{2})
+					v, n, err         = NewPtrSer(mus.Serializer[string](nil)).Unmarshal([]byte{2})
 				)
 				ctestutil.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
@@ -369,7 +369,7 @@ func TestOrd(t *testing.T) {
 						},
 					)
 					mocks     = []*mok.Mock{baseSer.Mock}
-					v, n, err = NewPtrSer[string](baseSer).Unmarshal([]byte{byte(com.NotNil)})
+					v, n, err = NewPtrSer(baseSer).Unmarshal([]byte{byte(com.NotNil)})
 				)
 				ctestutil.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err,
 					mocks, t)
@@ -380,7 +380,7 @@ func TestOrd(t *testing.T) {
 				var (
 					wantN   = 0
 					wantErr = mus.ErrTooSmallByteSlice
-					n, err  = NewPtrSer[string](nil).Skip([]byte{})
+					n, err  = NewPtrSer(mus.Serializer[string](nil)).Skip([]byte{})
 				)
 				ctestutil.TestSkipResults(wantN, n, wantErr, err, nil, t)
 			})
@@ -390,7 +390,7 @@ func TestOrd(t *testing.T) {
 				var (
 					wantN   = 0
 					wantErr = com.ErrWrongFormat
-					n, err  = NewPtrSer[string](nil).Skip([]byte{2})
+					n, err  = NewPtrSer(mus.Serializer[string](nil)).Skip([]byte{2})
 				)
 				ctestutil.TestSkipResults(wantN, n, wantErr, err, nil, t)
 			})
@@ -406,7 +406,7 @@ func TestOrd(t *testing.T) {
 						},
 					)
 					mocks  = []*mok.Mock{baseSer.Mock}
-					n, err = NewPtrSer[string](baseSer).Skip([]byte{byte(com.NotNil)})
+					n, err = NewPtrSer(baseSer).Skip([]byte{byte(com.NotNil)})
 				)
 				ctestutil.TestSkipResults(wantN, n, wantErr, err, mocks, t)
 			})
@@ -419,8 +419,8 @@ func TestOrd(t *testing.T) {
 					sl  = []byte{}
 					ser = ByteSlice
 				)
-				testutil.Test[[]byte]([][]byte{sl}, ser, t)
-				testutil.TestSkip[[]byte]([][]byte{sl}, ser, t)
+				testutil.Test([][]byte{sl}, ser, t)
+				testutil.Test([][]byte{sl}, ser, t)
 			})
 
 		t.Run("ByteSlice serializer should work correctly for non-empty slice",
@@ -429,8 +429,8 @@ func TestOrd(t *testing.T) {
 					sl  = []byte{0, 1, 1, 255, 100, 0, 1, 10}
 					ser = ByteSlice
 				)
-				testutil.Test[[]byte]([][]byte{sl}, ser, t)
-				testutil.TestSkip[[]byte]([][]byte{sl}, ser, t)
+				testutil.Test([][]byte{sl}, ser, t)
+				testutil.Test([][]byte{sl}, ser, t)
 			})
 
 		t.Run("We should be able to set a length serializer", func(t *testing.T) {
@@ -438,8 +438,8 @@ func TestOrd(t *testing.T) {
 				sl, lenSer = testutil.ByteSliceLenTestData(t)
 				ser        = NewByteSliceSer(bslops.WithLenSer(lenSer))
 			)
-			testutil.Test[[]byte]([][]byte{sl}, ser, t)
-			testutil.TestSkip[[]byte]([][]byte{sl}, ser, t)
+			testutil.Test([][]byte{sl}, ser, t)
+			testutil.Test([][]byte{sl}, ser, t)
 		})
 
 		t.Run("Marshal should panic with ErrTooSmallByteSlice if there is no space in bs",
@@ -534,8 +534,8 @@ func TestOrd(t *testing.T) {
 					sl  = []byte{}
 					ser = NewValidByteSliceSer(nil)
 				)
-				testutil.Test[[]byte]([][]byte{sl}, ser, t)
-				testutil.TestSkip[[]byte]([][]byte{sl}, ser, t)
+				testutil.Test([][]byte{sl}, ser, t)
+				testutil.Test([][]byte{sl}, ser, t)
 			})
 
 		t.Run("Valid ByteSlice serializer should work correctly for non-empty slice",
@@ -544,8 +544,8 @@ func TestOrd(t *testing.T) {
 					sl  = []byte{0, 1, 1, 255, 100, 0, 1, 10}
 					ser = NewValidByteSliceSer(nil)
 				)
-				testutil.Test[[]byte]([][]byte{sl}, ser, t)
-				testutil.TestSkip[[]byte]([][]byte{sl}, ser, t)
+				testutil.Test([][]byte{sl}, ser, t)
+				testutil.Test([][]byte{sl}, ser, t)
 			})
 
 		t.Run("Valid Unmarshal should return ErrTooSmallByteSlice if bs is too small",
@@ -613,21 +613,21 @@ func TestOrd(t *testing.T) {
 			func(t *testing.T) {
 				var (
 					sl  = []string{}
-					ser = NewSliceSer[string](nil)
+					ser = NewSliceSer(mus.Serializer[string](nil))
 				)
-				testutil.Test[[]string]([][]string{sl}, ser, t)
-				testutil.TestSkip[[]string]([][]string{sl}, ser, t)
+				testutil.Test([][]string{sl}, ser, t)
+				testutil.Test([][]string{sl}, ser, t)
 			})
 
 		t.Run("Slice serializer should work correctly with not empty slice",
 			func(t *testing.T) {
 				var (
 					sl, elemSer = testutil.SliceTestData(t)
-					ser         = NewSliceSer[string](elemSer)
+					ser         = NewSliceSer(elemSer)
 					mocks       = []*mok.Mock{elemSer.Mock}
 				)
-				testutil.Test[[]string]([][]string{sl}, ser, t)
-				testutil.TestSkip[[]string]([][]string{sl}, ser, t)
+				testutil.Test([][]string{sl}, ser, t)
+				testutil.TestSkip([][]string{sl}, ser, t)
 
 				if infomap := mok.CheckCalls(mocks); len(infomap) > 0 {
 					t.Error(infomap)
@@ -637,12 +637,12 @@ func TestOrd(t *testing.T) {
 		t.Run("We should be able to set a length serializer", func(t *testing.T) {
 			var (
 				sl, lenSer, elemSer = testutil.SliceLenTestData(t)
-				ser                 = NewSliceSer[string](elemSer,
+				ser                 = NewSliceSer(elemSer,
 					slops.WithLenSer[string](lenSer))
 				mocks = []*mok.Mock{lenSer.Mock, elemSer.Mock}
 			)
-			testutil.Test[[]string]([][]string{sl}, ser, t)
-			testutil.TestSkip[[]string]([][]string{sl}, ser, t)
+			testutil.Test([][]string{sl}, ser, t)
+			testutil.TestSkip([][]string{sl}, ser, t)
 
 			if infomap := mok.CheckCalls(mocks); len(infomap) > 0 {
 				t.Error(infomap)
@@ -655,7 +655,7 @@ func TestOrd(t *testing.T) {
 					wantV     []string = nil
 					wantN              = 0
 					wantErr            = mus.ErrTooSmallByteSlice
-					v, n, err          = NewSliceSer[string](nil).Unmarshal([]byte{})
+					v, n, err          = NewSliceSer(mus.Serializer[string](nil)).Unmarshal([]byte{})
 				)
 				ctestutil.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
@@ -667,7 +667,7 @@ func TestOrd(t *testing.T) {
 					wantN, bs          = NegativeLengthBs()
 					wantErr            = com.ErrNegativeLength
 				)
-				v, n, err := NewSliceSer[string](nil).Unmarshal(bs)
+				v, n, err := NewSliceSer(mus.Serializer[string](nil)).Unmarshal(bs)
 				ctestutil.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
@@ -683,7 +683,7 @@ func TestOrd(t *testing.T) {
 						},
 					)
 					mocks     = []*mok.Mock{elemSer.Mock}
-					v, n, err = NewSliceSer[uint](elemSer).Unmarshal([]byte{1})
+					v, n, err = NewSliceSer(elemSer).Unmarshal([]byte{1})
 				)
 				ctestutil.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 			})
@@ -699,8 +699,8 @@ func TestOrd(t *testing.T) {
 						},
 					)
 					mocks = []*mok.Mock{lenSer.Mock}
-					// n, err = NewSliceSerWith[string](lenSer, nil).Skip([]byte{})
-					n, err = NewSliceSer[string](nil, slops.WithLenSer[string](lenSer)).Skip([]byte{})
+					// n, err = NewSliceSer(lenSer, nil).Skip([]byte{})
+					n, err = NewSliceSer(mus.Serializer[string](nil), slops.WithLenSer[string](lenSer)).Skip([]byte{})
 				)
 				ctestutil.TestSkipResults(wantN, n, wantErr, err, mocks, t)
 			})
@@ -711,7 +711,7 @@ func TestOrd(t *testing.T) {
 					wantN, bs = NegativeLengthBs()
 					wantErr   = com.ErrNegativeLength
 				)
-				n, err := NewSliceSer[string](nil).Skip(bs)
+				n, err := NewSliceSer(mus.Serializer[string](nil)).Skip(bs)
 				ctestutil.TestSkipResults(wantN, n, wantErr, err, nil, t)
 			})
 
@@ -726,7 +726,7 @@ func TestOrd(t *testing.T) {
 						},
 					)
 					mocks  = []*mok.Mock{elemSer.Mock}
-					n, err = NewSliceSer[uint](elemSer).Skip([]byte{1})
+					n, err = NewSliceSer(elemSer).Skip([]byte{1})
 				)
 				ctestutil.TestSkipResults(wantN, n, wantErr, err, mocks, t)
 			})
@@ -735,21 +735,21 @@ func TestOrd(t *testing.T) {
 			func(t *testing.T) {
 				var (
 					sl  = []string{}
-					ser = NewValidSliceSer[string](nil, nil, nil)
+					ser = NewValidSliceSer(mus.Serializer[string](nil), nil, nil)
 				)
-				testutil.Test[[]string]([][]string{sl}, ser, t)
-				testutil.TestSkip[[]string]([][]string{sl}, ser, t)
+				testutil.Test([][]string{sl}, ser, t)
+				testutil.TestSkip([][]string{sl}, ser, t)
 			})
 
 		t.Run("Valid Slice serializer should work correctly with not empty slice",
 			func(t *testing.T) {
 				var (
 					sl, elemSer = testutil.SliceTestData(t)
-					ser         = NewValidSliceSer[string](elemSer, nil, nil)
+					ser         = NewValidSliceSer(elemSer, nil, nil)
 					mocks       = []*mok.Mock{elemSer.Mock}
 				)
-				testutil.Test[[]string]([][]string{sl}, ser, t)
-				testutil.TestSkip[[]string]([][]string{sl}, ser, t)
+				testutil.Test([][]string{sl}, ser, t)
+				testutil.TestSkip([][]string{sl}, ser, t)
 
 				if infomap := mok.CheckCalls(mocks); len(infomap) > 0 {
 					t.Error(infomap)
@@ -768,8 +768,8 @@ func TestOrd(t *testing.T) {
 						},
 					)
 					mocks = []*mok.Mock{lenSer.Mock}
-					// v, n, err = NewValidSliceSerWith[string](lenSer, nil, nil, nil).Unmarshal([]byte{})
-					v, n, err = NewValidSliceSer[string](nil, slops.WithLenSer[string](lenSer)).Unmarshal([]byte{})
+					// v, n, err = NewValidSliceSer(lenSer, nil, nil, nil).Unmarshal([]byte{})
+					v, n, err = NewValidSliceSer(mus.Serializer[string](nil), slops.WithLenSer[string](lenSer)).Unmarshal([]byte{})
 				)
 				ctestutil.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 			})
@@ -781,7 +781,7 @@ func TestOrd(t *testing.T) {
 					wantN, bs          = NegativeLengthBs()
 					wantErr            = com.ErrNegativeLength
 				)
-				v, n, err := NewValidSliceSer[string](nil, nil, nil).Unmarshal(bs)
+				v, n, err := NewValidSliceSer(mus.Serializer[string](nil), nil, nil).Unmarshal(bs)
 				ctestutil.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
@@ -797,7 +797,7 @@ func TestOrd(t *testing.T) {
 						},
 					)
 					mocks     = []*mok.Mock{elemSer.Mock}
-					v, n, err = NewValidSliceSer[uint](elemSer, nil, nil).Unmarshal([]byte{1})
+					v, n, err = NewValidSliceSer(elemSer, nil, nil).Unmarshal([]byte{1})
 				)
 				ctestutil.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 			})
@@ -815,7 +815,7 @@ func TestOrd(t *testing.T) {
 					)
 					bs        = []byte{3, 10, 2, 3}
 					mocks     = []*mok.Mock{lenVl.Mock}
-					v, n, err = NewValidSliceSer[uint](nil, slops.WithLenValidator[uint](lenVl)).Unmarshal(bs)
+					v, n, err = NewValidSliceSer(mus.Serializer[uint](nil), slops.WithLenValidator[uint](lenVl)).Unmarshal(bs)
 				)
 				ctestutil.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks,
 					t)
@@ -853,7 +853,7 @@ func TestOrd(t *testing.T) {
 						},
 					)
 					mocks     = []*mok.Mock{elemSer.Mock, elemVl.Mock}
-					v, n, err = NewValidSliceSer[uint](elemSer, slops.WithElemValidator[uint](elemVl)).Unmarshal(bs)
+					v, n, err = NewValidSliceSer(elemSer, nil, slops.WithElemValidator[uint](elemVl)).Unmarshal(bs)
 				)
 				ctestutil.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 			})
@@ -864,21 +864,21 @@ func TestOrd(t *testing.T) {
 			func(t *testing.T) {
 				var (
 					mp  = map[string]int{}
-					ser = NewMapSer[string, int](nil, nil)
+					ser = NewMapSer(mus.Serializer[string](nil), mus.Serializer[int](nil))
 				)
-				testutil.Test[map[string]int]([]map[string]int{mp}, ser, t)
-				testutil.TestSkip[map[string]int]([]map[string]int{mp}, ser, t)
+				testutil.Test([]map[string]int{mp}, ser, t)
+				testutil.TestSkip([]map[string]int{mp}, ser, t)
 			})
 
 		t.Run("Map should work correctly with not empty map",
 			func(t *testing.T) {
 				var (
 					mp, keySer, elemSer = testutil.MapTestData(t)
-					ser                 = NewMapSer[string, int](keySer, elemSer)
+					ser                 = NewMapSer(keySer, elemSer)
 					mocks               = []*mok.Mock{keySer.Mock, elemSer.Mock}
 				)
-				testutil.Test[map[string]int]([]map[string]int{mp}, ser, t)
-				testutil.TestSkip[map[string]int]([]map[string]int{mp}, ser, t)
+				testutil.Test([]map[string]int{mp}, ser, t)
+				testutil.TestSkip([]map[string]int{mp}, ser, t)
 
 				if infomap := mok.CheckCalls(mocks); len(infomap) > 0 {
 					t.Error(infomap)
@@ -888,12 +888,12 @@ func TestOrd(t *testing.T) {
 		t.Run("We should be able to set a length serializer", func(t *testing.T) {
 			var (
 				mp, lenSer, keySer, valueSer = testutil.MapLenTestData(t)
-				ser                          = NewMapSer[string, int](keySer, valueSer,
+				ser                          = NewMapSer(keySer, valueSer,
 					mapops.WithLenSer[string, int](lenSer))
 				mocks = []*mok.Mock{lenSer.Mock, keySer.Mock, valueSer.Mock}
 			)
-			testutil.Test[map[string]int]([]map[string]int{mp}, ser, t)
-			testutil.TestSkip[map[string]int]([]map[string]int{mp}, ser, t)
+			testutil.Test([]map[string]int{mp}, ser, t)
+			testutil.TestSkip([]map[string]int{mp}, ser, t)
 
 			if infomap := mok.CheckCalls(mocks); len(infomap) > 0 {
 				t.Error(infomap)
@@ -906,7 +906,7 @@ func TestOrd(t *testing.T) {
 					wantV     map[uint]uint = nil
 					wantN                   = 0
 					wantErr                 = mus.ErrTooSmallByteSlice
-					v, n, err               = NewMapSer[uint, uint](nil, nil).Unmarshal([]byte{})
+					v, n, err               = NewMapSer(mus.Serializer[uint](nil), mus.Serializer[uint](nil)).Unmarshal([]byte{})
 				)
 				ctestutil.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
@@ -918,7 +918,7 @@ func TestOrd(t *testing.T) {
 					wantN, bs               = NegativeLengthBs()
 					wantErr                 = com.ErrNegativeLength
 				)
-				v, n, err := NewMapSer[uint, uint](nil, nil).Unmarshal(bs)
+				v, n, err := NewMapSer(mus.Serializer[uint](nil), mus.Serializer[uint](nil)).Unmarshal(bs)
 				ctestutil.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
@@ -939,7 +939,7 @@ func TestOrd(t *testing.T) {
 						},
 					)
 					mocks     = []*mok.Mock{keySer.Mock}
-					v, n, err = NewMapSer[uint, uint](keySer, nil).Unmarshal(bs)
+					v, n, err = NewMapSer(keySer, mus.Serializer[uint](nil)).Unmarshal(bs)
 				)
 				ctestutil.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 			})
@@ -966,7 +966,7 @@ func TestOrd(t *testing.T) {
 						},
 					)
 					mocks     = []*mok.Mock{keySer.Mock, valueSer.Mock}
-					v, n, err = NewMapSer[uint, uint](keySer, valueSer).Unmarshal(bs)
+					v, n, err = NewMapSer(keySer, valueSer).Unmarshal(bs)
 				)
 				ctestutil.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 			})
@@ -983,7 +983,7 @@ func TestOrd(t *testing.T) {
 						},
 					)
 					mocks  = []*mok.Mock{keySer.Mock}
-					n, err = NewMapSer[uint, uint](keySer, nil).Skip(bs)
+					n, err = NewMapSer(keySer, mus.Serializer[uint](nil)).Skip(bs)
 				)
 				ctestutil.TestSkipResults(wantN, n, wantErr, err, mocks, t)
 			})
@@ -1005,7 +1005,7 @@ func TestOrd(t *testing.T) {
 						},
 					)
 					mocks  = []*mok.Mock{keySer.Mock, valueSer.Mock}
-					n, err = NewMapSer[uint, uint](keySer, valueSer).Skip(bs)
+					n, err = NewMapSer(keySer, valueSer).Skip(bs)
 				)
 				ctestutil.TestSkipResults(wantN, n, wantErr, err, mocks, t)
 			})
@@ -1021,7 +1021,7 @@ func TestOrd(t *testing.T) {
 						},
 					)
 					mocks  = []*mok.Mock{lenSer.Mock}
-					n, err = NewMapSer[uint, uint](nil, nil, mapops.WithLenSer[uint, uint](lenSer)).Skip([]byte{})
+					n, err = NewMapSer(mus.Serializer[string](nil), mus.Serializer[int](nil), mapops.WithLenSer[string, int](lenSer)).Skip([]byte{})
 				)
 				ctestutil.TestSkipResults(wantN, n, wantErr, err, mocks, t)
 			})
@@ -1032,7 +1032,7 @@ func TestOrd(t *testing.T) {
 					wantN, bs = NegativeLengthBs()
 					wantErr   = com.ErrNegativeLength
 				)
-				n, err := NewMapSer[string, string](nil, nil).Skip(bs)
+				n, err := NewMapSer(mus.Serializer[uint](nil), mus.Serializer[uint](nil)).Skip(bs)
 				ctestutil.TestSkipResults(wantN, n, wantErr, err, nil, t)
 			})
 
@@ -1040,21 +1040,21 @@ func TestOrd(t *testing.T) {
 			func(t *testing.T) {
 				var (
 					mp  = map[string]int{}
-					ser = NewValidMapSer[string, int](nil, nil, nil, nil, nil)
+					ser = NewValidMapSer(mus.Serializer[string](nil), mus.Serializer[int](nil), nil, nil, nil)
 				)
-				testutil.Test[map[string]int]([]map[string]int{mp}, ser, t)
-				testutil.TestSkip[map[string]int]([]map[string]int{mp}, ser, t)
+				testutil.Test([]map[string]int{mp}, ser, t)
+				testutil.TestSkip([]map[string]int{mp}, ser, t)
 			})
 
 		t.Run("Valid Map serializer should work correctly with not empty map",
 			func(t *testing.T) {
 				var (
 					mp, keySer, elemSer = testutil.MapTestData(t)
-					ser                 = NewValidMapSer[string, int](keySer, elemSer, nil, nil, nil)
+					ser                 = NewValidMapSer(keySer, elemSer, nil, nil, nil)
 					mocks               = []*mok.Mock{keySer.Mock, elemSer.Mock}
 				)
-				testutil.Test[map[string]int]([]map[string]int{mp}, ser, t)
-				testutil.TestSkip[map[string]int]([]map[string]int{mp}, ser, t)
+				testutil.Test([]map[string]int{mp}, ser, t)
+				testutil.TestSkip([]map[string]int{mp}, ser, t)
 
 				if infomap := mok.CheckCalls(mocks); len(infomap) > 0 {
 					t.Error(infomap)
@@ -1073,7 +1073,7 @@ func TestOrd(t *testing.T) {
 						},
 					)
 					mocks     = []*mok.Mock{lenSer.Mock}
-					v, n, err = NewValidMapSer[uint, uint](nil, nil, mapops.WithLenSer[uint, uint](lenSer)).Unmarshal([]byte{})
+					v, n, err = NewValidMapSer(mus.Serializer[uint](nil), mus.Serializer[uint](nil), mapops.WithLenSer[uint, uint](lenSer)).Unmarshal([]byte{})
 				)
 				ctestutil.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 			})
@@ -1085,7 +1085,7 @@ func TestOrd(t *testing.T) {
 					wantN, bs               = NegativeLengthBs()
 					wantErr                 = com.ErrNegativeLength
 				)
-				v, n, err := NewValidMapSer[uint, uint](nil, nil, nil, nil, nil).Unmarshal(bs)
+				v, n, err := NewValidMapSer(mus.Serializer[uint](nil), mus.Serializer[uint](nil), nil, nil, nil).Unmarshal(bs)
 				ctestutil.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
 			})
 
@@ -1106,7 +1106,7 @@ func TestOrd(t *testing.T) {
 						},
 					)
 					mocks     = []*mok.Mock{keySer.Mock}
-					v, n, err = NewValidMapSer[uint, uint](keySer, nil, nil, nil, nil).Unmarshal(bs)
+					v, n, err = NewValidMapSer(keySer, mus.Serializer[uint](nil), nil, nil, nil).Unmarshal(bs)
 				)
 				ctestutil.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 			})
@@ -1133,7 +1133,7 @@ func TestOrd(t *testing.T) {
 						},
 					)
 					mocks     = []*mok.Mock{keySer.Mock, valueSer.Mock}
-					v, n, err = NewValidMapSer[uint, uint](keySer, valueSer, nil, nil, nil).Unmarshal(bs)
+					v, n, err = NewValidMapSer(keySer, valueSer, nil, nil, nil).Unmarshal(bs)
 				)
 				ctestutil.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 			})
@@ -1154,7 +1154,7 @@ func TestOrd(t *testing.T) {
 						},
 					)
 					mocks     = []*mok.Mock{lenVl.Mock}
-					v, n, err = NewValidMapSer[uint, uint](nil, nil, mapops.WithLenValidator[uint, uint](lenVl)).Unmarshal(bs)
+					v, n, err = NewValidMapSer(mus.Serializer[uint](nil), mus.Serializer[uint](nil), mapops.WithLenValidator[uint, uint](lenVl)).Unmarshal(bs)
 				)
 				ctestutil.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 			})
@@ -1180,7 +1180,7 @@ func TestOrd(t *testing.T) {
 						},
 					)
 					mocks     = []*mok.Mock{keySer.Mock, keyVl.Mock}
-					v, n, err = NewValidMapSer[uint, uint](keySer, nil, mapops.WithKeyValidator[uint, uint](keyVl)).Unmarshal(bs)
+					v, n, err = NewValidMapSer(keySer, mus.Serializer[uint](nil), mapops.WithKeyValidator[uint, uint](keyVl)).Unmarshal(bs)
 				)
 				ctestutil.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 			})
@@ -1211,7 +1211,7 @@ func TestOrd(t *testing.T) {
 						},
 					)
 					mocks     = []*mok.Mock{keySer.Mock, valueSer.Mock, valueVl.Mock}
-					v, n, err = NewValidMapSer[uint, uint](keySer, valueSer, mapops.WithValueValidator[uint, uint](valueVl)).Unmarshal(bs)
+					v, n, err = NewValidMapSer(keySer, valueSer, mapops.WithValueValidator[uint, uint](valueVl)).Unmarshal(bs)
 				)
 				ctestutil.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, mocks, t)
 			})

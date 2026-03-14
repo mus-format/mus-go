@@ -16,7 +16,7 @@ func TestPM(t *testing.T) {
 			var (
 				wantN  = 1
 				wantBS = []byte{byte(com.Nil)}
-				ser    = NewPtrSer[int](com.NewPtrMap(), nil, nil)
+				ser    = NewPtrSer(com.NewPtrMap(), nil, mus.Serializer[int](nil))
 				size   = ser.Size(nil)
 				bs     = make([]byte, size)
 				n      = ser.Marshal(nil, bs)
@@ -35,7 +35,7 @@ func TestPM(t *testing.T) {
 					wantV     *int = nil
 					wantN          = 0
 					wantErr        = mus.ErrTooSmallByteSlice
-					ser            = NewPtrSer[int](nil, com.NewReversePtrMap(), nil)
+					ser            = NewPtrSer(nil, com.NewReversePtrMap(), mus.Serializer[int](nil))
 					v, n, err      = ser.Unmarshal([]byte{})
 				)
 				if v != wantV {
@@ -56,7 +56,7 @@ func TestPM(t *testing.T) {
 					wantN           = 1
 					wantErr   error = nil
 					bs              = []byte{byte(com.Nil)}
-					ser             = NewPtrSer[int](nil, com.NewReversePtrMap(), nil)
+					ser             = NewPtrSer(nil, com.NewReversePtrMap(), mus.Serializer[int](nil))
 					v, n, err       = ser.Unmarshal(bs)
 				)
 				if v != wantV {
@@ -77,7 +77,7 @@ func TestPM(t *testing.T) {
 					wantN          = 1
 					wantErr        = mus.ErrTooSmallByteSlice
 					bs             = []byte{byte(com.Mapping)}
-					ser            = NewPtrSer[int](nil, com.NewReversePtrMap(), nil)
+					ser            = NewPtrSer(nil, com.NewReversePtrMap(), mus.Serializer[int](nil))
 					v, n, err      = ser.Unmarshal(bs)
 				)
 				if v != wantV {
@@ -104,7 +104,7 @@ func TestPM(t *testing.T) {
 						},
 					)
 					ptrMap    = com.NewReversePtrMap()
-					ser       = NewPtrSer[int](nil, ptrMap, baseSer)
+					ser       = NewPtrSer(nil, ptrMap, baseSer)
 					bs        = []byte{byte(com.Mapping), 2, 1}
 					v, n, err = ser.Unmarshal(bs)
 				)
@@ -126,7 +126,7 @@ func TestPM(t *testing.T) {
 					wantN          = 0
 					wantErr        = com.ErrWrongFormat
 					bs             = []byte{byte(com.Mapping) + 100}
-					ser            = NewPtrSer[int](nil, com.NewReversePtrMap(), nil)
+					ser            = NewPtrSer(nil, com.NewReversePtrMap(), mus.Serializer[int](nil))
 					v, n, err      = ser.Unmarshal(bs)
 				)
 				if v != wantV {
@@ -143,7 +143,7 @@ func TestPM(t *testing.T) {
 		t.Run("Size should return 1 for nil pointer", func(t *testing.T) {
 			var (
 				wantSize = 1
-				size     = NewPtrSer[int](nil, nil, nil).Size(nil)
+				size     = NewPtrSer(nil, nil, mus.Serializer[int](nil)).Size(nil)
 			)
 			if size != wantSize {
 				t.Errorf("unexpected size, want '%v' actual '%v'", wantSize, size)
@@ -156,7 +156,7 @@ func TestPM(t *testing.T) {
 					wantN   = 1
 					wantErr = mus.ErrTooSmallByteSlice
 					bs      = []byte{byte(com.Mapping)}
-					n, err  = NewPtrSer[int](nil, com.NewReversePtrMap(), nil).Skip(bs)
+					n, err  = NewPtrSer(nil, com.NewReversePtrMap(), mus.Serializer[int](nil)).Skip(bs)
 				)
 				if n != wantN {
 					t.Errorf("unexpected n, want '%v' actual '%v'", wantN, n)
@@ -172,7 +172,7 @@ func TestPM(t *testing.T) {
 					wantN   = 0
 					wantErr = com.ErrWrongFormat
 					bs      = []byte{byte(com.Mapping) + 100}
-					n, err  = NewPtrSer[int](nil, com.NewReversePtrMap(), nil).Skip(bs)
+					n, err  = NewPtrSer(nil, com.NewReversePtrMap(), mus.Serializer[int](nil)).Skip(bs)
 				)
 				if n != wantN {
 					t.Errorf("unexpected n, want '%v' actual '%v'", wantN, n)
@@ -187,7 +187,7 @@ func TestPM(t *testing.T) {
 				var (
 					wantN   = 0
 					wantErr = mus.ErrTooSmallByteSlice
-					n, err  = NewPtrSer[int](nil, com.NewReversePtrMap(), nil).Skip([]byte{})
+					n, err  = NewPtrSer(nil, com.NewReversePtrMap(), mus.Serializer[int](nil)).Skip([]byte{})
 				)
 				if n != wantN {
 					t.Errorf("unexpected n, want '%v' actual '%v'", wantN, n)
@@ -203,7 +203,7 @@ func TestPM(t *testing.T) {
 					wantN         = 1
 					wantErr error = nil
 					bs            = []byte{byte(com.Nil)}
-					ser           = NewPtrSer[int](nil, com.NewReversePtrMap(), nil)
+					ser           = NewPtrSer(nil, com.NewReversePtrMap(), mus.Serializer[int](nil))
 					n, err        = ser.Skip(bs)
 				)
 				if n != wantN {
@@ -226,7 +226,7 @@ func TestPM(t *testing.T) {
 						},
 					)
 					ptrMap = com.NewReversePtrMap()
-					ser    = NewPtrSer[int](nil, ptrMap, baseSer)
+					ser    = NewPtrSer(nil, ptrMap, baseSer)
 					bs     = []byte{byte(com.Mapping), 2, 1}
 					n, err = ser.Skip(bs)
 				)

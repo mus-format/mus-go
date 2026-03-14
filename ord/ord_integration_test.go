@@ -10,32 +10,32 @@ import (
 
 func TestIntegrationOrd(t *testing.T) {
 	t.Run("pointer", func(t *testing.T) {
-		ser := NewPtrSer[string](String)
-		testutil.Test[*string](ctestutil.PointerTestCases, ser, t)
-		testutil.TestSkip[*string](ctestutil.PointerTestCases, ser, t)
+		ser := NewPtrSer(String)
+		testutil.Test(ctestutil.PointerTestCases, ser, t)
+		testutil.TestSkip(ctestutil.PointerTestCases, ser, t)
 	})
 
 	t.Run("slice", func(t *testing.T) {
-		ser := NewSliceSer[int](varint.Int)
-		testutil.Test[[]int](ctestutil.SliceTestCases, ser, t)
-		testutil.TestSkip[[]int](ctestutil.SliceTestCases, ser, t)
+		ser := NewSliceSer(varint.Int)
+		testutil.Test(ctestutil.SliceTestCases, ser, t)
+		testutil.Test(ctestutil.SliceTestCases, ser, t)
 	})
 
 	t.Run("valid slice", func(t *testing.T) {
-		ser := NewValidSliceSer[int](varint.Int, nil, nil)
-		testutil.Test[[]int](ctestutil.SliceTestCases, ser, t)
-		testutil.TestSkip[[]int](ctestutil.SliceTestCases, ser, t)
+		ser := NewValidSliceSer(varint.Int, nil, nil)
+		testutil.Test(ctestutil.SliceTestCases, ser, t)
+		testutil.Test(ctestutil.SliceTestCases, ser, t)
 	})
 
 	t.Run("map", func(t *testing.T) {
-		ser := NewMapSer[float32, uint8](varint.Float32, varint.Uint8)
-		testutil.Test[map[float32]uint8](ctestutil.MapTestCases, ser, t)
-		testutil.TestSkip[map[float32]uint8](ctestutil.MapTestCases, ser, t)
+		ser := NewMapSer(varint.Float32, varint.Uint8)
+		testutil.Test(ctestutil.MapTestCases, ser, t)
+		testutil.Test(ctestutil.MapTestCases, ser, t)
 	})
 
 	t.Run("valid map", func(t *testing.T) {
-		ser := NewValidMapSer[float32, uint8](varint.Float32, varint.Uint8, nil, nil, nil)
-		testutil.Test[map[float32]uint8](ctestutil.MapTestCases, ser, t)
-		testutil.TestSkip[map[float32]uint8](ctestutil.MapTestCases, ser, t)
+		ser := NewValidMapSer(varint.Float32, varint.Uint8, nil, nil, nil)
+		testutil.Test(ctestutil.MapTestCases, ser, t)
+		testutil.Test(ctestutil.MapTestCases, ser, t)
 	})
 }

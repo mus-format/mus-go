@@ -17,7 +17,7 @@ func TestIntegrationWrapper(t *testing.T) {
 			ser       = Wrap(ptrMap, revPtrMap, newPtrStructSer(ptrMap, revPtrMap,
 				varint.Int))
 		)
-		testutil.Test[ctestutil.PtrStruct](
+		testutil.Test(
 			ctestutil.PointerMappingTestCases(), ser, t)
 	})
 
@@ -34,11 +34,11 @@ func TestIntegrationWrapper(t *testing.T) {
 			e = 5
 			f = 6
 		)
-		testutil.Test[ctestutil.PtrStruct](
+		testutil.Test(
 			[]ctestutil.PtrStruct{{A1: &a, A2: &b, A3: &c}},
 			ser, t)
 
-		testutil.TestSkip[ctestutil.PtrStruct](
+		testutil.TestSkip(
 			[]ctestutil.PtrStruct{{A1: &d, A2: &e, A3: &f}},
 			ser, t)
 	})
