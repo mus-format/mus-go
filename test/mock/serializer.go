@@ -60,7 +60,7 @@ func (u Serializer[T]) RegisterSkipN(n int, fn SkipFn) Serializer[T] {
 }
 
 func (m Serializer[T]) Marshal(t T, bs []byte) (n int) {
-	result, err := m.Call("Marshal", mok.SafeVal[T](t), bs)
+	result, err := m.Call("Marshal", t, bs)
 	if err != nil {
 		panic(err)
 	}
@@ -79,7 +79,7 @@ func (u Serializer[T]) Unmarshal(bs []byte) (t T, n int, err error) {
 }
 
 func (m Serializer[T]) Size(t T) (size int) {
-	result, err := m.Call("Size", mok.SafeVal[T](t))
+	result, err := m.Call("Size", t)
 	if err != nil {
 		panic(err)
 	}
