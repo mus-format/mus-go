@@ -20,3 +20,32 @@ type Serializer[T any] interface {
 	Size(t T) (size int)
 	Skip(bs []byte) (n int, err error)
 }
+
+// Marshaller is the interface for types that can marshal themselves into the
+// MUS format.
+type Marshaller interface {
+	MarshalMUS(bs []byte) (n int)
+	SizeMUS() (size int)
+}
+
+// MarshallerTyped is the interface for types that support typed MUS
+// serialization, designed for use with DTS.
+type MarshallerTyped interface {
+	MarshalTypedMUS(bs []byte) (n int)
+	SizeTypedMUS() (size int)
+}
+
+// Marshal creates and returns a byte slice filled with the serialized data.
+func Marshal(v Marshaller) (bs []byte) {
+	bs = make([]byte, v.SizeMUS())
+	v.MarshalMUS(bs)
+	return
+}
+
+// MarshalTyped creates and returns a byte slice filled with the serialized
+// data.
+func MarshalTyped(v MarshallerTyped) (bs []byte) {
+	bs = make([]byte, v.SizeTypedMUS())
+	v.MarshalTypedMUS(bs)
+	return
+}
