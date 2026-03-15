@@ -29,7 +29,7 @@ page.
 
 ### Advanced Capabilities
 
-- Supports data versioning and interface serialization (oneof feature) using DTS.
+- Supports data versioning and interface serialization (oneof feature) using the [typed](#typed-data-type-metadata-support) package.
 - Comprehensive pointer support.
 - Can encode cyclic graphs and linked lists.
 - Offers zero-allocation deserialization.
@@ -64,7 +64,7 @@ than `gRPC/Protobuf`.
     - [ord (ordinary)](#ord-ordinary)
     - [unsafe](#unsafe)
     - [pm (pointer mapping)](#pm-pointer-mapping)
-    - [dts (data type metadata support)](#dts-data-type-metadata-support)
+    - [typed (data type metadata support)](#typed-data-type-metadata-support)
   - [Structs Support](#structs-support)
   - [More Features](#more-features)
   - [Testing](#testing)
@@ -210,9 +210,9 @@ var (
 The `pm` package preserves pointer equality after unmarshalling, ensuring that
 `ptr1 == ptr2`, while the `ord` package does not. This capability enables the    serialization of data structures like cyclic graphs or linked lists ([examples](https://github.com/mus-format/examples-go/tree/main/pm)).
 
-### dts (data type metadata support)
+### typed (data type metadata support)
 
-The `dts` package provides [DTM](https://medium.com/p/21d7be309e8d) 
+The `typed` package provides [DTM](https://medium.com/p/21d7be309e8d) 
 support for the `mus-go` serializer. It wraps a type serializer and a DTM 
 value, enabling [typed data serialization](https://ymz-ncnk.medium.com/mus-serialization-format-20f833df12d5)
 to provide data versioning, the oneof feature, and [other capabilities](https://github.com/mus-format/examples-go/tree/main/dts).

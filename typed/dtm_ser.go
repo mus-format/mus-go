@@ -1,4 +1,4 @@
-package dts
+package typed
 
 import (
 	com "github.com/mus-format/common-go"

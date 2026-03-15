@@ -29,7 +29,7 @@ type Marshaller interface {
 }
 
 // MarshallerTyped is the interface for types that support typed MUS
-// serialization, designed for use with DTS.
+// serialization, designed for use with the typed package.
 type MarshallerTyped interface {
 	MarshalTypedMUS(bs []byte) (n int)
 	SizeTypedMUS() (size int)
