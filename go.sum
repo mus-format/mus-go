@@ -1,5 +1,5 @@
-github.com/mus-format/common-go v0.0.0-20260314231257-b11fb3945107 h1:r9uyKil/321osWAgvaHRSNrAbnpq3k4gi2C5A7P0fN4=
-github.com/mus-format/common-go v0.0.0-20260314231257-b11fb3945107/go.mod h1:G4cssLSCvTjdGear9Svw8tLTqvUFv47uOpa7VQJYsNs=
+github.com/mus-format/common-go v0.0.0-20260316223939-44773ca1f6c3 h1:c01EH+1UTLgB6nx9d/BnHdLAJjxdeoFjJTaBgZxI0DU=
+github.com/mus-format/common-go v0.0.0-20260316223939-44773ca1f6c3/go.mod h1:ihc49nCegqVRFkJ5tpOGiwRqJN78IJKI407kF04VAr0=
 github.com/ymz-ncnk/assert v0.0.0-20260108210721-155bc9aa4282 h1:lU0oPVPOGW0BZwLwAqfSTh1yxhFbwXDv/UAYY54QTq0=
 github.com/ymz-ncnk/assert v0.0.0-20260108210721-155bc9aa4282/go.mod h1:+lSOTrCyOPuvc0xuvK4uKhgQ0Ar3U/HJPpJZg73kvgE=
 github.com/ymz-ncnk/mok v0.2.2 h1:MkHkli+n3Ci6Xla9e/6LApJZ6/XjLB6AB3IXDr9a7hk=
