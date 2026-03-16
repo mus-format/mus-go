@@ -163,11 +163,10 @@ n, err := YourTypeMUS.Skip(bs)
 ### varint
 
 This package provides Varint serializers for all `uint` (e.g., `uint64`,
-`uint32`, ...), `int`, `float`, and `byte` data types.
-
-It also includes the `PositiveInt` serializer (Varint without ZigZag) for
-efficiently encoding positive `int` values (negative values are supported as
-well, though with reduced performance).
+`uint32`, ...), `int`, `float`, and `byte` data types. It also includes the 
+`PositiveInt` serializer (Varint without ZigZag) for efficiently encoding 
+positive `int` values (negative values are supported as well, though with 
+reduced performance).
 
 ### raw
 
@@ -235,7 +234,7 @@ serialization of data structures like cyclic graphs or linked lists ([examples](
 ### typed (data type metadata support)
 
 The `typed` package provides [DTM](https://medium.com/p/21d7be309e8d) 
-support for the `mus-go` serializer. It wraps a type serializer and a DTM 
+support for the `mus` serializer. It wraps a type serializer and a DTM 
 value, enabling [typed data serialization](https://ymz-ncnk.medium.com/mus-serialization-format-20f833df12d5)
 to provide data versioning, the oneof feature, and [other capabilities](https://github.com/mus-format/examples-go/tree/main/typed).
 
@@ -244,7 +243,6 @@ to provide data versioning, the oneof feature, and [other capabilities](https://
 `mus` doesn’t support structs out of the box, which means you’ll need to 
 implement the `mus.Serializer` interface yourself. Simply deconstruct the struct
 into its fields and choose the desired encoding for each ([example](https://github.com/mus-format/examples-go/tree/main/types/struct)).
-
 This approach provides greater flexibility and keeps `mus` simple, making it 
 easy to implement in other programming languages.
 
@@ -281,15 +279,19 @@ go test -v -fuzz="^FuzzByte$" ./varint -fuzztime 10s
 
 ## Benchmarks
 
-Performance benchmarks for `mus` can be found at:
+| NAME     | NS/OP   | B/SIZE | B/OP   | ALLOCS/OP |
+| -------- | ------- | ------ | ------ | --------- |
+| mus      | 102.90  | 58.00  | 48.00  | 1         |
+| protobuf | 531.70  | 69.00  | 271.00 | 4         |
+| json     | 2779.00 | 150.00 | 600.00 | 9         |
 
-- [github.com/ymz-ncnk/go-serialization-benchmarks](https://github.com/ymz-ncnk/go-serialization-benchmarks)
-- [github.com/alecthomas/go_serialization_benchmarks](https://github.com/alecthomas/go_serialization_benchmarks)
+The data above is sourced from the [ymz-ncnk/go-serialization-benchmarks](https://github.com/ymz-ncnk/go-serialization-benchmarks) repository.
 
-Why a separate benchmark suite? The existing [benchmarks](https://github.com/alecthomas/go_serialization_benchmarks)
-sometimes produce inconsistent results across multiple runs, making it
-difficult to reliably compare serializers. New [benchmarks](https://github.com/ymz-ncnk/go-serialization-benchmarks)
-were created to provide more consistent and reproducible measurements.
+Why a separate benchmark suite? The [standard go-serialization-benchmarks](https://github.com/alecthomas/go_serialization_benchmarks) 
+sometimes produce inconsistent results across multiple runs. New 
+[benchmarks](https://github.com/ymz-ncnk/go-serialization-benchmarks) were 
+created to provide more consistent and reproducible measurements for 
+accurate comparison.
 
 ## Version Compatibility
 
