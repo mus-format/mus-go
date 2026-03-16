@@ -33,15 +33,15 @@ func FuzzPM_Ptr(f *testing.F) {
 			values    = make([]int, valuesCount)
 			ptrs      = make([]*int, ptrsCount)
 		)
-		for i := 0; i < valuesCount; i++ {
+		for i := range valuesCount {
 			values[i] = i
 		}
 		if isNil {
-			for i := 0; i < ptrsCount; i++ {
+			for i := range ptrsCount {
 				ptrs[i] = nil
 			}
 		} else {
-			for i := 0; i < ptrsCount; i++ {
+			for i := range ptrsCount {
 				ptrs[i] = &values[i%valuesCount]
 			}
 		}
@@ -131,7 +131,7 @@ func FuzzPM_Wrap(f *testing.F) {
 		if length > 0 {
 			head = &node{Value: 0}
 			curr := head
-			for i := 1; i < length; i++ {
+			for i := range length - 1 {
 				curr.Next = &node{Value: i}
 				curr = curr.Next
 			}

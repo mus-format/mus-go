@@ -132,7 +132,7 @@ func UnmarshalSlice[T any](bs []byte, elemSer mus.Serializer[T],
 		e  T
 	)
 	v = make([]T, length)
-	for i := 0; i < length; i++ {
+	for i := range length {
 		e, n1, err = elemSer.Unmarshal(bs[n:])
 		n += n1
 		if err != nil {
@@ -148,7 +148,7 @@ func SizeSlice[T any](v []T, elemSer mus.Serializer[T],
 ) (size int) {
 	length := len(v)
 	size = lenSer.Size(length)
-	for i := 0; i < length; i++ {
+	for i := range length {
 		size += elemSer.Size(v[i])
 	}
 	return
@@ -166,7 +166,7 @@ func SkipSlice[T any](bs []byte, elemSer mus.Serializer[T],
 		return
 	}
 	var n1 int
-	for i := 0; i < length; i++ {
+	for range length {
 		n1, err = elemSer.Skip(bs[n:])
 		n += n1
 		if err != nil {

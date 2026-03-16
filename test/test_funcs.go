@@ -10,7 +10,7 @@ import (
 )
 
 func Test[T any](cases []T, ser mus.Serializer[T], t *testing.T) {
-	for i := 0; i < len(cases); i++ {
+	for i := range cases {
 		var (
 			size = ser.Size(cases[i])
 			bs   = make([]byte, size)
@@ -52,7 +52,7 @@ func Test[T any](cases []T, ser mus.Serializer[T], t *testing.T) {
 }
 
 func TestSkip[T any](cases []T, ser mus.Serializer[T], t *testing.T) {
-	for i := 0; i < len(cases); i++ {
+	for i := range cases {
 		var (
 			size = ser.Size(cases[i])
 			bs   = make([]byte, size)
