@@ -1,24 +1,21 @@
-# mus-go: A High-Performance, Flexible Binary Serialization Library for Go
+# mus: A High-Performance, Flexible Binary Serialization Library for Go
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/mus-format/mus-go.svg)](https://pkg.go.dev/github.com/mus-format/mus-go)
 [![GoReportCard](https://goreportcard.com/badge/mus-format/mus-go)](https://goreportcard.com/report/github.com/mus-format/mus-go)
 [![codecov](https://codecov.io/gh/mus-format/mus-go/graph/badge.svg?token=WLLZ1MMQDX)](https://codecov.io/gh/mus-format/mus-go)
 
-**mus-go** is a powerful and versatile Go library for efficient binary
+**mus** is a powerful and versatile Go library for efficient binary
 serialization.
 
-While `mus-go` was built as a serializer for the [MUS format](https://medium.com/@ymz-ncnk/mus-serialization-format-20f833df12d5),
+While `mus` was built as a serializer for the [MUS format](https://medium.com/@ymz-ncnk/mus-serialization-format-20f833df12d5),
 its minimalist architecture and broad set of serialization primitives also make
 it well-suited for implementing other binary formats. Here you can find an
 [example](https://github.com/mus-format/examples-go/tree/main/protobuf)
 where it is used to encode data in Protobuf format.
 
-A streaming version is also available: [mus-stream-go](https://github.com/mus-format/mus-stream-go).
+A streaming version is also available: [mus-stream](https://github.com/mus-format/mus-stream-go).
 
-To get started quickly, visit the [code generator](https://github.com/mus-format/musgen-go)
-page.
-
-## Why mus-go?
+## Why mus?
 
 ### Core Performance & Reliability
 
@@ -40,23 +37,63 @@ page.
 - Supports private fields.
 - Out-of-order deserialization.
 
-## mus-go in Action: cmd-stream-go
+## mus in Action: cmd-stream
 
-Want to see it in action? Check out [cmd-stream-go](https://github.com/cmd-stream/cmd-stream-go)!
+Want to see it in action? Check out [cmd-stream](https://github.com/cmd-stream/cmd-stream-go)!
 This library, based on the Command Pattern, enables efficient execution of
 user-defined Commands on a server. The `cmd-stream/MUS` is about 3 times faster
 than `gRPC/Protobuf`.
 
+## Code Generator (Recommended)
+
+Manually writing `mus` serialization code can be tedious and error-prone. The
+[musgen-go](https://github.com/mus-format/musgen-go) code generator offers a
+much more efficient and reliable alternative that's simple to use - just provide
+a type and call `Generate()`.
+
+## Quick Start
+
+Here's an example of how to use `mus` to serialize a number.
+
+```go
+package main
+
+import (
+  "fmt"
+  "github.com/mus-format/mus-go/varint"
+)
+
+func main() {
+  var (
+    num  = 100
+    size = varint.Int.Size(num)
+    bs   = make([]byte, size)
+  )
+  
+  // Marshal
+  varint.Int.Marshal(num, bs)
+  
+  // Unmarshal
+  val, n, err := varint.Int.Unmarshal(bs)
+  if err != nil {
+    panic(err)
+  }
+  
+  fmt.Printf("Unmarshalled %d (%d bytes used)\n", val, n)
+}
+```
+
 ## Contents
 
-- [mus-go: A High-Performance, Flexible Binary Serialization Library for Go](#mus-go-a-high-performance-flexible-binary-serialization-library-for-go)
-  - [Why mus-go?](#why-mus-go)
+- [mus: A High-Performance, Flexible Binary Serialization Library for Go](#mus-a-high-performance-flexible-binary-serialization-library-for-go)
+  - [Why mus?](#why-mus)
     - [Core Performance \& Reliability](#core-performance--reliability)
     - [Advanced Capabilities](#advanced-capabilities)
     - [Additional Features](#additional-features)
-  - [mus-go in Action: cmd-stream-go](#mus-go-in-action-cmd-stream-go)
+  - [mus in Action: cmd-stream](#mus-in-action-cmd-stream)
+  - [Code Generator (Recommended)](#code-generator-recommended)
+  - [Quick Start](#quick-start)
   - [Contents](#contents)
-  - [Code Generator](#code-generator)
   - [How To](#how-to)
   - [Packages](#packages)
     - [varint](#varint)
@@ -72,20 +109,12 @@ than `gRPC/Protobuf`.
   - [Benchmarks](#benchmarks)
   - [Version Compatibility](#version-compatibility)
 
-## Code Generator
-
-Manually writing `mus-go` serialization code can be tedious and error-prone. The
-[musgen-go](https://github.com/mus-format/musgen-go) code generator offers a
-much more efficient and reliable alternative that's simple to use - just provide
-a type and call `Generate()`.
-
 ## How To
 
-To make a type serializable with `mus-go`, you need to implement the
+To make a type serializable with `mus`, you need to implement the
 [mus.Serializer](./mus.go) interface:
 
 ```go
-
 import "github.com/mus-format/mus-go"
 
 // YourTypeMUS is a MUS serializer for YourType.
@@ -120,29 +149,21 @@ n, err := YourTypeMUS.Skip(bs)
 
 ## Packages
 
-`mus-go` offers several encoding options, each in a separate package.
+`mus` offers several encoding options, each in a separate package.
+
+| Package                                          | Use Case                                 | Key Strength                  | Trade-off                            |
+| :----------------------------------------------- | :--------------------------------------- | :---------------------------- | :----------------------------------- |
+| **[`varint`](#varint)**                          | Numbers                                  | Space efficient               | Slight CPU cost for encoding         |
+| **[`raw`](#raw)**                                | Numbers, Time                            | Fast encoding                 | Higher space usage for small numbers |
+| **[`ord`](#ord-ordinary)**                       | Pointers, Strings, Slices, Maps          | Variable-length types support | Standard allocations                 |
+| **[`unsafe`](#unsafe)**                          | High-perf Numbers, Time, Strings, Arrays | Zero-allocation               | Uses unsafe type conversions         |
+| **[`pm`](#pm-pointer-mapping)**                  | Pointers, Cyclic Graphs, Linked Lists    | Preserves pointer equality    | Slightly more complex than `ord`     |
+| **[`typed`](#typed-data-type-metadata-support)** | Interface/Versioning                     | Typed serialization           | Requires DTM definition              |
 
 ### varint
 
 This package provides Varint serializers for all `uint` (e.g., `uint64`,
 `uint32`, ...), `int`, `float`, and `byte` data types.
-
-```go
-package main
-
-import "github.com/mus-format/mus-go/varint"
-
-func main() {
-  var (
-    num  = 100
-    size = varint.Int.Size(num)
-    bs = make([]byte, size)
-  )
-  n := varint.Int.Marshal(num, bs)
-  num, n, err := varint.Int.Unmarshal(bs)
-  // ...
-}
-```
 
 It also includes the `PositiveInt` serializer (Varint without ZigZag) for
 efficiently encoding positive `int` values (negative values are supported as
@@ -208,22 +229,23 @@ var (
 ```
 
 The `pm` package preserves pointer equality after unmarshalling, ensuring that
-`ptr1 == ptr2`, while the `ord` package does not. This capability enables the    serialization of data structures like cyclic graphs or linked lists ([examples](https://github.com/mus-format/examples-go/tree/main/pm)).
+`ptr1 == ptr2`, while the `ord` package does not. This capability enables the 
+serialization of data structures like cyclic graphs or linked lists ([examples](https://github.com/mus-format/examples-go/tree/main/pm)).
 
 ### typed (data type metadata support)
 
 The `typed` package provides [DTM](https://medium.com/p/21d7be309e8d) 
 support for the `mus-go` serializer. It wraps a type serializer and a DTM 
 value, enabling [typed data serialization](https://ymz-ncnk.medium.com/mus-serialization-format-20f833df12d5)
-to provide data versioning, the oneof feature, and [other capabilities](https://github.com/mus-format/examples-go/tree/main/dts).
+to provide data versioning, the oneof feature, and [other capabilities](https://github.com/mus-format/examples-go/tree/main/typed).
 
 ## Structs Support
 
-`mus-go` doesn’t support structs out of the box, which means you’ll need to 
+`mus` doesn’t support structs out of the box, which means you’ll need to 
 implement the `mus.Serializer` interface yourself. Simply deconstruct the struct
 into its fields and choose the desired encoding for each ([example](https://github.com/mus-format/examples-go/tree/main/types/struct)).
 
-This approach provides greater flexibility and keeps `mus-go` simple, making it 
+This approach provides greater flexibility and keeps `mus` simple, making it 
 easy to implement in other programming languages.
 
 ## More Features
@@ -237,7 +259,7 @@ easy to implement in other programming languages.
   
 ## Testing
 
-To run all `mus-go` tests, use the following command:
+To run all `mus` tests, use the following command:
 
 ```bash
 go test ./...
@@ -245,7 +267,7 @@ go test ./...
 
 ### Fuzz Testing
 
-`mus-go` also includes fuzz tests. To run them, you can use the `fuzz.sh` script:
+`mus` also includes fuzz tests. To run them, you can use the `fuzz.sh` script:
 
 ```bash
 ./fuzz.sh 10s
@@ -259,7 +281,7 @@ go test -v -fuzz="^FuzzByte$" ./varint -fuzztime 10s
 
 ## Benchmarks
 
-Performance benchmarks for `mus-go` can be found at:
+Performance benchmarks for `mus` can be found at:
 
 - [github.com/ymz-ncnk/go-serialization-benchmarks](https://github.com/ymz-ncnk/go-serialization-benchmarks)
 - [github.com/alecthomas/go_serialization_benchmarks](https://github.com/alecthomas/go_serialization_benchmarks)
