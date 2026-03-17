@@ -12,7 +12,7 @@ import (
 )
 
 // NewArraySer returns a new array serializer with the given element serializer.
-// To specify a length or element validator, use NewValidArraySer instead.
+// To specify an element validator, use NewValidArraySer instead.
 //
 // Panics if T is not an array type.
 func NewArraySer[T, V any](elemSer mus.Serializer[V],

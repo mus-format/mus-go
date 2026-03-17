@@ -8,7 +8,7 @@ import (
 )
 
 // NewSliceSer returns a new slice serializer with the given element serializer.
-// To specify a length or element validator, use NewValidStringSer instead.
+// To specify a length or element validator, use NewValidSliceSer instead.
 func NewSliceSer[T any](elemSer mus.Serializer[T], opts ...slopts.SetOption[T]) (
 	s sliceSer[T],
 ) {
