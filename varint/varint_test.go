@@ -7,45 +7,58 @@ import (
 	ctest "github.com/mus-format/common-go/test"
 	"github.com/mus-format/mus-go"
 	"github.com/mus-format/mus-go/test"
+	asserterror "github.com/ymz-ncnk/assert/error"
 )
 
 func TestVarint_unmarshalUint(t *testing.T) {
 	t.Run("unmarshalUint should return ErrTooSmallByteSlice if bs is empty",
 		func(t *testing.T) {
 			var (
-				wantV     uint64 = 0
-				wantN            = 0
-				wantErr          = mus.ErrTooSmallByteSlice
-				bs               = []byte{}
-				v, n, err        = unmarshalUint[uint64](0, 0, bs)
+				want = test.UnmarshalResult[uint64]{
+					V:   0,
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{}
 			)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			v, n, err := unmarshalUint[uint64](0, 0, bs)
+			asserterror.Equal(t, want.V, v)
+			asserterror.Equal(t, want.N, n)
+			asserterror.EqualError(t, err, want.Err)
 		})
 
 	t.Run("unmarshalUint should return ErrOverflow if there is no varint end",
 		func(t *testing.T) {
 			var (
-				wantV     uint16 = 0
-				wantN            = 3
-				wantErr          = com.ErrOverflow
-				bs               = []byte{200, 200, 200}
-				v, n, err        = unmarshalUint[uint16](com.Uint16MaxVarintLen,
-					com.Uint16MaxLastByte, bs)
+				want = test.UnmarshalResult[uint16]{
+					V:   0,
+					N:   3,
+					Err: com.ErrOverflow,
+				}
+				bs = []byte{200, 200, 200}
 			)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			v, n, err := unmarshalUint[uint16](com.Uint16MaxVarintLen,
+				com.Uint16MaxLastByte, bs)
+			asserterror.Equal(t, want.V, v)
+			asserterror.Equal(t, want.N, n)
+			asserterror.EqualError(t, err, want.Err)
 		})
 
 	t.Run("unmarshalUint should return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantV     uint16 = 0
-				wantN            = 2
-				wantErr          = mus.ErrTooSmallByteSlice
-				bs               = []byte{200, 200}
-				v, n, err        = unmarshalUint[uint16](com.Uint16MaxVarintLen,
-					com.Uint16MaxLastByte, bs)
+				want = test.UnmarshalResult[uint16]{
+					V:   0,
+					N:   2,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{200, 200}
 			)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			v, n, err := unmarshalUint[uint16](com.Uint16MaxVarintLen,
+				com.Uint16MaxLastByte, bs)
+			asserterror.Equal(t, want.V, v)
+			asserterror.Equal(t, want.N, n)
+			asserterror.EqualError(t, err, want.Err)
 		})
 }
 
@@ -53,36 +66,45 @@ func TestVarint_skipUint(t *testing.T) {
 	t.Run("skipUint should return ErrTooSmallByteSlice if bs is empty",
 		func(t *testing.T) {
 			var (
-				wantN   = 0
-				wantErr = mus.ErrTooSmallByteSlice
-				bs      = []byte{}
-				n, err  = skipUint(0, 0, bs)
+				want = test.SkipResult{
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{}
 			)
-			ctest.TestSkipResults(wantN, n, wantErr, err, nil, t)
+			n, err := skipUint(0, 0, bs)
+			asserterror.Equal(t, want.N, n)
+			asserterror.EqualError(t, err, want.Err)
 		})
 
 	t.Run("skipUint should return ErrOverflow if there is no varint end",
 		func(t *testing.T) {
 			var (
-				wantN   = 3
-				wantErr = com.ErrOverflow
-				bs      = []byte{200, 200, 200, 200, 200}
-				n, err  = skipUint(com.Uint16MaxVarintLen, com.Uint16MaxLastByte,
-					bs)
+				want = test.SkipResult{
+					N:   3,
+					Err: com.ErrOverflow,
+				}
+				bs = []byte{200, 200, 200, 200, 200}
 			)
-			ctest.TestSkipResults(wantN, n, wantErr, err, nil, t)
+			n, err := skipUint(com.Uint16MaxVarintLen, com.Uint16MaxLastByte,
+				bs)
+			asserterror.Equal(t, want.N, n)
+			asserterror.EqualError(t, err, want.Err)
 		})
 
 	t.Run("skipUint shold return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantN   = 2
-				wantErr = mus.ErrTooSmallByteSlice
-				bs      = []byte{200, 200}
-				n, err  = skipUint(com.Uint16MaxVarintLen, com.Uint16MaxLastByte,
-					bs)
+				want = test.SkipResult{
+					N:   2,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{200, 200}
 			)
-			ctest.TestSkipResults(wantN, n, wantErr, err, nil, t)
+			n, err := skipUint(com.Uint16MaxVarintLen, com.Uint16MaxLastByte,
+				bs)
+			asserterror.Equal(t, want.N, n)
+			asserterror.EqualError(t, err, want.Err)
 		})
 }
 
@@ -127,13 +149,14 @@ func TestVarint_Int64(t *testing.T) {
 	t.Run("UnmarshalInt64 should return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantV     int64 = 0
-				wantN           = 0
-				wantErr         = mus.ErrTooSmallByteSlice
-				bs              = []byte{}
-				v, n, err       = Int64.Unmarshal(bs)
+				want = test.UnmarshalResult[int64]{
+					V:   0,
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{}
 			)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			test.TestUnmarshalOnly(bs, Int64, want, nil, t)
 		})
 }
 
@@ -148,13 +171,14 @@ func TestVarint_Int32(t *testing.T) {
 	t.Run("UnmarshalInt32 should return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantV     int32 = 0
-				wantN           = 0
-				wantErr         = mus.ErrTooSmallByteSlice
-				bs              = []byte{}
-				v, n, err       = Int32.Unmarshal(bs)
+				want = test.UnmarshalResult[int32]{
+					V:   0,
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{}
 			)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			test.TestUnmarshalOnly(bs, Int32, want, nil, t)
 		})
 }
 
@@ -169,13 +193,14 @@ func TestVarint_Int16(t *testing.T) {
 	t.Run("UnmarshalInt16 should return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantV     int16 = 0
-				wantN           = 0
-				wantErr         = mus.ErrTooSmallByteSlice
-				bs              = []byte{}
-				v, n, err       = Int16.Unmarshal(bs)
+				want = test.UnmarshalResult[int16]{
+					V:   0,
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{}
 			)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			test.TestUnmarshalOnly(bs, Int16, want, nil, t)
 		})
 }
 
@@ -190,13 +215,14 @@ func TestVarint_Int8(t *testing.T) {
 	t.Run("UnmarshalInt8 should return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantV     int8 = 0
-				wantN          = 0
-				wantErr        = mus.ErrTooSmallByteSlice
-				bs             = []byte{}
-				v, n, err      = Int8.Unmarshal(bs)
+				want = test.UnmarshalResult[int8]{
+					V:   0,
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{}
 			)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			test.TestUnmarshalOnly(bs, Int8, want, nil, t)
 		})
 }
 
@@ -211,13 +237,14 @@ func TestVarint_Int(t *testing.T) {
 	t.Run("UnmarshaPositivelInt should return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantV     = 0
-				wantN     = 0
-				wantErr   = mus.ErrTooSmallByteSlice
-				bs        = []byte{}
-				v, n, err = Int.Unmarshal(bs)
+				want = test.UnmarshalResult[int]{
+					V:   0,
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{}
 			)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			test.TestUnmarshalOnly(bs, Int, want, nil, t)
 		})
 }
 
@@ -232,13 +259,14 @@ func TestVarint_PositiveInt64(t *testing.T) {
 	t.Run("UnmarshalPositiveInt64 should return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantV     int64 = 0
-				wantN           = 0
-				wantErr         = mus.ErrTooSmallByteSlice
-				bs              = []byte{}
-				v, n, err       = PositiveInt64.Unmarshal(bs)
+				want = test.UnmarshalResult[int64]{
+					V:   0,
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{}
 			)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			test.TestUnmarshalOnly(bs, PositiveInt64, want, nil, t)
 		})
 }
 
@@ -253,13 +281,14 @@ func TestVarint_PositiveInt32(t *testing.T) {
 	t.Run("UnmarshalPositiveInt32 should return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantV     int32 = 0
-				wantN           = 0
-				wantErr         = mus.ErrTooSmallByteSlice
-				bs              = []byte{}
-				v, n, err       = PositiveInt32.Unmarshal(bs)
+				want = test.UnmarshalResult[int32]{
+					V:   0,
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{}
 			)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			test.TestUnmarshalOnly(bs, PositiveInt32, want, nil, t)
 		})
 }
 
@@ -274,13 +303,14 @@ func TestVarint_PositiveInt16(t *testing.T) {
 	t.Run("UnmarshalPositiveInt16 should return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantV     int16 = 0
-				wantN           = 0
-				wantErr         = mus.ErrTooSmallByteSlice
-				bs              = []byte{}
-				v, n, err       = PositiveInt16.Unmarshal(bs)
+				want = test.UnmarshalResult[int16]{
+					V:   0,
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{}
 			)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			test.TestUnmarshalOnly(bs, PositiveInt16, want, nil, t)
 		})
 }
 
@@ -295,13 +325,14 @@ func TestVarint_PositiveInt8(t *testing.T) {
 	t.Run("UnmarshalPositiveInt8 should return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantV     int8 = 0
-				wantN          = 0
-				wantErr        = mus.ErrTooSmallByteSlice
-				bs             = []byte{}
-				v, n, err      = PositiveInt8.Unmarshal(bs)
+				want = test.UnmarshalResult[int8]{
+					V:   0,
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{}
 			)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			test.TestUnmarshalOnly(bs, PositiveInt8, want, nil, t)
 		})
 }
 
@@ -316,13 +347,14 @@ func TestVarint_PositiveInt(t *testing.T) {
 	t.Run("UnmarshaPositivelInt should return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantV     = 0
-				wantN     = 0
-				wantErr   = mus.ErrTooSmallByteSlice
-				bs        = []byte{}
-				v, n, err = PositiveInt.Unmarshal(bs)
+				want = test.UnmarshalResult[int]{
+					V:   0,
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{}
 			)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			test.TestUnmarshalOnly(bs, PositiveInt, want, nil, t)
 		})
 }
 
@@ -343,14 +375,14 @@ func TestVarint_Float64(t *testing.T) {
 	t.Run("UnmarshalFloat64 should return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantV     float64 = 0
-				wantN             = 0
-				wantErr           = mus.ErrTooSmallByteSlice
-				bs                = []byte{}
-				v, n, err         = Float64.Unmarshal(bs)
+				want = test.UnmarshalResult[float64]{
+					V:   0,
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{}
 			)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err,
-				nil, t)
+			test.TestUnmarshalOnly(bs, Float64, want, nil, t)
 		})
 }
 
@@ -365,13 +397,13 @@ func TestVarint_Float32(t *testing.T) {
 	t.Run("UnmarshalFloat32 should return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantV     float32 = 0
-				wantN             = 0
-				wantErr           = mus.ErrTooSmallByteSlice
-				bs                = []byte{}
-				v, n, err         = Float32.Unmarshal(bs)
+				want = test.UnmarshalResult[float32]{
+					V:   0,
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{}
 			)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err,
-				nil, t)
+			test.TestUnmarshalOnly(bs, Float32, want, nil, t)
 		})
 }

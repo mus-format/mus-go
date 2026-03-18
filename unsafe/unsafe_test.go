@@ -17,6 +17,7 @@ import (
 	"github.com/mus-format/mus-go/test"
 	"github.com/mus-format/mus-go/test/mock"
 	"github.com/mus-format/mus-go/varint"
+	asserterror "github.com/ymz-ncnk/assert/error"
 	"github.com/ymz-ncnk/mok"
 )
 
@@ -27,9 +28,7 @@ func TestUnsafe_setUpUintFuncs(t *testing.T) {
 			defer func() {
 				if r := recover(); r != nil {
 					err := r.(error)
-					if err != wantErr {
-						t.Errorf("unexpected error, want '%v' actual '%v'", wantErr, err)
-					}
+					asserterror.EqualError(t, err, wantErr)
 				}
 			}()
 			setUpUintFuncs(16)
@@ -38,35 +37,25 @@ func TestUnsafe_setUpUintFuncs(t *testing.T) {
 	t.Run("If the system int size is equal to 32, setUpUintFuncs should initialize the uint functions with 32-bit versions",
 		func(t *testing.T) {
 			setUpUintFuncs(32)
-			if !ctest.ComparePtrs(marshalUint, marshalInteger32[uint]) {
-				t.Error("unexpected marshalUint func")
-			}
-			if !ctest.ComparePtrs(unmarshalUint, unmarshalInteger32[uint]) {
-				t.Error("unexpected unmarshalUint func")
-			}
-			if sizeUint != com.Num32RawSize {
-				t.Error("unexpected sizeUint value")
-			}
-			if !ctest.ComparePtrs(skipUint, raw.SkipInteger32) {
-				t.Error("unexpected skipUint func")
-			}
+			asserterror.Equal(t, ctest.ComparePtrs(marshalUint, marshalInteger32[uint]),
+				true, "unexpected marshalUint func")
+			asserterror.Equal(t, ctest.ComparePtrs(unmarshalUint, unmarshalInteger32[uint]),
+				true, "unexpected unmarshalUint func")
+			asserterror.Equal(t, sizeUint, com.Num32RawSize, "unexpected sizeUint value")
+			asserterror.Equal(t, ctest.ComparePtrs(skipUint, raw.SkipInteger32),
+				true, "unexpected skipUint func")
 		})
 
 	t.Run("If the system int size is equal to 64, setUpUintFuncs should initialize the uint functions with 64-bit versions",
 		func(t *testing.T) {
 			setUpUintFuncs(64)
-			if !ctest.ComparePtrs(marshalUint, marshalInteger64[uint]) {
-				t.Error("unexpected marshalUint func")
-			}
-			if !ctest.ComparePtrs(unmarshalUint, unmarshalInteger64[uint]) {
-				t.Error("unexpected unmarshalUint func")
-			}
-			if sizeUint != com.Num64RawSize {
-				t.Error("unexpected sizeUint value")
-			}
-			if !ctest.ComparePtrs(skipUint, raw.SkipInteger64) {
-				t.Error("unexpected skipUint func")
-			}
+			asserterror.Equal(t, ctest.ComparePtrs(marshalUint, marshalInteger64[uint]),
+				true, "unexpected marshalUint func")
+			asserterror.Equal(t, ctest.ComparePtrs(unmarshalUint, unmarshalInteger64[uint]),
+				true, "unexpected unmarshalUint func")
+			asserterror.Equal(t, sizeUint, com.Num64RawSize, "unexpected sizeUint value")
+			asserterror.Equal(t, ctest.ComparePtrs(skipUint, raw.SkipInteger64),
+				true, "unexpected skipUint func")
 		})
 }
 
@@ -76,9 +65,7 @@ func TestUnsafe_setUpIntFuncs(t *testing.T) {
 		defer func() {
 			if r := recover(); r != nil {
 				err := r.(error)
-				if err != wantErr {
-					t.Errorf("unexpected error, want '%v' actual '%v'", wantErr, err)
-				}
+				asserterror.EqualError(t, err, wantErr)
 			}
 		}()
 		setUpIntFuncs(16)
@@ -87,80 +74,74 @@ func TestUnsafe_setUpIntFuncs(t *testing.T) {
 	t.Run("If the system int size is equal to 32, setUpIntFuncs should initialize the uint functions with 32-bit versions",
 		func(t *testing.T) {
 			setUpIntFuncs(32)
-			if !ctest.ComparePtrs(marshalInt, marshalInteger32[int]) {
-				t.Error("unexpected marshalInt func")
-			}
-			if !ctest.ComparePtrs(unmarshalInt, unmarshalInteger32[int]) {
-				t.Error("unexpected unmarshalInt func")
-			}
-			if sizeInt != com.Num32RawSize {
-				t.Error("unexpected sizeInt value")
-			}
-			if !ctest.ComparePtrs(skipInt, raw.SkipInteger32) {
-				t.Error("unexpected skipInt func")
-			}
+			asserterror.Equal(t, ctest.ComparePtrs(marshalInt, marshalInteger32[int]),
+				true, "unexpected marshalInt func")
+			asserterror.Equal(t, ctest.ComparePtrs(unmarshalInt, unmarshalInteger32[int]),
+				true, "unexpected unmarshalInt func")
+			asserterror.Equal(t, sizeInt, com.Num32RawSize, "unexpected sizeInt value")
+			asserterror.Equal(t, ctest.ComparePtrs(skipInt, raw.SkipInteger32),
+				true, "unexpected skipInt func")
 		})
 
 	t.Run("If the system int size is equal to 64, setUpIntFuncs should initialize the uint functions with 64-bit versions",
 		func(t *testing.T) {
 			setUpIntFuncs(64)
-			if !ctest.ComparePtrs(marshalInt, marshalInteger64[int]) {
-				t.Error("unexpected marshalInt func")
-			}
-			if !ctest.ComparePtrs(unmarshalInt, unmarshalInteger64[int]) {
-				t.Error("unexpected unmarshalInt func")
-			}
-			if sizeInt != com.Num64RawSize {
-				t.Error("unexpected sizeInt value")
-			}
-			if !ctest.ComparePtrs(skipInt, raw.SkipInteger64) {
-				t.Error("unexpected skipInt func")
-			}
+			asserterror.Equal(t, ctest.ComparePtrs(marshalInt, marshalInteger64[int]),
+				true, "unexpected marshalInt func")
+			asserterror.Equal(t, ctest.ComparePtrs(unmarshalInt, unmarshalInteger64[int]),
+				true, "unexpected unmarshalInt func")
+			asserterror.Equal(t, sizeInt, com.Num64RawSize, "unexpected sizeInt value")
+			asserterror.Equal(t, ctest.ComparePtrs(skipInt, raw.SkipInteger64),
+				true, "unexpected skipInt func")
 		})
 }
 
 func TestUnsafe_unmarshalInteger64(t *testing.T) {
 	var (
-		wantV     uint64 = 0
-		wantN            = 0
-		wantErr          = mus.ErrTooSmallByteSlice
-		bs               = []byte{1, 2, 3, 4, 5, 6, 7}
-		v, n, err        = unmarshalInteger64[uint64](bs)
+		want = test.UnmarshalResult[uint64]{
+			V:   0,
+			N:   0,
+			Err: mus.ErrTooSmallByteSlice,
+		}
+		bs = []byte{1, 2, 3, 4, 5, 6, 7}
 	)
-	ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+	test.TestUnmarshalOnly(bs, Uint64, want, nil, t)
 }
 
 func TestUnsafe_unmarshalInteger32(t *testing.T) {
 	var (
-		wantV     uint32 = 0
-		wantN            = 0
-		wantErr          = mus.ErrTooSmallByteSlice
-		bs               = []byte{1, 2, 3}
-		v, n, err        = unmarshalInteger32[uint32](bs)
+		want = test.UnmarshalResult[uint32]{
+			V:   0,
+			N:   0,
+			Err: mus.ErrTooSmallByteSlice,
+		}
+		bs = []byte{1, 2, 3}
 	)
-	ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+	test.TestUnmarshalOnly(bs, Uint32, want, nil, t)
 }
 
 func TestUnsafe_unmarshalInteger16(t *testing.T) {
 	var (
-		wantV     uint16 = 0
-		wantN            = 0
-		wantErr          = mus.ErrTooSmallByteSlice
-		bs               = []byte{1}
-		v, n, err        = unmarshalInteger16[uint16](bs)
+		want = test.UnmarshalResult[uint16]{
+			V:   0,
+			N:   0,
+			Err: mus.ErrTooSmallByteSlice,
+		}
+		bs = []byte{1}
 	)
-	ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+	test.TestUnmarshalOnly(bs, Uint16, want, nil, t)
 }
 
 func TestUnsafe_unmarshalInteger8(t *testing.T) {
 	var (
-		wantV     uint8 = 0
-		wantN           = 0
-		wantErr         = mus.ErrTooSmallByteSlice
-		bs              = []byte{}
-		v, n, err       = unmarshalInteger8[uint8](bs)
+		want = test.UnmarshalResult[uint8]{
+			V:   0,
+			N:   0,
+			Err: mus.ErrTooSmallByteSlice,
+		}
+		bs = []byte{}
 	)
-	ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+	test.TestUnmarshalOnly(bs, Uint8, want, nil, t)
 }
 
 func TestUnsafe_String(t *testing.T) {
@@ -191,9 +172,7 @@ func TestUnsafe_String(t *testing.T) {
 			defer func() {
 				if r := recover(); r != nil {
 					err := r.(error)
-					if err != wantErr {
-						t.Errorf("unexpected error, want '%v' actual '%v'", wantErr, err)
-					}
+					asserterror.EqualError(t, err, wantErr)
 				}
 			}()
 
@@ -203,36 +182,39 @@ func TestUnsafe_String(t *testing.T) {
 	t.Run("If the length serializer fails with an error, Unmarshal should return it",
 		func(t *testing.T) {
 			var (
-				wantV     = ""
-				wantN     = 0
-				wantErr   = mus.ErrTooSmallByteSlice
-				v, n, err = String.Unmarshal(nil)
+				want = test.UnmarshalResult[string]{
+					V:   "",
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
 			)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil,
-				t)
+			test.TestUnmarshalOnly(nil, String, want, nil, t)
 		})
 
 	t.Run("Unmarshal should return ErrNegativeLength if meets a negative length",
 		func(t *testing.T) {
 			var (
-				wantV     = ""
 				wantN, bs = NegativeLengthBs()
-				wantErr   = com.ErrNegativeLength
-				v, n, err = String.Unmarshal(bs)
+				want      = test.UnmarshalResult[string]{
+					V:   "",
+					N:   wantN,
+					Err: com.ErrNegativeLength,
+				}
 			)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			test.TestUnmarshalOnly(bs, String, want, nil, t)
 		})
 
 	t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantV     = ""
-				wantN     = 1
-				wantErr   = mus.ErrTooSmallByteSlice
-				bs        = []byte{3, 1, 1}
-				v, n, err = String.Unmarshal(bs)
+				want = test.UnmarshalResult[string]{
+					V:   "",
+					N:   1,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{3, 1, 1}
 			)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			test.TestUnmarshalOnly(bs, String, want, nil, t)
 		})
 
 	t.Run("Valid String serializer should succeed",
@@ -245,75 +227,85 @@ func TestUnsafe_String(t *testing.T) {
 	t.Run("If lenSer fails to unmarshal length, Unmarshal should return an error",
 		func(t *testing.T) {
 			var (
-				wantV   = ""
-				wantN   = 0
 				wantErr = mus.ErrTooSmallByteSlice
-				lenSer  = mock.NewSerializer[int]().RegisterUnmarshal(
+				want    = test.UnmarshalResult[string]{
+					V:   "",
+					N:   0,
+					Err: wantErr,
+				}
+				lenSer = mock.NewSerializer[int]().RegisterUnmarshal(
 					func(bs []byte) (t int, n int, err error) {
 						return 0, 0, wantErr
 					},
 				)
-				v, n, err = NewValidStringSer(stropts.WithLenSer(lenSer)).Unmarshal(nil)
+				ser = NewValidStringSer(stropts.WithLenSer(lenSer))
 			)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			test.TestUnmarshalOnly(nil, ser, want, []*mok.Mock{lenSer.Mock}, t)
 		})
 
 	t.Run("Valid Unmarshal should return ErrNegativeLength if meets a negative length",
 		func(t *testing.T) {
 			var (
-				wantV     = ""
 				wantN, bs = NegativeLengthBs()
-				wantErr   = com.ErrNegativeLength
-				v, n, err = NewValidStringSer(nil).Unmarshal(bs)
+				want      = test.UnmarshalResult[string]{
+					V:   "",
+					N:   wantN,
+					Err: com.ErrNegativeLength,
+				}
 			)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			test.TestUnmarshalOnly(bs, NewValidStringSer(nil), want, nil, t)
 		})
 
 	t.Run("Valid Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantV     = ""
-				wantN     = 1
-				wantErr   = mus.ErrTooSmallByteSlice
-				bs        = []byte{3, 1, 1}
-				v, n, err = NewValidStringSer(nil).Unmarshal(bs)
+				want = test.UnmarshalResult[string]{
+					V:   "",
+					N:   1,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{3, 1, 1}
 			)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			test.TestUnmarshalOnly(bs, NewValidStringSer(nil), want, nil, t)
 		})
 
 	t.Run("If lenVl returns an error, valid Unmarshal should return it",
 		func(t *testing.T) {
 			var (
-				wantV   = ""
-				wantN   = 1
 				wantErr = errors.New("lenVl validator error")
-				lenVl   = cmock.NewValidator[int]().RegisterValidate(
+				want    = test.UnmarshalResult[string]{
+					V:   "",
+					N:   1,
+					Err: wantErr,
+				}
+				lenVl = cmock.NewValidator[int]().RegisterValidate(
 					func(v int) (err error) {
 						wantV := 3
-						if v != wantV {
-							t.Errorf("unexpected v, want '%v' actual '%v'", wantV, v)
-						}
+						asserterror.Equal(t, v, wantV)
 						return wantErr
 					},
 				)
-				bs        = []byte{3, 1, 1, 1}
-				v, n, err = NewValidStringSer(stropts.WithLenValidator(lenVl)).Unmarshal(bs)
+				bs  = []byte{3, 1, 1, 1}
+				ser = NewValidStringSer(stropts.WithLenValidator(lenVl))
 			)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			test.TestUnmarshalOnly(bs, ser, want, nil, t)
 		})
 
 	t.Run("If string length == 0 lenVl should work", func(t *testing.T) {
 		var (
-			wantV                        = ""
-			wantN                        = 1
-			wantErr                      = errors.New("empty string")
-			bs                           = []byte{0}
-			lenVl   com.ValidatorFn[int] = func(t int) (err error) {
+			wantErr = errors.New("empty string")
+			want    = test.UnmarshalResult[string]{
+				V:   "",
+				N:   1,
+				Err: wantErr,
+			}
+			bs                         = []byte{0}
+			lenVl com.ValidatorFn[int] = func(t int) (err error) {
 				return wantErr
 			}
-			v, n, err = NewValidStringSer(stropts.WithLenValidator(lenVl)).Unmarshal(bs)
+			ser = NewValidStringSer(stropts.WithLenValidator(lenVl))
 		)
-		ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+		test.TestUnmarshalOnly(bs, ser, want, nil, t)
 	})
 }
 
@@ -393,13 +385,14 @@ func TestUnsafe_Float64(t *testing.T) {
 	t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantV     float64 = 0.0
-				wantN             = 0
-				wantErr           = mus.ErrTooSmallByteSlice
-				bs                = []byte{}
-				v, n, err         = Float64.Unmarshal(bs)
+				want = test.UnmarshalResult[float64]{
+					V:   0.0,
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{}
 			)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			test.TestUnmarshalOnly(bs, Float64, want, nil, t)
 		})
 }
 
@@ -413,13 +406,14 @@ func TestUnsafe_Float32(t *testing.T) {
 	t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantV     float32 = 0.0
-				wantN             = 0
-				wantErr           = mus.ErrTooSmallByteSlice
-				bs                = []byte{}
-				v, n, err         = Float32.Unmarshal(bs)
+				want = test.UnmarshalResult[float32]{
+					V:   0.0,
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{}
 			)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			test.TestUnmarshalOnly(bs, Float32, want, nil, t)
 		})
 }
 
@@ -433,25 +427,27 @@ func TestUnsafe_Bool(t *testing.T) {
 	t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantV     bool = false
-				wantN          = 0
-				wantErr        = mus.ErrTooSmallByteSlice
-				bs             = []byte{}
-				v, n, err      = Bool.Unmarshal(bs)
+				want = test.UnmarshalResult[bool]{
+					V:   false,
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{}
 			)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			test.TestUnmarshalOnly(bs, Bool, want, nil, t)
 		})
 
 	t.Run("Unmarshal should return ErrWrongFormat if meets wrong format",
 		func(t *testing.T) {
 			var (
-				wantV     bool = false
-				wantN          = 0
-				wantErr        = com.ErrWrongFormat
-				bs             = []byte{2}
-				v, n, err      = Bool.Unmarshal(bs)
+				want = test.UnmarshalResult[bool]{
+					V:   false,
+					N:   0,
+					Err: com.ErrWrongFormat,
+				}
+				bs = []byte{2}
 			)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			test.TestUnmarshalOnly(bs, Bool, want, nil, t)
 		})
 }
 
@@ -489,9 +485,7 @@ func TestUnsafe_ByteSlice(t *testing.T) {
 			defer func() {
 				if r := recover(); r != nil {
 					err := r.(error)
-					if err != wantErr {
-						t.Errorf("unexpected error, want '%v' actual '%v'", wantErr, err)
-					}
+					asserterror.EqualError(t, err, wantErr)
 				}
 			}()
 			ByteSlice.Marshal(s, bs)
@@ -500,55 +494,63 @@ func TestUnsafe_ByteSlice(t *testing.T) {
 	t.Run("If the length serializer fails with an error, Unmarshal should return it",
 		func(t *testing.T) {
 			var (
-				wantV     []byte = nil
-				wantN            = 0
-				wantErr          = mus.ErrTooSmallByteSlice
-				v, n, err        = ByteSlice.Unmarshal(nil)
+				want = test.UnmarshalResult[[]byte]{
+					V:   nil,
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
 			)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil,
-				t)
+			test.TestUnmarshalOnly(nil, ByteSlice, want, nil, t)
 		})
 
 	t.Run("Unmarshal should return ErrTooSmallByteSlice if bs is too small for slice content",
 		func(t *testing.T) {
 			var (
-				wantV     []byte = nil
-				wantN            = 1
-				wantErr          = mus.ErrTooSmallByteSlice
-				v, n, err        = ByteSlice.Unmarshal([]byte{2, 1}) // Length 2 but only 1 byte available
+				want = test.UnmarshalResult[[]byte]{
+					V:   nil,
+					N:   1,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{2, 1}
 			)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			test.TestUnmarshalOnly(bs, ByteSlice, want, nil, t)
 		})
 
 	t.Run("Unmarshal should return ErrNegativeLength if meets a negative length",
 		func(t *testing.T) {
 			var (
-				wantV     []byte = nil
-				wantN, bs        = NegativeLengthBs()
-				wantErr          = com.ErrNegativeLength
-				v, n, err        = ByteSlice.Unmarshal(bs)
+				wantN, bs = NegativeLengthBs()
+				want      = test.UnmarshalResult[[]byte]{
+					V:   nil,
+					N:   wantN,
+					Err: com.ErrNegativeLength,
+				}
 			)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			test.TestUnmarshalOnly(bs, ByteSlice, want, nil, t)
 		})
 
 	t.Run("Skip should return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantN   = 0
-				wantErr = mus.ErrTooSmallByteSlice
-				n, err  = ByteSlice.Skip([]byte{})
+				want = test.SkipResult{
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{}
 			)
-			ctest.TestSkipResults(wantN, n, wantErr, err, nil, t)
+			test.TestSkipOnly(bs, ByteSlice, want, nil, t)
 		})
 
 	t.Run("Skip should return ErrNegativeLength if meets a negative length",
 		func(t *testing.T) {
 			var (
 				wantN, bs = NegativeLengthBs()
-				wantErr   = com.ErrNegativeLength
-				n, err    = ByteSlice.Skip(bs)
+				want      = test.SkipResult{
+					N:   wantN,
+					Err: com.ErrNegativeLength,
+				}
 			)
-			ctest.TestSkipResults(wantN, n, wantErr, err, nil, t)
+			test.TestSkipOnly(bs, ByteSlice, want, nil, t)
 		})
 
 	t.Run("Valid ByteSlice serializer should succeed with empty slice",
@@ -568,58 +570,66 @@ func TestUnsafe_ByteSlice(t *testing.T) {
 	t.Run("If lenSer fails with an error, valid Unmarshal should return it",
 		func(t *testing.T) {
 			var (
-				wantV   []byte = nil
-				wantN          = 0
-				wantErr        = errors.New("lenSer error")
-				lenSer         = mock.NewSerializer[int]().RegisterUnmarshal(
+				wantErr = errors.New("lenSer error")
+				want    = test.UnmarshalResult[[]byte]{
+					V:   nil,
+					N:   0,
+					Err: wantErr,
+				}
+				lenSer = mock.NewSerializer[int]().RegisterUnmarshal(
 					func(bs []byte) (t int, n int, err error) {
 						return 0, 0, wantErr
 					},
 				)
-				mocks     = []*mok.Mock{lenSer.Mock}
-				v, n, err = NewValidByteSliceSer(bslopts.WithLenSer(lenSer)).Unmarshal(nil)
+				ser = NewValidByteSliceSer(bslopts.WithLenSer(lenSer))
 			)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err,
-				mocks, t)
+			test.TestUnmarshalOnly(nil, ser, want, []*mok.Mock{lenSer.Mock}, t)
 		})
 
 	t.Run("Valid Unmarshal should return ErrTooSmallByteSlice if bs is too small for slice content",
 		func(t *testing.T) {
 			var (
-				wantV     []byte = nil
-				wantN            = 1
-				wantErr          = mus.ErrTooSmallByteSlice
-				v, n, err        = NewValidByteSliceSer(nil).Unmarshal([]byte{2, 1}) // Length 2 but only 1 byte available
+				want = test.UnmarshalResult[[]byte]{
+					V:   nil,
+					N:   1,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{2, 1}
 			)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			test.TestUnmarshalOnly(bs, NewValidByteSliceSer(nil), want, nil, t)
 		})
 
 	t.Run("Valid Unmarshal should return ErrNegativeLength if meets a negative length",
 		func(t *testing.T) {
 			var (
-				wantV     []byte = nil
-				wantN, bs        = NegativeLengthBs()
-				wantErr          = com.ErrNegativeLength
-				v, n, err        = NewValidByteSliceSer(nil).Unmarshal(bs)
+				wantN, bs = NegativeLengthBs()
+				want      = test.UnmarshalResult[[]byte]{
+					V:   nil,
+					N:   wantN,
+					Err: com.ErrNegativeLength,
+				}
 			)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			test.TestUnmarshalOnly(bs, NewValidByteSliceSer(nil), want, nil, t)
 		})
 
 	t.Run("If lenVl fails with an error, valid Unmarshal should return it",
 		func(t *testing.T) {
 			var (
-				wantV   []byte = nil
-				wantN          = 1
-				wantErr        = errors.New("too large slice")
-				bs             = []byte{3, 4, 1, 1}
-				lenVl          = cmock.NewValidator[int]().RegisterValidate(
+				wantErr = errors.New("too large slice")
+				want    = test.UnmarshalResult[[]byte]{
+					V:   nil,
+					N:   1,
+					Err: wantErr,
+				}
+				bs    = []byte{3, 4, 1, 1}
+				lenVl = cmock.NewValidator[int]().RegisterValidate(
 					func(v int) (err error) {
 						return wantErr
 					},
 				)
-				v, n, err = NewValidByteSliceSer(bslopts.WithLenValidator(lenVl)).Unmarshal(bs)
+				ser = NewValidByteSliceSer(bslopts.WithLenValidator(lenVl))
 			)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			test.TestUnmarshalOnly(bs, ser, want, nil, t)
 		})
 }
 
@@ -646,14 +656,14 @@ func TestUnsafe_Time(t *testing.T) {
 		t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
 			func(t *testing.T) {
 				var (
-					wantV     = time.Time{}
-					wantN     = 0
-					wantErr   = mus.ErrTooSmallByteSlice
-					bs        = []byte{}
-					v, n, err = TimeUnixUTC.Unmarshal(bs)
+					want = test.UnmarshalResult[time.Time]{
+						V:   time.Time{},
+						N:   0,
+						Err: mus.ErrTooSmallByteSlice,
+					}
+					bs = []byte{}
 				)
-				ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err,
-					nil, t)
+				test.TestUnmarshalOnly(bs, TimeUnixUTC, want, nil, t)
 			})
 	})
 
@@ -677,14 +687,14 @@ func TestUnsafe_Time(t *testing.T) {
 		t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
 			func(t *testing.T) {
 				var (
-					wantV     = time.Time{}
-					wantN     = 0
-					wantErr   = mus.ErrTooSmallByteSlice
-					bs        = []byte{}
-					v, n, err = TimeUnixMilliUTC.Unmarshal(bs)
+					want = test.UnmarshalResult[time.Time]{
+						V:   time.Time{},
+						N:   0,
+						Err: mus.ErrTooSmallByteSlice,
+					}
+					bs = []byte{}
 				)
-				ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err,
-					nil, t)
+				test.TestUnmarshalOnly(bs, TimeUnixMilliUTC, want, nil, t)
 			})
 	})
 
@@ -708,14 +718,14 @@ func TestUnsafe_Time(t *testing.T) {
 		t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
 			func(t *testing.T) {
 				var (
-					wantV     = time.Time{}
-					wantN     = 0
-					wantErr   = mus.ErrTooSmallByteSlice
-					bs        = []byte{}
-					v, n, err = TimeUnixMicroUTC.Unmarshal(bs)
+					want = test.UnmarshalResult[time.Time]{
+						V:   time.Time{},
+						N:   0,
+						Err: mus.ErrTooSmallByteSlice,
+					}
+					bs = []byte{}
 				)
-				ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err,
-					nil, t)
+				test.TestUnmarshalOnly(bs, TimeUnixMicroUTC, want, nil, t)
 			})
 	})
 
@@ -733,14 +743,14 @@ func TestUnsafe_Time(t *testing.T) {
 		t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
 			func(t *testing.T) {
 				var (
-					wantV     = time.Time{}
-					wantN     = 0
-					wantErr   = mus.ErrTooSmallByteSlice
-					bs        = []byte{}
-					v, n, err = TimeUnixNanoUTC.Unmarshal(bs)
+					want = test.UnmarshalResult[time.Time]{
+						V:   time.Time{},
+						N:   0,
+						Err: mus.ErrTooSmallByteSlice,
+					}
+					bs = []byte{}
 				)
-				ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err,
-					nil, t)
+				test.TestUnmarshalOnly(bs, TimeUnixNanoUTC, want, nil, t)
 			})
 	})
 }
@@ -763,14 +773,14 @@ func TestUnsafe_Array(t *testing.T) {
 	t.Run("Unmarshal of the too large array should return ErrTooLargeLength",
 		func(t *testing.T) {
 			var (
-				wantV     [3]int = [3]int{0, 0, 0}
-				wantN            = 1
-				wantErr          = com.ErrTooLargeLength
-				bs               = []byte{4}
-				v, n, err        = NewArraySer[[3]int, int](nil).Unmarshal(bs)
+				want = test.UnmarshalResult[[3]int]{
+					V:   [3]int{0, 0, 0},
+					N:   1,
+					Err: com.ErrTooLargeLength,
+				}
+				bs = []byte{4}
 			)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err,
-				nil, t)
+			test.TestUnmarshalOnly(bs, NewArraySer[[3]int, int](nil), want, nil, t)
 		})
 
 	t.Run("Valid array serializer should succeed", func(t *testing.T) {
@@ -790,43 +800,42 @@ func TestUnsafe_Array(t *testing.T) {
 	t.Run("Valid Unmarshal of the too large array should return ErrTooLargeLength",
 		func(t *testing.T) {
 			var (
-				wantV     [3]int = [3]int{0, 0, 0}
-				wantN            = 1
-				wantErr          = com.ErrTooLargeLength
-				bs               = []byte{4}
-				v, n, err        = NewValidArraySer[[3]int, int](nil, nil).Unmarshal(bs)
+				want = test.UnmarshalResult[[3]int]{
+					V:   [3]int{0, 0, 0},
+					N:   1,
+					Err: com.ErrTooLargeLength,
+				}
+				bs = []byte{4}
 			)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err,
-				nil, t)
+			test.TestUnmarshalOnly(bs, NewValidArraySer[[3]int, int](nil, nil), want, nil, t)
 		})
 
 	t.Run("If elemVl returns an error, valid Unmarshal should return it",
 		func(t *testing.T) {
 			var (
-				wantV    [3]int = [3]int{0, 0, 0}
-				wantElem        = 11
-				wantN           = 2
-				wantErr         = errors.New("elemVl error")
-				bs              = []byte{3, 11}
-				elemSer         = mock.NewSerializer[int]().RegisterUnmarshal(
+				wantElem = 11
+				wantErr  = errors.New("elemVl error")
+				want     = test.UnmarshalResult[[3]int]{
+					V:   [3]int{0, 0, 0},
+					N:   2,
+					Err: wantErr,
+				}
+				bs      = []byte{3, 11}
+				elemSer = mock.NewSerializer[int]().RegisterUnmarshal(
 					func(bs []byte) (t int, n int, err error) {
 						return 11, 1, nil
 					},
 				)
 				elemVl = cmock.NewValidator[int]().RegisterValidate(
 					func(v int) (err error) {
-						if v != wantElem {
-							t.Errorf("unexpected v, want %v actual %v", wantElem, v)
-						}
+						asserterror.Equal(t, v, wantElem)
 						return wantErr
 					},
 				)
 				ser   = NewValidArraySer[[3]int](elemSer, arropts.WithElemValidator[int](elemVl))
 				mocks = []*mok.Mock{elemSer.Mock, elemVl.Mock}
 			)
-			v, n, err := ser.Unmarshal(bs)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err,
-				mocks, t)
+			test.TestUnmarshalOnly(bs, ser, want, mocks, t)
 		})
 
 	t.Run("We should be able to set a length serializer", func(t *testing.T) {

@@ -9,6 +9,7 @@ import (
 	ctest "github.com/mus-format/common-go/test"
 	"github.com/mus-format/mus-go"
 	"github.com/mus-format/mus-go/test"
+	asserterror "github.com/ymz-ncnk/assert/error"
 )
 
 func TestRaw_setUpUintFuncs(t *testing.T) {
@@ -18,9 +19,7 @@ func TestRaw_setUpUintFuncs(t *testing.T) {
 			defer func() {
 				if r := recover(); r != nil {
 					err := r.(error)
-					if err != wantErr {
-						t.Errorf("unexpected error, want '%v' actual '%v'", wantErr, err)
-					}
+					asserterror.EqualError(t, err, wantErr)
 				}
 			}()
 			setUpUintFuncs(16)
@@ -29,35 +28,25 @@ func TestRaw_setUpUintFuncs(t *testing.T) {
 	t.Run("If the system int size is equal to 32, setUpUintFuncs should initialize the uint functions with 32-bit versions",
 		func(t *testing.T) {
 			setUpUintFuncs(32)
-			if !ctest.ComparePtrs(marshalUint, marshalInteger32[uint]) {
-				t.Error("unexpected marshalUint func")
-			}
-			if !ctest.ComparePtrs(unmarshalUint, unmarshalInteger32[uint]) {
-				t.Error("unexpected unmarshalUint func")
-			}
-			if sizeUint != com.Num32RawSize {
-				t.Error("unexpected sizeUint func")
-			}
-			if !ctest.ComparePtrs(skipUint, SkipInteger32) {
-				t.Error("unexpected skipUint func")
-			}
+			asserterror.Equal(t, ctest.ComparePtrs(marshalUint, marshalInteger32[uint]),
+				true, "unexpected marshalUint func")
+			asserterror.Equal(t, ctest.ComparePtrs(unmarshalUint, unmarshalInteger32[uint]),
+				true, "unexpected unmarshalUint func")
+			asserterror.Equal(t, sizeUint, com.Num32RawSize, "unexpected sizeUint func")
+			asserterror.Equal(t, ctest.ComparePtrs(skipUint, SkipInteger32),
+				true, "unexpected skipUint func")
 		})
 
 	t.Run("If the system int size is equal to 64, setUpUintFuncs should initialize the uint functions with 64-bit versions",
 		func(t *testing.T) {
 			setUpUintFuncs(64)
-			if !ctest.ComparePtrs(marshalUint, marshalInteger64[uint]) {
-				t.Error("unexpected marshalUint func")
-			}
-			if !ctest.ComparePtrs(unmarshalUint, unmarshalInteger64[uint]) {
-				t.Error("unexpected unmarshalUint func")
-			}
-			if sizeUint != com.Num64RawSize {
-				t.Error("unexpected sizeUint func")
-			}
-			if !ctest.ComparePtrs(skipUint, SkipInteger64) {
-				t.Error("unexpected skipUint func")
-			}
+			asserterror.Equal(t, ctest.ComparePtrs(marshalUint, marshalInteger64[uint]),
+				true, "unexpected marshalUint func")
+			asserterror.Equal(t, ctest.ComparePtrs(unmarshalUint, unmarshalInteger64[uint]),
+				true, "unexpected unmarshalUint func")
+			asserterror.Equal(t, sizeUint, com.Num64RawSize, "unexpected sizeUint func")
+			asserterror.Equal(t, ctest.ComparePtrs(skipUint, SkipInteger64),
+				true, "unexpected skipUint func")
 		})
 }
 
@@ -68,9 +57,7 @@ func TestRaw_setUpIntFuncs(t *testing.T) {
 			defer func() {
 				if r := recover(); r != nil {
 					err := r.(error)
-					if err != wantErr {
-						t.Errorf("unexpected error, want '%v' actual '%v'", wantErr, err)
-					}
+					asserterror.EqualError(t, err, wantErr)
 				}
 			}()
 			setUpIntFuncs(16)
@@ -79,35 +66,25 @@ func TestRaw_setUpIntFuncs(t *testing.T) {
 	t.Run("If the system int size is equal to 32, setUpIntFuncs should initialize the uint functions with 32-bit versions",
 		func(t *testing.T) {
 			setUpIntFuncs(32)
-			if !ctest.ComparePtrs(marshalInt, marshalInteger32[int]) {
-				t.Error("unexpected marshalInt func")
-			}
-			if !ctest.ComparePtrs(unmarshalInt, unmarshalInteger32[int]) {
-				t.Error("unexpected unmarshalInt func")
-			}
-			if sizeInt != com.Num32RawSize {
-				t.Error("unexpected sizeInt func")
-			}
-			if !ctest.ComparePtrs(skipInt, SkipInteger32) {
-				t.Error("unexpected skipInt func")
-			}
+			asserterror.Equal(t, ctest.ComparePtrs(marshalInt, marshalInteger32[int]),
+				true, "unexpected marshalInt func")
+			asserterror.Equal(t, ctest.ComparePtrs(unmarshalInt, unmarshalInteger32[int]),
+				true, "unexpected unmarshalInt func")
+			asserterror.Equal(t, sizeInt, com.Num32RawSize, "unexpected sizeInt func")
+			asserterror.Equal(t, ctest.ComparePtrs(skipInt, SkipInteger32),
+				true, "unexpected skipInt func")
 		})
 
 	t.Run("If the system int size is equal to 64, setUpIntFuncs should initialize the uint functions with 64-bit versions",
 		func(t *testing.T) {
 			setUpIntFuncs(64)
-			if !ctest.ComparePtrs(marshalInt, marshalInteger64[int]) {
-				t.Error("unexpected marshalInt func")
-			}
-			if !ctest.ComparePtrs(unmarshalInt, unmarshalInteger64[int]) {
-				t.Error("unexpected unmarshalInt func")
-			}
-			if sizeInt != com.Num64RawSize {
-				t.Error("unexpected sizeInt func")
-			}
-			if !ctest.ComparePtrs(skipInt, SkipInteger64) {
-				t.Error("unexpected skipInt func")
-			}
+			asserterror.Equal(t, ctest.ComparePtrs(marshalInt, marshalInteger64[int]),
+				true, "unexpected marshalInt func")
+			asserterror.Equal(t, ctest.ComparePtrs(unmarshalInt, unmarshalInteger64[int]),
+				true, "unexpected unmarshalInt func")
+			asserterror.Equal(t, sizeInt, com.Num64RawSize, "unexpected sizeInt func")
+			asserterror.Equal(t, ctest.ComparePtrs(skipInt, SkipInteger64),
+				true, "unexpected skipInt func")
 		})
 }
 
@@ -127,24 +104,26 @@ func TestRaw_Uint64(t *testing.T) {
 	t.Run("unmarshalInteger64 should return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantV   uint64 = 0
-				wantN          = 0
-				wantErr        = mus.ErrTooSmallByteSlice
-				bs             = []byte{1, 2, 3, 4, 5}
+				want = test.UnmarshalResult[uint64]{
+					V:   0,
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{1, 2, 3, 4, 5}
 			)
-			v, n, err := unmarshalInteger64[uint64](bs)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			test.TestUnmarshalOnly(bs, Uint64, want, nil, t)
 		})
 
 	t.Run("skipInteger64 should return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantN   = 0
-				wantErr = mus.ErrTooSmallByteSlice
-				bs      = []byte{1, 2, 3, 4, 5, 6, 7}
+				want = test.SkipResult{
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{1, 2, 3, 4, 5, 6, 7}
 			)
-			n, err := SkipInteger64(bs)
-			ctest.TestSkipResults(wantN, n, wantErr, err, nil, t)
+			test.TestSkipOnly(bs, Uint64, want, nil, t)
 		})
 }
 
@@ -158,24 +137,26 @@ func TestRaw_Uint32(t *testing.T) {
 	t.Run("unmarshalInteger32 should return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantV   uint32 = 0
-				wantN          = 0
-				wantErr        = mus.ErrTooSmallByteSlice
-				bs             = []byte{1, 2, 3}
+				want = test.UnmarshalResult[uint32]{
+					V:   0,
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{1, 2, 3}
 			)
-			v, n, err := unmarshalInteger32[uint32](bs)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			test.TestUnmarshalOnly(bs, Uint32, want, nil, t)
 		})
 
 	t.Run("skipInteger32 should return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantN   = 0
-				wantErr = mus.ErrTooSmallByteSlice
-				bs      = []byte{1, 2, 3}
+				want = test.SkipResult{
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{1, 2, 3}
 			)
-			n, err := SkipInteger32(bs)
-			ctest.TestSkipResults(wantN, n, wantErr, err, nil, t)
+			test.TestSkipOnly(bs, Uint32, want, nil, t)
 		})
 }
 
@@ -189,24 +170,26 @@ func TestRaw_Uint16(t *testing.T) {
 	t.Run("unmarshalInteger16 should return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantV   uint16 = 0
-				wantN          = 0
-				wantErr        = mus.ErrTooSmallByteSlice
-				bs             = []byte{1}
+				want = test.UnmarshalResult[uint16]{
+					V:   0,
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{1}
 			)
-			v, n, err := unmarshalInteger16[uint16](bs)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			test.TestUnmarshalOnly(bs, Uint16, want, nil, t)
 		})
 
 	t.Run("skipInteger16 should return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantN   = 0
-				wantErr = mus.ErrTooSmallByteSlice
-				bs      = []byte{1}
+				want = test.SkipResult{
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{1}
 			)
-			n, err := SkipInteger16(bs)
-			ctest.TestSkipResults(wantN, n, wantErr, err, nil, t)
+			test.TestSkipOnly(bs, Uint16, want, nil, t)
 		})
 }
 
@@ -220,24 +203,26 @@ func TestRaw_Uint8(t *testing.T) {
 	t.Run("unmarshalInteger8 should return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantV   uint8 = 0
-				wantN         = 0
-				wantErr       = mus.ErrTooSmallByteSlice
-				bs            = []byte{}
+				want = test.UnmarshalResult[uint8]{
+					V:   0,
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{}
 			)
-			v, n, err := unmarshalInteger8[uint8](bs)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			test.TestUnmarshalOnly(bs, Uint8, want, nil, t)
 		})
 
 	t.Run("skipInteger8 should return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantN   = 0
-				wantErr = mus.ErrTooSmallByteSlice
-				bs      = []byte{}
+				want = test.SkipResult{
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{}
 			)
-			n, err := SkipInteger8(bs)
-			ctest.TestSkipResults(wantN, n, wantErr, err, nil, t)
+			test.TestSkipOnly(bs, Uint8, want, nil, t)
 		})
 }
 
@@ -287,24 +272,26 @@ func TestRaw_Float64(t *testing.T) {
 	t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantV   float64 = 0
-				wantN           = 0
-				wantErr         = mus.ErrTooSmallByteSlice
-				bs              = []byte{1, 2, 3, 4, 5}
+				want = test.UnmarshalResult[float64]{
+					V:   0,
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{1, 2, 3, 4, 5}
 			)
-			v, n, err := Float64.Unmarshal(bs)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			test.TestUnmarshalOnly(bs, Float64, want, nil, t)
 		})
 
 	t.Run("Skip should return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantN   = 0
-				wantErr = mus.ErrTooSmallByteSlice
-				bs      = []byte{1, 2, 3, 4, 5}
+				want = test.SkipResult{
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{1, 2, 3, 4, 5}
 			)
-			n, err := Float64.Skip(bs)
-			ctest.TestSkipResults(wantN, n, wantErr, err, nil, t)
+			test.TestSkipOnly(bs, Float64, want, nil, t)
 		})
 }
 
@@ -318,24 +305,26 @@ func TestRaw_Float32(t *testing.T) {
 	t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantV   float32 = 0
-				wantN           = 0
-				wantErr         = mus.ErrTooSmallByteSlice
-				bs              = []byte{1, 2}
+				want = test.UnmarshalResult[float32]{
+					V:   0,
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{1, 2}
 			)
-			v, n, err := Float32.Unmarshal(bs)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			test.TestUnmarshalOnly(bs, Float32, want, nil, t)
 		})
 
 	t.Run("Skip should return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantN   = 0
-				wantErr = mus.ErrTooSmallByteSlice
-				bs      = []byte{1, 2}
+				want = test.SkipResult{
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{1, 2}
 			)
-			n, err := Float32.Skip(bs)
-			ctest.TestSkipResults(wantN, n, wantErr, err, nil, t)
+			test.TestSkipOnly(bs, Float32, want, nil, t)
 		})
 }
 
@@ -359,13 +348,14 @@ func TestRaw_TimeUnixUTC(t *testing.T) {
 	t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantV   = time.Time{}
-				wantN   = 0
-				wantErr = mus.ErrTooSmallByteSlice
-				bs      = []byte{}
+				want = test.UnmarshalResult[time.Time]{
+					V:   time.Time{},
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{}
 			)
-			v, n, err := TimeUnixUTC.Unmarshal(bs)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			test.TestUnmarshalOnly(bs, TimeUnixUTC, want, nil, t)
 		})
 }
 
@@ -389,13 +379,14 @@ func TestRaw_TimeUnixMilliUTC(t *testing.T) {
 	t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantV   = time.Time{}
-				wantN   = 0
-				wantErr = mus.ErrTooSmallByteSlice
-				bs      = []byte{}
+				want = test.UnmarshalResult[time.Time]{
+					V:   time.Time{},
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{}
 			)
-			v, n, err := TimeUnixMilliUTC.Unmarshal(bs)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			test.TestUnmarshalOnly(bs, TimeUnixMilliUTC, want, nil, t)
 		})
 }
 
@@ -419,13 +410,14 @@ func TestRaw_TimeUnixMicroUTC(t *testing.T) {
 	t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantV   = time.Time{}
-				wantN   = 0
-				wantErr = mus.ErrTooSmallByteSlice
-				bs      = []byte{}
+				want = test.UnmarshalResult[time.Time]{
+					V:   time.Time{},
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{}
 			)
-			v, n, err := TimeUnixMicroUTC.Unmarshal(bs)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			test.TestUnmarshalOnly(bs, TimeUnixMicroUTC, want, nil, t)
 		})
 }
 
@@ -444,12 +436,13 @@ func TestRaw_TimeUnixNanoUTC(t *testing.T) {
 	t.Run("Unmarshal should return ErrTooSmallByteSlice if there is no space in bs",
 		func(t *testing.T) {
 			var (
-				wantV   = time.Time{}
-				wantN   = 0
-				wantErr = mus.ErrTooSmallByteSlice
-				bs      = []byte{}
+				want = test.UnmarshalResult[time.Time]{
+					V:   time.Time{},
+					N:   0,
+					Err: mus.ErrTooSmallByteSlice,
+				}
+				bs = []byte{}
 			)
-			v, n, err := TimeUnixNanoUTC.Unmarshal(bs)
-			ctest.TestUnmarshalResults(wantV, v, wantN, n, wantErr, err, nil, t)
+			test.TestUnmarshalOnly(bs, TimeUnixNanoUTC, want, nil, t)
 		})
 }

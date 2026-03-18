@@ -9,14 +9,14 @@ import (
 	asserterror "github.com/ymz-ncnk/assert/error"
 )
 
-const FooDTM com.DTM = 1
+const FooDTM com.DTM = 0
 
 type Foo struct {
 	Num int
 	Str string
 }
 
-func TestTyped(t *testing.T) {
+func TestTyped_Ser(t *testing.T) {
 	t.Run("Marshal, Unmarshal, Size, Skip methods should succeed",
 		func(t *testing.T) {
 			var (
@@ -169,5 +169,30 @@ func TestTyped(t *testing.T) {
 			asserterror.EqualError(t, wantErr, err)
 			asserterror.Equal(t, wantDTM, dtm)
 			asserterror.Equal(t, wantN, n)
+		})
+}
+
+func TestTyped_DTMSer(t *testing.T) {
+	t.Run("Marshal should panic if receives too small byte slice",
+		func(t *testing.T) {
+			defer func() {
+				if r := recover(); r == nil {
+					t.Error("should panic")
+				}
+			}()
+			DTMSer.Marshal(1, make([]byte, DTMSer.Size(1)-1))
+		})
+
+	t.Run("Unmarshal and Skip should return error if receives too small byte slice",
+		func(t *testing.T) {
+			var (
+				bs  = make([]byte, DTMSer.Size(1)-1)
+				err error
+			)
+			_, _, err = DTMSer.Unmarshal(bs)
+			asserterror.EqualError(t, mus.ErrTooSmallByteSlice, err)
+
+			_, err = DTMSer.Skip(bs)
+			asserterror.EqualError(t, mus.ErrTooSmallByteSlice, err)
 		})
 }

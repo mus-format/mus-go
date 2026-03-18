@@ -33,12 +33,7 @@ func TestPMIntegration_Wrapper(t *testing.T) {
 			e = 5
 			f = 6
 		)
-		test.Test(
-			[]ctest.PtrStruct{{A1: &a, A2: &b, A3: &c}},
-			ser, t)
-
-		test.TestSkip(
-			[]ctest.PtrStruct{{A1: &d, A2: &e, A3: &f}},
-			ser, t)
+		test.Test([]ctest.PtrStruct{{A1: &a, A2: &b, A3: &c}}, ser, t)
+		test.TestSkip([]ctest.PtrStruct{{A1: &d, A2: &e, A3: &f}}, ser, t)
 	})
 }
