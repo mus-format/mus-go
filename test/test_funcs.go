@@ -8,7 +8,14 @@ import (
 
 	"github.com/mus-format/mus-go"
 	asserterror "github.com/ymz-ncnk/assert/error"
+	"github.com/ymz-ncnk/mok"
 )
+
+type UnmarshalResult[T any] struct {
+	V   T
+	N   int
+	Err error
+}
 
 func Test[T any](cases []T, ser mus.Serializer[T], t *testing.T) {
 	for i := range cases {
@@ -50,6 +57,16 @@ func Test[T any](cases []T, ser mus.Serializer[T], t *testing.T) {
 			}
 		}
 	}
+}
+
+func TestUnmarshal[T any](bs []byte, ser mus.Serializer[T],
+	want UnmarshalResult[T], mocks []*mok.Mock, t *testing.T,
+) {
+	v, n, err := ser.Unmarshal(bs)
+	asserterror.EqualDeep(t, v, want.V)
+	asserterror.Equal(t, n, want.N)
+	asserterror.EqualError(t, err, want.Err)
+	asserterror.EqualDeep(t, mok.CheckCalls(mocks), mok.EmptyInfomap)
 }
 
 func TestSkip[T any](cases []T, ser mus.Serializer[T], t *testing.T) {
