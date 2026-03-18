@@ -1,13 +1,14 @@
 package test
 
 import (
+	"fmt"
 	"math"
-	"reflect"
 	"testing"
 	"time"
 
 	"github.com/mus-format/mus-go"
 	asserterror "github.com/ymz-ncnk/assert/error"
+	assertfatal "github.com/ymz-ncnk/assert/fatal"
 	"github.com/ymz-ncnk/mok"
 )
 
@@ -26,36 +27,32 @@ func Test[T any](cases []T, ser mus.Serializer[T], t *testing.T) {
 			v    T
 		)
 		n = ser.Marshal(cases[i], bs)
-		if n != size {
-			t.Errorf("case '%v', unexpected n, want '%v' actual '%v'", i, size, n)
-		}
+		asserterror.Equal(t, n, size,
+			fmt.Sprintf("case '%v', unexpected n, want '%v' actual '%v'", i, size, n))
+
 		v, n, err := ser.Unmarshal(bs)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if n != size {
-			t.Errorf("case '%v', unexpected n, want '%v' actual '%v'", i, size, n)
-		}
+		assertfatal.EqualError(t, err, nil)
+		asserterror.Equal(t, n, size,
+			fmt.Sprintf("case '%v', unexpected n, want '%v' actual '%v'", i, size, n))
+
 		if tm, ok := any(v).(time.Time); ok {
-			tm1 := any(cases[i]).(time.Time)
-			if !tm.Equal(tm1) {
-				t.Errorf("case '%v', unexpected v, want '%v' actual '%v'", i, cases[i], v)
-			}
-		} else {
-			if f64, ok := any(v).(float64); ok {
-				if math.Float64bits(f64) == math.Float64bits(any(cases[i]).(float64)) {
-					continue
-				}
-			}
-			if f32, ok := any(v).(float32); ok {
-				if math.Float32bits(f32) == math.Float32bits(any(cases[i]).(float32)) {
-					continue
-				}
-			}
-			if !reflect.DeepEqual(v, cases[i]) {
-				t.Errorf("case '%v', unexpected v, want '%v' actual '%v'", i, cases[i], v)
+			asserterror.Equal(t, tm.Equal(any(cases[i]).(time.Time)), true,
+				fmt.Sprintf("case '%v', unexpected v, want '%v' actual '%v'", i, cases[i], v))
+			return
+		}
+
+		if f64, ok := any(v).(float64); ok {
+			if math.Float64bits(f64) == math.Float64bits(any(cases[i]).(float64)) {
+				continue
 			}
 		}
+		if f32, ok := any(v).(float32); ok {
+			if math.Float32bits(f32) == math.Float32bits(any(cases[i]).(float32)) {
+				continue
+			}
+		}
+		asserterror.EqualDeep(t, v, cases[i],
+			fmt.Sprintf("case '%v', unexpected v, want '%v' actual '%v'", i, cases[i], v))
 	}
 }
 
@@ -63,10 +60,10 @@ func TestUnmarshal[T any](bs []byte, ser mus.Serializer[T],
 	want UnmarshalResult[T], mocks []*mok.Mock, t *testing.T,
 ) {
 	v, n, err := ser.Unmarshal(bs)
-	asserterror.EqualDeep(t, v, want.V)
-	asserterror.Equal(t, n, want.N)
-	asserterror.EqualError(t, err, want.Err)
-	asserterror.EqualDeep(t, mok.CheckCalls(mocks), mok.EmptyInfomap)
+	asserterror.EqualDeep(t, v, want.V, "unexpected v")
+	asserterror.Equal(t, n, want.N, "unexpected n")
+	asserterror.EqualError(t, err, want.Err, "unexpected err")
+	asserterror.EqualDeep(t, mok.CheckCalls(mocks), mok.EmptyInfomap, "unexpected mocks")
 }
 
 func TestSkip[T any](cases []T, ser mus.Serializer[T], t *testing.T) {
@@ -77,25 +74,21 @@ func TestSkip[T any](cases []T, ser mus.Serializer[T], t *testing.T) {
 		)
 		ser.Marshal(cases[i], bs)
 		n, err := ser.Skip(bs)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if n != len(bs) {
-			t.Fatal("skipped not enough")
-		}
+		assertfatal.EqualError(t, err, nil,
+			fmt.Sprintf("case '%v', unexpected error", i))
+		asserterror.Equal(t, n, len(bs),
+			fmt.Sprintf("case '%v', skipped not enough", i))
 	}
 }
 
-func TestValidation[T any](cases []T, ser mus.Serializer[T], wantErr error,
+func TestValidation[T any](testCase T, ser mus.Serializer[T], wantErr error,
 	t *testing.T,
 ) {
-	for i := range cases {
-		var (
-			size = ser.Size(cases[i])
-			bs   = make([]byte, size)
-		)
-		ser.Marshal(cases[i], bs)
-		_, _, err := ser.Unmarshal(bs)
-		asserterror.EqualError(t, err, wantErr)
-	}
+	var (
+		size = ser.Size(testCase)
+		bs   = make([]byte, size)
+	)
+	ser.Marshal(testCase, bs)
+	_, _, err := ser.Unmarshal(bs)
+	asserterror.EqualError(t, err, wantErr, "unexpected error")
 }
