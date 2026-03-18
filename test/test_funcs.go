@@ -18,6 +18,11 @@ type UnmarshalResult[T any] struct {
 	Err error
 }
 
+type SkipResult struct {
+	N   int
+	Err error
+}
+
 func Test[T any](cases []T, ser mus.Serializer[T], t *testing.T) {
 	for i := range cases {
 		var (
@@ -56,16 +61,6 @@ func Test[T any](cases []T, ser mus.Serializer[T], t *testing.T) {
 	}
 }
 
-func TestUnmarshal[T any](bs []byte, ser mus.Serializer[T],
-	want UnmarshalResult[T], mocks []*mok.Mock, t *testing.T,
-) {
-	v, n, err := ser.Unmarshal(bs)
-	asserterror.EqualDeep(t, v, want.V, "unexpected v")
-	asserterror.Equal(t, n, want.N, "unexpected n")
-	asserterror.EqualError(t, err, want.Err, "unexpected err")
-	asserterror.EqualDeep(t, mok.CheckCalls(mocks), mok.EmptyInfomap, "unexpected mocks")
-}
-
 func TestSkip[T any](cases []T, ser mus.Serializer[T], t *testing.T) {
 	for i := range cases {
 		var (
@@ -91,4 +86,23 @@ func TestValidation[T any](testCase T, ser mus.Serializer[T], wantErr error,
 	ser.Marshal(testCase, bs)
 	_, _, err := ser.Unmarshal(bs)
 	asserterror.EqualError(t, err, wantErr, "unexpected error")
+}
+
+func TestUnmarshalOnly[T any](bs []byte, ser mus.Serializer[T],
+	want UnmarshalResult[T], mocks []*mok.Mock, t *testing.T,
+) {
+	v, n, err := ser.Unmarshal(bs)
+	asserterror.EqualDeep(t, v, want.V, "unexpected v")
+	asserterror.Equal(t, n, want.N, "unexpected n")
+	asserterror.EqualError(t, err, want.Err, "unexpected err")
+	asserterror.EqualDeep(t, mok.CheckCalls(mocks), mok.EmptyInfomap, "unexpected mocks")
+}
+
+func TestSkipOnly[T any](bs []byte, ser mus.Serializer[T],
+	want SkipResult, mocks []*mok.Mock, t *testing.T,
+) {
+	n, err := ser.Skip(bs)
+	asserterror.Equal(t, n, want.N, "unexpected n")
+	asserterror.EqualError(t, err, want.Err, "unexpected err")
+	asserterror.EqualDeep(t, mok.CheckCalls(mocks), mok.EmptyInfomap, "unexpected mocks")
 }
