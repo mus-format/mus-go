@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/mus-format/mus-go"
+	asserterror "github.com/ymz-ncnk/assert/error"
 )
 
 func Test[T any](cases []T, ser mus.Serializer[T], t *testing.T) {
@@ -65,5 +66,19 @@ func TestSkip[T any](cases []T, ser mus.Serializer[T], t *testing.T) {
 		if n != len(bs) {
 			t.Fatal("skipped not enough")
 		}
+	}
+}
+
+func TestValidation[T any](cases []T, ser mus.Serializer[T], wantErr error,
+	t *testing.T,
+) {
+	for i := range cases {
+		var (
+			size = ser.Size(cases[i])
+			bs   = make([]byte, size)
+		)
+		ser.Marshal(cases[i], bs)
+		_, _, err := ser.Unmarshal(bs)
+		asserterror.EqualError(t, err, wantErr)
 	}
 }
