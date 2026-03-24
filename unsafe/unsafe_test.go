@@ -181,13 +181,11 @@ func TestUnsafe_String(t *testing.T) {
 
 	t.Run("If the length serializer fails with an error, Unmarshal should return it",
 		func(t *testing.T) {
-			var (
-				want = test.UnmarshalResult[string]{
-					V:   "",
-					N:   0,
-					Err: mus.ErrTooSmallByteSlice,
-				}
-			)
+			want := test.UnmarshalResult[string]{
+				V:   "",
+				N:   0,
+				Err: mus.ErrTooSmallByteSlice,
+			}
 			test.TestUnmarshalOnly(nil, String, want, nil, t)
 		})
 
@@ -493,13 +491,11 @@ func TestUnsafe_ByteSlice(t *testing.T) {
 
 	t.Run("If the length serializer fails with an error, Unmarshal should return it",
 		func(t *testing.T) {
-			var (
-				want = test.UnmarshalResult[[]byte]{
-					V:   nil,
-					N:   0,
-					Err: mus.ErrTooSmallByteSlice,
-				}
-			)
+			want := test.UnmarshalResult[[]byte]{
+				V:   nil,
+				N:   0,
+				Err: mus.ErrTooSmallByteSlice,
+			}
 			test.TestUnmarshalOnly(nil, ByteSlice, want, nil, t)
 		})
 
@@ -832,7 +828,7 @@ func TestUnsafe_Array(t *testing.T) {
 						return wantErr
 					},
 				)
-				ser   = NewValidArraySer[[3]int](elemSer, arropts.WithElemValidator[int](elemVl))
+				ser   = NewValidArraySer[[3]int](elemSer, arropts.WithElemValidator(elemVl))
 				mocks = []*mok.Mock{elemSer.Mock, elemVl.Mock}
 			)
 			test.TestUnmarshalOnly(bs, ser, want, mocks, t)
