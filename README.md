@@ -44,12 +44,15 @@ This library, based on the Command Pattern, enables efficient execution of
 user-defined Commands on a server. The `cmd-stream/MUS` is about 3 times faster
 than `gRPC/Protobuf`.
 
-## Code Generator (Recommended)
+## Code Generation (Recommended)
 
-Manually writing `mus` serialization code can be tedious and error-prone. The
-[musgen-go](https://github.com/mus-format/musgen-go) code generator offers a
-much more efficient and reliable alternative that's simple to use - just provide
-a type and call `Generate()`.
+Implementing `mus` serializers manually can be tedious and error-prone. There
+are two ways to automate this:
+
+- [mus-gen](https://github.com/mus-format/mus-gen-go) — a traditional code 
+  generator. Simply provide a type and call `Generate()`.
+- [mus-skill](https://github.com/mus-format/mus-skill-go) — an AI agent skill to
+  produce serialization code.
 
 ## Quick Start
 
@@ -91,7 +94,7 @@ func main() {
     - [Advanced Capabilities](#advanced-capabilities)
     - [Additional Features](#additional-features)
   - [mus in Action: cmd-stream](#mus-in-action-cmd-stream)
-  - [Code Generator (Recommended)](#code-generator-recommended)
+  - [Code Generation (Recommended)](#code-generation-recommended)
   - [Quick Start](#quick-start)
   - [Contents](#contents)
   - [How To](#how-to)
