@@ -10,8 +10,8 @@ We provide security updates for the following versions of **mus-go**:
 
 | Version | Supported          |
 | ------- | ------------------ |
-| v0.9.x  | :white_check_mark: |
-| < v0.9  | :x:                |
+| v0.10.x | :white_check_mark: |
+| < v0.10 | :x:                |
 
 We recommend all users stay on the latest minor version to receive the most 
 up-to-date security patches.
