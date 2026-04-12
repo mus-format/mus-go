@@ -22,9 +22,9 @@ up-to-date security patches.
 
 Instead, please use the **GitHub Private Vulnerability Reporting** feature:
 
-1.  Navigate to the [mus-go repository](https://github.com/mus-format/mus-go) on GitHub.
-2.  Click on the **Security and quality** tab.
-3.  Click on **Report a vulnerability** to open a private advisory.
+1. Navigate to the [mus-go repository](https://github.com/mus-format/mus-go) on GitHub.
+2. Click on the **Security and quality** tab.
+3. Click on **Report a vulnerability** to open a private advisory.
 
 Using this feature allows us to communicate with you privately, resolve the 
 issue, and coordinate a public disclosure once a fix is available.
