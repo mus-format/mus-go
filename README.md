@@ -110,6 +110,7 @@ func main() {
   - [Testing](#testing)
     - [Fuzz Testing](#fuzz-testing)
   - [Benchmarks](#benchmarks)
+  - [Contributing & Security](#contributing--security)
   - [Version Compatibility](#version-compatibility)
 
 ## How To
@@ -295,6 +296,14 @@ sometimes produce inconsistent results across multiple runs. New
 [benchmarks](https://github.com/ymz-ncnk/go-serialization-benchmarks) were 
 created to provide more consistent and reproducible measurements for 
 accurate comparison.
+
+## Contributing & Security
+
+We welcome contributions of all kinds! Please see [CONTRIBUTING.md](CONTRIBUTING.md) 
+for details on how to get involved.
+
+If you find a security vulnerability, please refer to our 
+[Security Policy](SECURITY.md) for instructions on how to report it privately.
 
 ## Version Compatibility
 
