@@ -1,0 +1,31 @@
+name: "Security Scan"
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  ACT: false
+
+jobs:
+  gosec:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v6
+      - name: Run Gosec Security Scanner
+        uses: securego/gosec@master
+        with:
+          # Generates a SARIF file for GitHub Security integration
+          args: '-fmt sarif -out results.sarif -exclude=G103,G115 -exclude-dir=test ./...'
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v4
+        if: ${{ !env.ACT }}
+        with:
+          sarif_file: results.sarif
+          token: ${{ secrets.GITHUB_TOKEN }}

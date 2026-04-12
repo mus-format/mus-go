@@ -15,7 +15,7 @@ func TestOptions(t *testing.T) {
 	)
 	Apply([]SetOption[any]{
 		WithLenSer[any](wantLenSer),
-		WithElemValidator[any](wantElemVl),
+		WithElemValidator(wantElemVl),
 	}, &o)
 
 	if o.LenSer != wantLenSer {

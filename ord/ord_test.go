@@ -313,10 +313,10 @@ func TestOrd_Pointer(t *testing.T) {
 	t.Run("Pointer serializer should succeed for not nil ptr",
 		func(t *testing.T) {
 			var (
-				str1                            = "one"
-				str1Raw                         = append([]byte{6}, []byte(str1)...)
-				ptr                             = &str1
-				strSer  mock.Serializer[string] = mock.NewSerializer[string]().RegisterMarshalN(2,
+				str1    = "one"
+				str1Raw = append([]byte{6}, []byte(str1)...)
+				ptr     = &str1
+				strSer  = mock.NewSerializer[string]().RegisterMarshalN(2,
 					func(v string, bs []byte) (n int) {
 						switch v {
 						case str1:

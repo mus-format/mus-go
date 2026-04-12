@@ -102,8 +102,7 @@ type validSliceSer[T any] struct {
 // return com.ErrNegativeLength, a length/element unmarshalling error, or a
 // length/element validation error.
 func (s validSliceSer[T]) Unmarshal(bs []byte) (v []T, n int, err error) {
-	return UnmarshalValidSlice(bs, s.sliceSer.ElemSer, s.sliceSer.LenSer, s.lenVl,
-		s.elemVl)
+	return UnmarshalValidSlice(bs, s.ElemSer, s.LenSer, s.lenVl, s.elemVl)
 }
 
 func MarshalSlice[T any](v []T, elemSer mus.Serializer[T],

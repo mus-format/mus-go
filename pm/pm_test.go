@@ -207,7 +207,7 @@ func TestPM_Wrapper(t *testing.T) {
 		func(t *testing.T) {
 			var (
 				wantV  byte = 1
-				wantN  int  = 1
+				wantN       = 1
 				ptrMap      = com.NewPtrMap()
 				ptrSer      = mock.NewSerializer[byte]().RegisterMarshal(
 					func(v byte, bs []byte) (n int) {
@@ -233,7 +233,7 @@ func TestPM_Wrapper(t *testing.T) {
 		func(t *testing.T) {
 			var (
 				wantV     byte = 1
-				wantN     int  = 1
+				wantN          = 1
 				revPtrMap      = com.NewReversePtrMap()
 				ptrSer         = mock.NewSerializer[byte]().RegisterUnmarshal(
 					func(bs []byte) (v byte, n int, err error) {
@@ -263,7 +263,7 @@ func TestPM_Wrapper(t *testing.T) {
 		func(t *testing.T) {
 			var (
 				wantV    byte = 1
-				wantSize int  = 1
+				wantSize      = 1
 				ptrMap        = com.NewPtrMap()
 				ptrSer        = mock.NewSerializer[byte]().RegisterSize(
 					func(v byte) (size int) {
@@ -286,7 +286,7 @@ func TestPM_Wrapper(t *testing.T) {
 		func(t *testing.T) {
 			var (
 				wantV     byte = 1
-				wantN     int  = 1
+				wantN          = 1
 				revPtrMap      = com.NewReversePtrMap()
 				ptrSer         = mock.NewSerializer[byte]().RegisterSkip(
 					func(bs []byte) (n int, err error) {

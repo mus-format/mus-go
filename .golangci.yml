@@ -1,0 +1,52 @@
+version: "2"
+run:
+  tests: true
+linters:
+  default: none
+  enable:
+    - bodyclose
+    - copyloopvar
+    - errcheck
+    - goconst
+    - misspell
+    - perfsprint
+    - prealloc
+    - revive
+    - staticcheck
+    - unconvert
+    - whitespace
+  settings:
+    perfsprint:
+      int-conversion: true
+      err-error: true
+    prealloc:
+      simple: true
+      range-loops: true
+      for-loops: true
+    revive:
+      rules:
+        - name: exported
+        - name: var-naming
+        - name: package-comments
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths: []
+    rules:
+      - path: '^(test/|.*_test\.go$)'
+        linters:
+          - revive
+          - goconst
+          - errcheck
+      - path: typed/typed_ser\.go
+        linters:
+          - revive
+        text: "stutters"
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  new: false

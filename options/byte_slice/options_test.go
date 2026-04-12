@@ -25,5 +25,4 @@ func TestOptions(t *testing.T) {
 	if o.LenVl != wantLenVl {
 		t.Errorf("unexpected LenVl, want %v actual %v", wantLenVl, o.LenVl)
 	}
-
 }
