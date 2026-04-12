@@ -16,7 +16,7 @@ type Foo struct {
 	Str string
 }
 
-func TestTyped_Ser(t *testing.T) {
+func TestSer(t *testing.T) {
 	t.Run("Marshal, Unmarshal, Size, Skip methods should succeed",
 		func(t *testing.T) {
 			var (
@@ -32,7 +32,7 @@ func TestTyped_Ser(t *testing.T) {
 				).RegisterSkip(
 					func(bs []byte) (int, error) { return n, nil },
 				)
-				fooTypedMUS = NewTypedSer(FooDTM, ser)
+				fooTypedMUS = NewSer(FooDTM, ser)
 				bs          = make([]byte, fooTypedMUS.Size(foo))
 			)
 			// Marshal
@@ -65,7 +65,7 @@ func TestTyped_Ser(t *testing.T) {
 				).RegisterSkip(
 					func(bs []byte) (int, error) { return n, nil },
 				)
-				fooTypedMUS = NewTypedSer(FooDTM, ser)
+				fooTypedMUS = NewSer(FooDTM, ser)
 				bs          = make([]byte, fooTypedMUS.Size(foo))
 			)
 			n1 := fooTypedMUS.Marshal(foo, bs)
@@ -92,7 +92,7 @@ func TestTyped_Ser(t *testing.T) {
 
 	t.Run("DTM method should return correct DTM", func(t *testing.T) {
 		var (
-			fooTypedMUS = NewTypedSer[Foo](FooDTM, nil)
+			fooTypedMUS = NewSer[Foo](FooDTM, nil)
 			dtm         = fooTypedMUS.DTM()
 		)
 		asserterror.Equal(t, FooDTM, dtm)
@@ -104,7 +104,7 @@ func TestTyped_Ser(t *testing.T) {
 				actualDTM   = FooDTM + 3
 				wantErr     = com.NewWrongDTMError(FooDTM, actualDTM)
 				bs          = make([]byte, DTMSer.Size(actualDTM))
-				fooTypedMUS = NewTypedSer[Foo](FooDTM, nil)
+				fooTypedMUS = NewSer[Foo](FooDTM, nil)
 			)
 			DTMSer.Marshal(actualDTM, bs)
 			foo, n, err := fooTypedMUS.Unmarshal(bs)
@@ -119,7 +119,7 @@ func TestTyped_Ser(t *testing.T) {
 				actualDTM   = FooDTM + 3
 				wantErr     = com.NewWrongDTMError(FooDTM, actualDTM)
 				bs          = make([]byte, DTMSer.Size(actualDTM))
-				fooTypedMUS = NewTypedSer[Foo](FooDTM, nil)
+				fooTypedMUS = NewSer[Foo](FooDTM, nil)
 			)
 			DTMSer.Marshal(actualDTM, bs)
 			n, err := fooTypedMUS.Skip(bs)
@@ -135,7 +135,7 @@ func TestTyped_Ser(t *testing.T) {
 				wantErr = mus.ErrTooSmallByteSlice
 
 				bs          = []byte{}
-				fooTypedMUS = NewTypedSer[Foo](FooDTM, nil)
+				fooTypedMUS = NewSer[Foo](FooDTM, nil)
 			)
 			foo, n, err := fooTypedMUS.Unmarshal(bs)
 			asserterror.EqualError(t, wantErr, err)
@@ -150,7 +150,7 @@ func TestTyped_Ser(t *testing.T) {
 				wantErr = mus.ErrTooSmallByteSlice
 
 				bs          = []byte{}
-				fooTypedMUS = NewTypedSer[Foo](FooDTM, nil)
+				fooTypedMUS = NewSer[Foo](FooDTM, nil)
 			)
 			n, err := fooTypedMUS.Skip(bs)
 			asserterror.EqualError(t, wantErr, err)
@@ -172,7 +172,7 @@ func TestTyped_Ser(t *testing.T) {
 		})
 }
 
-func TestTyped_DTMSer(t *testing.T) {
+func TestDTMSer(t *testing.T) {
 	t.Run("Marshal should panic if receives too small byte slice",
 		func(t *testing.T) {
 			defer func() {

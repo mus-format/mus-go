@@ -42,10 +42,6 @@ linters:
           - revive
           - goconst
           - errcheck
-      - path: typed/typed_ser\.go
-        linters:
-          - revive
-        text: "stutters"
 issues:
   max-issues-per-linter: 0
   max-same-issues: 0

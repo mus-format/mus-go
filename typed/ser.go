@@ -8,25 +8,25 @@ import (
 	"github.com/mus-format/mus-go"
 )
 
-// NewTypedSer creates a new TypedSer.
-func NewTypedSer[T any](dtm com.DTM, ser mus.Serializer[T]) TypedSer[T] {
-	return TypedSer[T]{dtm, ser}
-}
-
-// TypedSer implements the mus.Serializer interface and provides DTM support for the
+// Ser implements the mus.Serializer interface and provides DTM support for the
 // mus-go serializer. It helps to serializer DTM + data.
-type TypedSer[T any] struct {
+type Ser[T any] struct {
 	dtm com.DTM
 	ser mus.Serializer[T]
 }
 
+// NewSer creates a new TypedSer.
+func NewSer[T any](dtm com.DTM, ser mus.Serializer[T]) Ser[T] {
+	return Ser[T]{dtm, ser}
+}
+
 // DTM returns the initialization value.
-func (d TypedSer[T]) DTM() com.DTM {
+func (d Ser[T]) DTM() com.DTM {
 	return d.dtm
 }
 
 // Marshal marshals DTM + data.
-func (d TypedSer[T]) Marshal(t T, bs []byte) (n int) {
+func (d Ser[T]) Marshal(t T, bs []byte) (n int) {
 	n = DTMSer.Marshal(d.dtm, bs)
 	n += d.ser.Marshal(t, bs[n:])
 	return
@@ -36,7 +36,7 @@ func (d TypedSer[T]) Marshal(t T, bs []byte) (n int) {
 //
 // Returns com.WrongDTMError if the unmarshalled DTM differs from the expected
 // one.
-func (d TypedSer[T]) Unmarshal(bs []byte) (t T, n int, err error) {
+func (d Ser[T]) Unmarshal(bs []byte) (t T, n int, err error) {
 	dtm, n, err := DTMSer.Unmarshal(bs)
 	if err != nil {
 		return
@@ -52,7 +52,7 @@ func (d TypedSer[T]) Unmarshal(bs []byte) (t T, n int, err error) {
 }
 
 // Size calculates the size of the DTM + data.
-func (d TypedSer[T]) Size(t T) (size int) {
+func (d Ser[T]) Size(t T) (size int) {
 	size = DTMSer.Size(d.dtm)
 	return size + d.ser.Size(t)
 }
@@ -61,7 +61,7 @@ func (d TypedSer[T]) Size(t T) (size int) {
 //
 // Returns com.WrongDTMError if the unmarshalled DTM differs from the expected
 // one.
-func (d TypedSer[T]) Skip(bs []byte) (n int, err error) {
+func (d Ser[T]) Skip(bs []byte) (n int, err error) {
 	dtm, n, err := DTMSer.Unmarshal(bs)
 	if err != nil {
 		return
@@ -77,11 +77,11 @@ func (d TypedSer[T]) Skip(bs []byte) (n int, err error) {
 }
 
 // UnmarshalData unmarshals only data.
-func (d TypedSer[T]) UnmarshalData(bs []byte) (t T, n int, err error) {
+func (d Ser[T]) UnmarshalData(bs []byte) (t T, n int, err error) {
 	return d.ser.Unmarshal(bs)
 }
 
 // SkipData skips only data.
-func (d TypedSer[T]) SkipData(bs []byte) (n int, err error) {
+func (d Ser[T]) SkipData(bs []byte) (n int, err error) {
 	return d.ser.Skip(bs)
 }
