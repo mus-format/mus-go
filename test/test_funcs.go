@@ -107,58 +107,70 @@ func TestSkipOnly[T any](bs []byte, ser mus.Serializer[T],
 	asserterror.EqualDeep(t, mok.CheckCalls(mocks), mok.EmptyInfomap, "unexpected mocks")
 }
 
-func TestVersioned[T, V, K any](t *testing.T,
-	old T, oldVerSer mus.Serializer[T], wantOld K,
-	curr V, currVerSer mus.Serializer[V], wantCurr K,
-	ser mus.Serializer[K],
-) {
-	var (
-		size = oldVerSer.Size(old)
-		bs   = make([]byte, size)
-	)
-	n := oldVerSer.Marshal(old, bs)
-	asserterror.Equal(t, n, size)
+// -----------------------------------------------------------------------------
 
-	v, n, err := ser.Unmarshal(bs)
-	asserterror.EqualError(t, err, nil)
-	asserterror.Equal(t, n, size)
-	asserterror.EqualDeep(t, v, wantOld)
-
-	size = currVerSer.Size(curr)
-	bs = make([]byte, size)
-
-	n = currVerSer.Marshal(curr, bs)
-	asserterror.Equal(t, n, size)
-
-	v, n, err = ser.Unmarshal(bs)
-	asserterror.EqualError(t, err, nil)
-	asserterror.Equal(t, n, size)
-	asserterror.EqualDeep(t, v, wantCurr)
+type VersionedCase[K any] interface {
+	Marshal() ([]byte, int)
+	GetWant() K
 }
 
-func TestVersionedSkip[T, V, K any](t *testing.T,
-	old T, oldVerSer mus.Serializer[T],
-	curr V, currVerSer mus.Serializer[V],
-	ser mus.Serializer[K],
+func Version[T, K any](val T, ser mus.Serializer[T], want K) VersionedCase[K] {
+	return vcase[T, K]{val, ser, want}
+}
+
+func VersionSkip[T, K any](val T, ser mus.Serializer[T]) VersionedCase[K] {
+	return vcase[T, K]{Value: val, ser: ser}
+}
+
+func TestVersioned[K any](t *testing.T,
+	ser mus.Serializer[K], cases ...VersionedCase[K],
 ) {
+	for i, c := range cases {
+		bs, size := c.Marshal()
+		asserterror.Equal(t, len(bs), size,
+			fmt.Sprintf("case '%v', unexpected size, want '%v' actual '%v'", i, size, len(bs)))
+
+		v, n, err := ser.Unmarshal(bs)
+		assertfatal.EqualError(t, err, nil,
+			fmt.Sprintf("case '%v', unexpected error", i))
+		asserterror.Equal(t, n, size,
+			fmt.Sprintf("case '%v', unexpected n, want '%v' actual '%v'", i, size, n))
+		asserterror.EqualDeep(t, v, c.GetWant(),
+			fmt.Sprintf("case '%v', unexpected v", i))
+	}
+}
+
+func TestVersionedSkip[K any](t *testing.T,
+	ser mus.Serializer[K], cases ...VersionedCase[K],
+) {
+	for i, c := range cases {
+		bs, size := c.Marshal()
+		asserterror.Equal(t, len(bs), size,
+			fmt.Sprintf("case '%v', unexpected size, want '%v' actual '%v'", i, size, len(bs)))
+
+		n, err := ser.Skip(bs)
+		assertfatal.EqualError(t, err, nil,
+			fmt.Sprintf("case '%v', unexpected error", i))
+		asserterror.Equal(t, n, size,
+			fmt.Sprintf("case '%v', unexpected n, want '%v' actual '%v'", i, size, n))
+	}
+}
+
+type vcase[T, K any] struct {
+	Value T
+	ser   mus.Serializer[T]
+	Want  K
+}
+
+func (c vcase[T, K]) Marshal() ([]byte, int) {
 	var (
-		size = oldVerSer.Size(old)
+		size = c.ser.Size(c.Value)
 		bs   = make([]byte, size)
+		n    = c.ser.Marshal(c.Value, bs)
 	)
-	n := oldVerSer.Marshal(old, bs)
-	asserterror.Equal(t, n, size)
+	return bs, n
+}
 
-	n, err := ser.Skip(bs)
-	asserterror.EqualError(t, err, nil)
-	asserterror.Equal(t, n, size)
-
-	size = currVerSer.Size(curr)
-	bs = make([]byte, size)
-
-	n = currVerSer.Marshal(curr, bs)
-	asserterror.Equal(t, n, size)
-
-	n, err = ser.Skip(bs)
-	asserterror.EqualError(t, err, nil)
-	asserterror.Equal(t, n, size)
+func (c vcase[T, K]) GetWant() K {
+	return c.Want
 }
