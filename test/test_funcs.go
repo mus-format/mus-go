@@ -106,3 +106,59 @@ func TestSkipOnly[T any](bs []byte, ser mus.Serializer[T],
 	asserterror.EqualError(t, err, want.Err, "unexpected err")
 	asserterror.EqualDeep(t, mok.CheckCalls(mocks), mok.EmptyInfomap, "unexpected mocks")
 }
+
+func TestVersioned[T, V, K any](t *testing.T,
+	old T, oldVerSer mus.Serializer[T], wantOld K,
+	curr V, currVerSer mus.Serializer[V], wantCurr K,
+	ser mus.Serializer[K],
+) {
+	var (
+		size = oldVerSer.Size(old)
+		bs   = make([]byte, size)
+	)
+	n := oldVerSer.Marshal(old, bs)
+	asserterror.Equal(t, n, size)
+
+	v, n, err := ser.Unmarshal(bs)
+	asserterror.EqualError(t, err, nil)
+	asserterror.Equal(t, n, size)
+	asserterror.EqualDeep(t, v, wantOld)
+
+	size = currVerSer.Size(curr)
+	bs = make([]byte, size)
+
+	n = currVerSer.Marshal(curr, bs)
+	asserterror.Equal(t, n, size)
+
+	v, n, err = ser.Unmarshal(bs)
+	asserterror.EqualError(t, err, nil)
+	asserterror.Equal(t, n, size)
+	asserterror.EqualDeep(t, v, wantCurr)
+}
+
+func TestVersionedSkip[T, V, K any](t *testing.T,
+	old T, oldVerSer mus.Serializer[T],
+	curr V, currVerSer mus.Serializer[V],
+	ser mus.Serializer[K],
+) {
+	var (
+		size = oldVerSer.Size(old)
+		bs   = make([]byte, size)
+	)
+	n := oldVerSer.Marshal(old, bs)
+	asserterror.Equal(t, n, size)
+
+	n, err := ser.Skip(bs)
+	asserterror.EqualError(t, err, nil)
+	asserterror.Equal(t, n, size)
+
+	size = currVerSer.Size(curr)
+	bs = make([]byte, size)
+
+	n = currVerSer.Marshal(curr, bs)
+	asserterror.Equal(t, n, size)
+
+	n, err = ser.Skip(bs)
+	asserterror.EqualError(t, err, nil)
+	asserterror.Equal(t, n, size)
+}
