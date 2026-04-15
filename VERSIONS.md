@@ -1,3 +1,10 @@
+Release: 2026.04.b
+
+- github.com/mus-format/mus-go          v0.10.1
+- github.com/mus-format/mus-gen-go 			v0.5.1
+- github.com/mus-format/mus-skill-go 		v0.2.1
+- github.com/mus-format/ext-protobuf-go v0.0.0-20260415030655-c962eaf1a674
+
 Release: 2026.04.a
 
 - github.com/mus-format/mus-go          v0.10.0
