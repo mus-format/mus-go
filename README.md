@@ -110,7 +110,7 @@ func main() {
   - [Testing](#testing)
     - [Fuzz Testing](#fuzz-testing)
   - [Benchmarks](#benchmarks)
-  - [Contributing & Security](#contributing--security)
+  - [Contributing \& Security](#contributing--security)
   - [Version Compatibility](#version-compatibility)
 
 ## How To
@@ -256,8 +256,8 @@ easy to implement in other programming languages.
   `func(v Type) error` ([examples](https://github.com/mus-format/examples-go/tree/main/validation)).
 - **Out-of-Order Deserialization**: Decode fields partially or non-sequentially 
   for greater efficiency ([example](https://github.com/mus-format/examples-go/tree/main/out_of_order)).
-- **Zero-Allocation**: Use the `unsafe` package to achieve zero-allocation 
-  deserialization.
+- **Zero-Allocation**: Achieve zero-allocation deserialization by simply using 
+  the `unsafe` package (where applicable) instead of `varint`, `raw`, or `ord`.
   
 ## Testing
 
