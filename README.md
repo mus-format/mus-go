@@ -7,52 +7,46 @@
 **mus** is a powerful and versatile Go library for efficient binary
 serialization.
 
-While `mus` was built as a serializer for the [MUS format](https://medium.com/@ymz-ncnk/mus-serialization-format-20f833df12d5),
-its minimalist architecture and broad set of serialization primitives also make
-it well-suited for implementing other binary formats. Here you can find an
-[example](https://github.com/mus-format/examples-go/tree/main/protobuf)
-where it is used to encode data in Protobuf format.
+While originally built for the [MUS format](https://medium.com/@ymz-ncnk/mus-serialization-format-20f833df12d5), its minimalist architecture and 
+extensive set of serialization primitives make it ideal for implementing other
+binary formats. For example, you can see how it's used to encode data in
+[Protobuf format](https://github.com/mus-format/examples-go/tree/main/protobuf).
 
 A streaming version is also available: [mus-stream](https://github.com/mus-format/mus-stream-go).
 
 ## Why mus?
 
-### Core Performance & Reliability
+### Performance
 
 - Top-tier performance (see [benchmarks](#benchmarks)).
-- Space-efficient data serialization.
-- Robust and reliable.
+- Space-efficient binary format.
+- Zero-allocation mode.
 - Cross-architecture compatible (32/64-bit systems).
 
-### Advanced Capabilities
+### Capabilities
 
-- Supports data versioning and interface serialization (oneof feature) using the [typed](#typed-data-type-metadata-support) package.
-- Comprehensive pointer support.
-- Can encode cyclic graphs and linked lists.
-- Offers zero-allocation deserialization.
+- Typed serialization (versioning and `oneof`).
+- Comprehensive pointers support (handles cyclic graphs and linked lists).
+- Validation during the unmarshalling process.
 
-### Additional Features
+### Features
 
-- Validation and field skipping during unmarshalling.
-- Supports private fields.
-- Out-of-order deserialization.
+- Private fields support.
+- Data skipping (enables out-of-order and partial unmarshalling).
 
 ## mus in Action: cmd-stream
 
-Want to see it in action? Check out [cmd-stream](https://github.com/cmd-stream/cmd-stream-go)!
-This library, based on the Command Pattern, enables efficient execution of
-user-defined Commands on a server. The `cmd-stream/MUS` is about 3 times faster
-than `gRPC/Protobuf`.
+[cmd-stream](https://github.com/cmd-stream/cmd-stream-go) uses `mus-stream` to 
+enable efficient remote command execution - 3x faster than `gRPC/Protobuf`.
 
 ## Code Generation (Recommended)
 
 Implementing `mus` serializers manually can be tedious and error-prone. There
 are two ways to automate this:
 
-- [mus-gen](https://github.com/mus-format/mus-gen-go) — a traditional code 
-  generator. Simply provide a type and call `Generate()`.
-- [mus-skill](https://github.com/mus-format/mus-skill-go) — an AI agent skill to
-  produce serialization code.
+- [mus-gen](https://github.com/mus-format/mus-gen-go) — Traditional code 
+  generator.
+- [mus-skill](https://github.com/mus-format/mus-skill-go) — AI agent skill.
 
 ## Quick Start
 
@@ -67,22 +61,22 @@ import (
 )
 
 func main() {
+  num  := 100
+
+  // Pre-allocate a buffer.
   var (
-    num  = 100
     size = varint.Int.Size(num)
     bs   = make([]byte, size)
   )
   
-  // Marshal
+  // Marshal.
   varint.Int.Marshal(num, bs)
   
-  // Unmarshal
-  val, n, err := varint.Int.Unmarshal(bs)
+  // Unmarshal.
+  num, _, err := varint.Int.Unmarshal(bs)
   if err != nil {
     panic(err)
   }
-  
-  fmt.Printf("Unmarshalled %d (%d bytes used)\n", val, n)
 }
 ```
 
@@ -90,9 +84,9 @@ func main() {
 
 - [mus: A High-Performance, Flexible Binary Serialization Library for Go](#mus-a-high-performance-flexible-binary-serialization-library-for-go)
   - [Why mus?](#why-mus)
-    - [Core Performance \& Reliability](#core-performance--reliability)
-    - [Advanced Capabilities](#advanced-capabilities)
-    - [Additional Features](#additional-features)
+    - [Performance](#performance)
+    - [Capabilities](#capabilities)
+    - [Features](#features)
   - [mus in Action: cmd-stream](#mus-in-action-cmd-stream)
   - [Code Generation (Recommended)](#code-generation-recommended)
   - [Quick Start](#quick-start)
@@ -136,14 +130,16 @@ func (s yourTypeMUS) Skip(bs []byte) (n int, err error)                  {...}
 Then, you can use it as follows:
 
 ```go
+value := YourType{...}
+
 var (
-  value YourType = ...
   size = YourTypeMUS.Size(value) // The number of bytes required to serialize 
   // the value.
   bs = make([]byte, size)
 )
 
 n := YourTypeMUS.Marshal(value, bs) // Returns the number of used bytes.
+
 value, n, err := YourTypeMUS.Unmarshal(bs) // Returns the value, the number of 
 // used bytes and any error encountered.
 
