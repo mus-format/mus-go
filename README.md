@@ -99,7 +99,7 @@ func main() {
   - [Benchmarks](#benchmarks)
   - [Contributing \& Security](#contributing--security)
   - [Version Compatibility](#version-compatibility)
-  - [Users](#users)
+  - [Used By](#used-by)
 
 ## How To
 
@@ -299,9 +299,9 @@ If you find a security vulnerability, please refer to our
 
 For a complete list of compatible module versions, see [VERSIONS.md](VERSIONS.md).
 
-## Users
+## Used By
 
-Check out who is building with MUS in [USERS.md](USERS.md).
+See who is building with MUS in [USERS.md](USERS.md).
 
 **Already using MUS?** Open a Pull Request to add your project or company to the 
 list!
