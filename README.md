@@ -33,11 +33,6 @@ A streaming version is also available: [mus-stream](https://github.com/mus-forma
 - Private fields support.
 - Data skipping (enables out-of-order and partial unmarshalling).
 
-## mus in Action: cmd-stream
-
-[cmd-stream](https://github.com/cmd-stream/cmd-stream-go) uses `mus-stream` to 
-enable efficient remote command execution - 3x faster than `gRPC/Protobuf`.
-
 ## Code Generation (Recommended)
 
 Implementing `mus` serializers manually can be tedious and error-prone. There
@@ -86,7 +81,6 @@ func main() {
     - [Performance](#performance)
     - [Capabilities](#capabilities)
     - [Features](#features)
-  - [mus in Action: cmd-stream](#mus-in-action-cmd-stream)
   - [Code Generation (Recommended)](#code-generation-recommended)
   - [Quick Start](#quick-start)
   - [Contents](#contents)
@@ -105,6 +99,7 @@ func main() {
   - [Benchmarks](#benchmarks)
   - [Contributing \& Security](#contributing--security)
   - [Version Compatibility](#version-compatibility)
+  - [Users](#users)
 
 ## How To
 
@@ -303,3 +298,10 @@ If you find a security vulnerability, please refer to our
 ## Version Compatibility
 
 For a complete list of compatible module versions, see [VERSIONS.md](VERSIONS.md).
+
+## Users
+
+Check out who is building with MUS in [USERS.md](USERS.md).
+
+**Already using MUS?** Open a Pull Request to add your project or company to the 
+list!
