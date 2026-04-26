@@ -297,11 +297,11 @@ If you find a security vulnerability, please refer to our
 
 ## Version Compatibility
 
-For a complete list of compatible module versions, see [VERSIONS.md](VERSIONS.md).
+Check [**VERSIONS.md**](VERSIONS.md) for the compatibility matrix of module 
+versions.
 
 ## Used By
 
 See who is building with MUS in [USERS.md](USERS.md).
 
-**Already using MUS?** Open a Pull Request to add your project or company to the 
-list!
+Already using MUS and want to support the project's growth? **[Join the list!](USERS.md)**
