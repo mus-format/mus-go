@@ -9,7 +9,7 @@ serialization.
 
 While originally built for the [MUS format](https://medium.com/@ymz-ncnk/mus-serialization-format-20f833df12d5), its minimalist architecture and 
 extensive set of serialization primitives make it ideal for implementing other
-binary formats. See this [example of Protobuf-style encoding](https://github.com/mus-format/examples-go/tree/main/protobuf) using `mus-go`.
+binary formats. See this [example of Protobuf-style encoding](https://github.com/mus-format/examples-go/tree/main/protobuf) using `mus`.
 
 A streaming version is also available: [mus-stream](https://github.com/mus-format/mus-stream-go).
 
@@ -297,7 +297,7 @@ If you find a security vulnerability, please refer to our
 
 ## Version Compatibility
 
-Check [**VERSIONS.md**](VERSIONS.md) for the compatibility matrix of module 
+Check [VERSIONS.md](VERSIONS.md) for the compatibility matrix of module 
 versions.
 
 ## Used By
