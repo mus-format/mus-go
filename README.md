@@ -26,8 +26,7 @@ A streaming version is also available: [mus-stream](https://github.com/mus-forma
 In addition to 32/64-bit compatibility and private field access, the library 
 provides:
 
-- Typed serialization (versioning, oneof).
-- Advanced pointer handling (appliable cyclic graphs and linked lists).
+- Typed serialization (versioning, `oneof`).
 - Comprehensive pointers support (handles cyclic graphs and linked lists).
 - Validation during unmarshalling.
 - Data skipping (enables out-of-order and partial unmarshalling).
