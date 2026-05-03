@@ -7,9 +7,9 @@
 **mus** is a powerful and versatile Go library for efficient binary
 serialization.
 
-While originally built for the [MUS format](https://medium.com/@ymz-ncnk/mus-serialization-format-20f833df12d5), its minimalist architecture and 
-extensive set of serialization primitives make it ideal for implementing other
-binary formats. See this [example of Protobuf-style encoding](https://github.com/mus-format/examples-go/tree/main/protobuf) using `mus`.
+While originally built for the [MUS format](https://medium.com/@ymz-ncnk/mus-serialization-format-20f833df12d5), 
+its minimalist architecture and extensive set of serialization primitives make 
+it ideal for implementing other binary formats (including [Protobuf-style encoding](https://github.com/mus-format/examples-go/tree/main/protobuf)).
 
 A streaming version is also available: [mus-stream](https://github.com/mus-format/mus-stream-go).
 
@@ -17,31 +17,47 @@ A streaming version is also available: [mus-stream](https://github.com/mus-forma
 
 ### Performance
 
-- Top-tier performance (see [benchmarks](#benchmarks)).
-- Space-efficient binary format.
-- Zero-allocation mode.
-- Cross-architecture compatible (32/64-bit systems).
+- Optimized for maximum speed (see [benchmarks](#benchmarks)).
+- Offers space-efficient binary representation.
+- Has zero-allocation mode.
 
 ### Capabilities
 
-- Typed serialization (versioning and `oneof`).
+In addition to 32/64-bit compatibility and private field access, the library 
+provides:
+
+- Typed serialization (versioning, oneof).
+- Advanced pointer handling (appliable cyclic graphs and linked lists).
 - Comprehensive pointers support (handles cyclic graphs and linked lists).
-- Validation during the unmarshalling process.
-
-### Features
-
-- Private fields support.
+- Validation during unmarshalling.
 - Data skipping (enables out-of-order and partial unmarshalling).
 
-## Code Generation (Recommended)
+## Contents
 
-Implementing `mus` serializers manually can be tedious and error-prone. There
-are two ways to automate this:
-
-- [mus-gen](https://github.com/mus-format/mus-gen-go) — Traditional code 
-  generator.
-- [mus-skill](https://github.com/mus-format/mus-skill-go) — AI agent skill.
-
+- [mus: A High-Performance, Flexible Binary Serialization Library for Go](#mus-a-high-performance-flexible-binary-serialization-library-for-go)
+  - [Why mus?](#why-mus)
+    - [Performance](#performance)
+    - [Capabilities](#capabilities)
+  - [Contents](#contents)
+  - [Quick Start](#quick-start)
+  - [Code Generation (Recommended)](#code-generation-recommended)
+  - [How To](#how-to)
+  - [Packages](#packages)
+    - [varint](#varint)
+    - [raw](#raw)
+    - [ord (ordinary)](#ord-ordinary)
+    - [unsafe](#unsafe)
+    - [pm (pointer mapping)](#pm-pointer-mapping)
+    - [typed (data type metadata support)](#typed-data-type-metadata-support)
+  - [Structs Support](#structs-support)
+  - [More Features](#more-features)
+  - [Testing](#testing)
+    - [Fuzz Testing](#fuzz-testing)
+  - [Benchmarks](#benchmarks)
+  - [Contributing \& Security](#contributing--security)
+  - [Version Compatibility](#version-compatibility)
+  - [Used By](#used-by)
+  
 ## Quick Start
 
 Here's an example of how to use `mus` to serialize a number.
@@ -74,32 +90,14 @@ func main() {
 }
 ```
 
-## Contents
+## Code Generation (Recommended)
 
-- [mus: A High-Performance, Flexible Binary Serialization Library for Go](#mus-a-high-performance-flexible-binary-serialization-library-for-go)
-  - [Why mus?](#why-mus)
-    - [Performance](#performance)
-    - [Capabilities](#capabilities)
-    - [Features](#features)
-  - [Code Generation (Recommended)](#code-generation-recommended)
-  - [Quick Start](#quick-start)
-  - [Contents](#contents)
-  - [How To](#how-to)
-  - [Packages](#packages)
-    - [varint](#varint)
-    - [raw](#raw)
-    - [ord (ordinary)](#ord-ordinary)
-    - [unsafe](#unsafe)
-    - [pm (pointer mapping)](#pm-pointer-mapping)
-    - [typed (data type metadata support)](#typed-data-type-metadata-support)
-  - [Structs Support](#structs-support)
-  - [More Features](#more-features)
-  - [Testing](#testing)
-    - [Fuzz Testing](#fuzz-testing)
-  - [Benchmarks](#benchmarks)
-  - [Contributing \& Security](#contributing--security)
-  - [Version Compatibility](#version-compatibility)
-  - [Used By](#used-by)
+Implementing `mus` serializers manually can be tedious and error-prone. There
+are two ways to automate this:
+
+- [mus-gen](https://github.com/mus-format/mus-gen-go) — Traditional code 
+  generator.
+- [mus-skill](https://github.com/mus-format/mus-skill-go) — AI agent skill.
 
 ## How To
 
@@ -137,7 +135,7 @@ n := YourTypeMUS.Marshal(value, bs) // Returns the number of used bytes.
 value, n, err := YourTypeMUS.Unmarshal(bs) // Returns the value, the number of 
 // used bytes and any error encountered.
 
-// Instead of unmarshalling the value can be skipped:
+// Instead of unmarshalling, the value can be skipped:
 n, err := YourTypeMUS.Skip(bs)
 ```
 
@@ -235,20 +233,19 @@ to provide data versioning, the oneof feature, and [other capabilities](https://
 ## Structs Support
 
 `mus` doesn’t support structs out of the box, which means you’ll need to 
-implement the `mus.Serializer` interface yourself. Simply deconstruct the struct
-into its fields and choose the desired encoding for each ([example](https://github.com/mus-format/examples-go/tree/main/types/struct)).
+implement the `mus.Serializer` interface yourself by choosing the specific
+encoding for each field ([example](https://github.com/mus-format/examples-go/tree/main/types/struct)).
 This approach provides greater flexibility and keeps `mus` simple, making it 
 easy to implement in other programming languages.
 
 ## More Features
 
-- **Validation**: Validate data during unmarshalling with a custom function:
+- Validation: Validate data during unmarshalling using custom functions:
   `func(v Type) error` ([examples](https://github.com/mus-format/examples-go/tree/main/validation)).
-- **Out-of-Order Deserialization**: Decode fields partially or non-sequentially 
-  for greater efficiency ([example](https://github.com/mus-format/examples-go/tree/main/out_of_order)).
-- **Zero-Allocation**: Achieve zero-allocation deserialization by simply using 
-  the `unsafe` package (where applicable) instead of `varint`, `raw`, or `ord`.
-  
+- Out-of-order deserialization: Decode fields partially or non-sequentially 
+  ([example](https://github.com/mus-format/examples-go/tree/main/out_of_order)).
+- Zero-allocation: Achieve maximum efficiency by using the `unsafe` package.
+
 ## Testing
 
 To run all `mus` tests, use the following command:
@@ -279,13 +276,12 @@ go test -v -fuzz="^FuzzByte$" ./varint -fuzztime 10s
 | protobuf | 531.70  | 69.00  | 271.00 | 4         |
 | json     | 2779.00 | 150.00 | 600.00 | 9         |
 
-The data above is sourced from the [ymz-ncnk/go-serialization-benchmarks](https://github.com/ymz-ncnk/go-serialization-benchmarks) repository.
+Data sourced from [ymz-ncnk/go-serialization-benchmarks](https://github.com/ymz-ncnk/go-serialization-benchmarks).
 
-Why a separate benchmark suite? The [standard go-serialization-benchmarks](https://github.com/alecthomas/go_serialization_benchmarks) 
-sometimes produce inconsistent results across multiple runs. New 
-[benchmarks](https://github.com/ymz-ncnk/go-serialization-benchmarks) were 
-created to provide more consistent and reproducible measurements for 
-accurate comparison.
+Why a separate benchmark suite? [Standard benchmarks](https://github.com/alecthomas/go_serialization_benchmarks) 
+sometimes produce inconsistent results across multiple runs. The 
+`ymz-ncnk/go-serialization-benchmarks` suite was created to provide more 
+consistent and reproducible measurements.
 
 ## Contributing & Security
 
