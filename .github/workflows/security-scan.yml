@@ -6,6 +6,8 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions: {}
+
 env:
   ACT: false
 
@@ -17,14 +19,14 @@ jobs:
       contents: read
       security-events: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: Run Gosec Security Scanner
-        uses: securego/gosec@master
+        uses: securego/gosec@4a3bd8af174872c778439083ded7adbf3747e770 # v2.22.1
         with:
           # Generates a SARIF file for GitHub Security integration
           args: '-fmt sarif -out results.sarif -exclude=G103,G115 -exclude-dir=test ./...'
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v4
+        uses: github/codeql-action/upload-sarif@e46ed2cbd01164d986452f91f178727624ae40d7 # v4.35.3
         if: ${{ !env.ACT }}
         with:
           sarif_file: results.sarif
