@@ -3,6 +3,7 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/mus-format/mus-go.svg)](https://pkg.go.dev/github.com/mus-format/mus-go)
 [![GoReportCard](https://goreportcard.com/badge/mus-format/mus-go)](https://goreportcard.com/report/github.com/mus-format/mus-go)
 [![codecov](https://codecov.io/gh/mus-format/mus-go/graph/badge.svg?token=WLLZ1MMQDX)](https://codecov.io/gh/mus-format/mus-go)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/mus-format/mus-go/badge)](https://scorecard.dev/viewer/?uri=github.com/mus-format/mus-go)
 
 **mus** is a powerful and versatile Go library for efficient binary
 serialization.
