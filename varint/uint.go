@@ -1,6 +1,8 @@
 package varint
 
 import (
+	"math/bits"
+
 	com "github.com/mus-format/common-go"
 	"github.com/mus-format/mus-go"
 	"golang.org/x/exp/constraints"
@@ -225,11 +227,7 @@ func unmarshalUint[T constraints.Unsigned](maxVarintLen int, maxLastByte byte,
 }
 
 func sizeUint[T constraints.Unsigned](t T) (size int) {
-	for t >= 0x80 {
-		t >>= 7
-		size++
-	}
-	return size + 1
+	return (bits.Len64(uint64(t)|1) + 6) / 7
 }
 
 func skipUint(maxVarintLen int, maxLastByte byte, bs []byte) (n int,
