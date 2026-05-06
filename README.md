@@ -256,16 +256,16 @@ go test ./...
 
 ### Fuzz Testing
 
-`mus` also includes fuzz tests. To run them, you can use the `fuzz.sh` script:
+To run fuzz tests use the `fuzz.sh` script:
 
 ```bash
 ./fuzz.sh 10s
 ```
 
-Or you can run a specific fuzz test using the `go test` command:
+For a specific fuzz test:
 
 ```bash
-go test -v -fuzz="^FuzzByte$" ./varint -fuzztime 10s
+go test -v -fuzz="^FuzzVarint_Byte$" ./varint -fuzztime 10s
 ```
 
 ## Benchmarks
